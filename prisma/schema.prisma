@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== ENUMS =====
+enum TipoEvento {
+  corporativo
+  casamento
+  festa
+  workshop
+  conferencia
+  aniversario
+  formatura
+  outro
+}
+
+enum StatusEvento {
+  planejamento
+  confirmado
+  em_andamento
+  finalizado
+  cancelado
+}
+
+enum StatusParticipante { 
+  pendente 
+  confirmado 
+  cancelado 
+}
+
+enum TipoParticipante { 
+  vip 
+  comum 
+  staff 
+  palestrante 
+}
+
+enum StatusAluno { 
+  ativo 
+  inativo 
+  transferido 
+  formado 
+}
+
+enum StatusParticipacao { 
+  pendente 
+  confirmado 
+  cancelado 
+  compareceu 
+  ausente 
+}
+
+enum Periodo { 
+  matutino 
+  vespertino 
+  noturno 
+  integral 
+}
+
+enum StatusTurma { 
+  ativa 
+  inativa 
+  concluida 
+}
+
+model Evento {
+  id                     String             @id @default(uuid())
+  nome                   String
+  descricao              String?
+  tipo_evento            TipoEvento
+  data_inicio            String
+  data_fim               String
+  horario_inicio         String
+  horario_fim            String
+  local_nome             String
+  endereco_completo      String
+  cidade                 String
+  estado                 String
+  cep                    String?
+  link_maps              String?
+  capacidade_maxima      Int
+  vagas_disponiveis      Int
+  status                 StatusEvento       @default(planejamento)
+  valor_total            Float              @default(0)
+  valor_entrada          Float              @default(0)
+  valor_pendente         Float              @default(0)
+  cliente_nome           String?
+  cliente_email          String?
+  cliente_telefone       String?
+  cliente_empresa        String?
+  responsavel_nome       String?
+  responsavel_cpf        String?
+  responsavel_email      String?
+  observacoes            String?
+  necessidades_especiais String?
+  fornecedores           Json?
+  checklist              Json?
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
+
+  participantes          Participante[]
+  evento_alunos          EventoAluno[]
+
+  @@map("eventos")
+}
+
+model Aluno {
+  id                   String        @id @default(uuid())
+  matricula            String        @unique
+  nome                 String
+  idade                Int
+  email                String        @unique
+  telefone             String
+  turma                String
+  curso                String
+  cidade               String?
+  responsavel          String?
+  cpf_responsavel      String?
+  telefone_responsavel String?
+  email_responsavel    String?
+  foto_url             String?
+  status               StatusAluno   @default(ativo)
+  observacoes          String?
+  created_by           String?
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+
+  evento_alunos        EventoAluno[]
+
+  @@map("alunos")
+}
+
+model EventoAluno {
+  id                     String             @id @default(uuid())
+  evento_id              String
+  aluno_id               String
+  status_participacao    StatusParticipacao @default(pendente)
+  funcao                 String?
+  mesa                   String?
+  acompanhantes          Int                @default(0)
+  necessidades_especiais String?
+  confirma_presenca      Boolean            @default(false)
+  data_confirmacao       DateTime?
+  observacoes            String?
+  
+  evento                 Evento             @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  aluno                  Aluno              @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+
+  @@unique([evento_id, aluno_id])
+  @@map("evento_alunos")
+}
+
+model Participante {
+  id                 String             @id @default(uuid())
+  evento_id          String
+  nome               String
+  email              String?
+  telefone           String?
+  status_confirmacao StatusParticipante @default(pendente)
+  tipo_participante  TipoParticipante   @default(comum)
+  observacoes        String?
+  created_at         DateTime           @default(now())
+  
+  evento             Evento             @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+
+  @@map("participantes")
+}
+
+model FAQ {
+  id             String   @id @default(uuid())
+  categoria      String
+  pergunta       String
+  resposta       String
+  palavras_chave String[]
+  ordem          Int      @default(0)
+  ativo          Boolean  @default(true)
+  visualizacoes  Int      @default(0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model Turma {
+  id          String      @id @default(uuid())
+  nome        String      @unique
+  ano         Int
+  ano_letivo  Int?
+  periodo     Periodo?
+  curso       String
+  coordenador String?
+  sala        String?
+  capacidade  Int?
+  status      StatusTurma @default(ativa)
+
+  @@map("turmas")
+}
+
+model Cliente {
+  id           String   @id @default(uuid())
+  nome         String
+  telefone     String   @unique
+  documento    String
+  agente_ativo Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("clientes")
+}
