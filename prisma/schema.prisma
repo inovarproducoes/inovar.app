@@ -106,6 +106,9 @@ model Evento {
   participantes          Participante[]
   evento_alunos          EventoAluno[]
 
+  @@index([data_inicio])
+  @@index([status])
+  @@index([tipo_evento])
   @@map("eventos")
 }
 
@@ -132,6 +135,9 @@ model Aluno {
 
   evento_alunos        EventoAluno[]
 
+  @@index([status])
+  @@index([turma])
+  @@index([curso])
   @@map("alunos")
 }
 
