@@ -4,7 +4,8 @@ import { alunosService } from '@/services/alunosService';
 export function useAlunos(filtros?: any) {
   return useQuery({
     queryKey: ['alunos', filtros],
-    queryFn: () => alunosService.buscarAlunos(filtros)
+    queryFn: () => alunosService.buscarAlunos(filtros),
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 }
 
@@ -22,6 +23,7 @@ export function useAlunosDoEvento(evId: string) {
   return useQuery({
     queryKey: ['evento-alunos', evId],
     queryFn: () => alunosService.buscarAlunosDoEvento(evId),
-    enabled: !!evId
+    enabled: !!evId,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 }

@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -28,24 +31,29 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (isAuthenticated) return <>{children}</>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="bg-card w-full max-w-md p-8 rounded-xl shadow border">
-        <h1 className="text-2xl font-bold text-center mb-6">Login Inovar App</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="bg-card w-full max-w-md p-8 rounded-xl shadow border flex flex-col items-center">
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+          <Lock className="w-8 h-8 text-primary" />
+        </div>
+        <h1 className="text-2xl font-bold text-center mb-2">Inovar App</h1>
+        <p className="text-sm text-muted-foreground text-center mb-8">Digite a senha para acessar o painel</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
           <div>
-            <label className="block text-sm font-medium mb-1">Senha de Acesso</label>
-            <input 
+            <Input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full flex h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Digite a senha"
+              autoFocus
+              className="w-full text-center"
             />
-            {error && <p className="text-destructive text-sm mt-1">Senha incorreta. Tente novamente.</p>}
+            {error && <p className="text-destructive text-sm mt-2 text-center">Senha incorreta</p>}
           </div>
-          <button type="submit" className="w-full h-10 pb-2 pt-2 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90">
+          <Button type="submit" className="w-full">
             Entrar
-          </button>
+          </Button>
         </form>
       </div>
     </div>

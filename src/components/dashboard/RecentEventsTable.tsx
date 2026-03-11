@@ -1,8 +1,10 @@
 import { Evento } from "@/types/database";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 
 export function RecentEventsTable({ eventos }: { eventos: Evento[] }) {
+  const router = useRouter();
   if (eventos.length === 0) return <div className="text-center py-6 text-muted-foreground">Nenhum evento recente</div>;
 
   return (
@@ -18,7 +20,7 @@ export function RecentEventsTable({ eventos }: { eventos: Evento[] }) {
         </thead>
         <tbody>
           {eventos.map(ev => (
-            <tr key={ev.id} className="bg-card border-b hover:bg-muted/50">
+            <tr key={ev.id} onClick={() => router.push(`/eventos/${ev.id}`)} className="bg-card border-b hover:bg-muted/50 cursor-pointer transition-colors">
               <td className="px-6 py-4 font-medium">{ev.nome}</td>
               <td className="px-6 py-4">{format(new Date(ev.data_inicio), "dd 'de' MMMM", { locale: ptBR })}</td>
               <td className="px-6 py-4 truncate max-w-[200px]">{ev.local_nome}</td>

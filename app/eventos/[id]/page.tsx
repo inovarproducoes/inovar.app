@@ -1,6 +1,6 @@
 "use client";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { useEvento, useUpdateEvento } from "@/hooks/useEventos";
+import { useEvento, useUpdateEvento, useDeleteEvento } from "@/hooks/useEventos";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,13 +9,19 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
-import { MapPin, Calendar, Users, DollarSign, Clock, UsersIcon, ShieldCheck } from "lucide-react";
+import { MapPin, Calendar, Users, DollarSign, Clock, UsersIcon, ShieldCheck, ArrowLeft, Edit2, Trash2, Building, Mail, Phone } from "lucide-react";
+import Link from "next/link";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 export default function EventoDetalhesPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const { data: evento, isLoading } = useEvento(id);
   const { mutate: updateEvento } = useUpdateEvento();
+  const { mutate: deleteEvento } = useDeleteEvento();
 
   if (isLoading || !evento) return <MainLayout title="Detalhes do Evento"><div className="flex justify-center items-center h-full">Carregando...</div></MainLayout>;
 
@@ -28,8 +34,56 @@ export default function EventoDetalhesPage() {
 
   const percentOcupado = evento.capacidade_maxima > 0 ? ((evento.capacidade_maxima - evento.vagas_disponiveis) / evento.capacidade_maxima) * 100 : 0;
 
+  let fornecedores = [];
+  try {
+    fornecedores = evento.fornecedores ? (typeof evento.fornecedores === 'string' ? JSON.parse(evento.fornecedores) : evento.fornecedores) : [];
+  } catch (e) {
+    fornecedores = [];
+  }
+
+  const handleDelete = () => {
+    deleteEvento(id, {
+      onSuccess: () => router.push("/eventos")
+    });
+  };
+
   return (
     <MainLayout title={evento.nome} subtitle={`Cadastrado em ${format(new Date(evento.created_at), 'dd/MM/yyyy')}`}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <Button variant="outline" asChild className="gap-2">
+          <Link href="/eventos"><ArrowLeft className="w-4 h-4" /> Voltar</Link>
+        </Button>
+        <div className="flex gap-2">
+          <Badge variant="outline" className="text-sm px-4 capitalize tracking-wide">{evento.status.replace("_", " ")}</Badge>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="secondary" className="gap-2"><Edit2 className="w-4 h-4" /> Editar</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader><DialogTitle>Editar {evento.nome}</DialogTitle></DialogHeader>
+              <div className="py-8 text-center text-muted-foreground border-dashed border-2 rounded-lg mt-4">
+                Formulário de Edição completo aqui (react-hook-form + zod simulado)
+              </div>
+            </DialogContent>
+          </Dialog>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="gap-2"><Trash2 className="w-4 h-4" /> Excluir</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir evento?</AlertDialogTitle>
+                <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">Excluir</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
            <Card>
@@ -95,6 +149,25 @@ export default function EventoDetalhesPage() {
                </CardContent>
              </Card>
            )}
+
+           <Card>
+             <CardHeader className="flex flex-row items-center justify-between">
+               <CardTitle>Participantes</CardTitle>
+               <Button variant="outline" size="sm">Gerenciar</Button>
+             </CardHeader>
+             <CardContent>
+               <div className="border rounded-md">
+                 <table className="w-full text-sm">
+                   <thead className="bg-muted">
+                     <tr><th className="text-left p-3">Nome</th><th className="text-left p-3">Email</th><th className="text-left p-3">Status</th></tr>
+                   </thead>
+                   <tbody>
+                     <tr><td className="p-4 text-center text-muted-foreground" colSpan={3}>Nenhum participante vinculado</td></tr>
+                   </tbody>
+                 </table>
+               </div>
+             </CardContent>
+           </Card>
         </div>
 
         <div className="space-y-6">
@@ -128,10 +201,41 @@ export default function EventoDetalhesPage() {
            </Card>
 
            <Card>
-              <CardHeader><CardTitle>Responsável/Cliente</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                 <div className="flex items-center gap-2 text-sm"><Users className="w-4 h-4 text-muted-foreground" /> <span>{evento.cliente_nome || evento.responsavel_nome || 'Não definido'}</span></div>
-                 {evento.responsavel_cpf && <div className="flex items-center gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-muted-foreground" /> <span>{evento.responsavel_cpf}</span></div>}
+              <CardHeader><CardTitle>Responsável / Cliente</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                 <div className="space-y-1 text-sm bg-muted/50 p-3 rounded-lg border">
+                   <p className="font-semibold text-foreground flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Empresa Contratante</p>
+                   {evento.cliente_nome ? (
+                     <>
+                       <div className="flex items-center gap-2 mt-2"><Users className="w-4 h-4 text-muted-foreground" /> <span>{evento.cliente_nome}</span></div>
+                       {evento.cliente_email && <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-muted-foreground" /> <span>{evento.cliente_email}</span></div>}
+                       {evento.cliente_telefone && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-muted-foreground" /> <span>{evento.cliente_telefone}</span></div>}
+                     </>
+                   ) : <p className="text-muted-foreground mt-2">Nenhum cliente vinculado.</p>}
+                 </div>
+
+                 <div className="space-y-1 text-sm pt-2">
+                   <p className="font-semibold text-foreground mb-2">Responsável Legal</p>
+                   <div className="flex items-center gap-2"><Users className="w-4 h-4 text-muted-foreground" /> <span>{evento.responsavel_nome || 'Não definido'}</span></div>
+                   {evento.responsavel_cpf && <div className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-muted-foreground" /> <span>{evento.responsavel_cpf}</span></div>}
+                 </div>
+              </CardContent>
+           </Card>
+
+           <Card>
+              <CardHeader><CardTitle>Fornecedores</CardTitle></CardHeader>
+              <CardContent>
+                {fornecedores.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {fornecedores.map((f: any, i: number) => (
+                      <Badge key={i} variant="secondary" className="px-3 py-1 font-normal">
+                        <span className="font-semibold mr-1">{f.nome}:</span> {f.contato}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nenhum fornecedor cadastrado.</p>
+                )}
               </CardContent>
            </Card>
         </div>

@@ -1,4 +1,4 @@
-export type StatusAluno = 'ativo' | 'inativo' | 'transferido' | 'formado';
+export type StatusAluno = 'ativo' | 'inativo' | 'transferido' | 'formado' | 'inadimplente' | 'trancado' | 'concluido' | 'cancelado';
 export type StatusParticipacao = 'pendente' | 'confirmado' | 'cancelado' | 'compareceu' | 'ausente';
 export type Periodo = 'matutino' | 'vespertino' | 'noturno' | 'integral';
 export type StatusTurma = 'ativa' | 'inativa' | 'concluida';

@@ -6,7 +6,7 @@ import { MapPin, Calendar, Clock, Trash2 } from "lucide-react";
 
 interface EventCardProps {
   evento: Evento;
-  onDelete?: (id: string) => void;
+  onDelete?: (e: React.MouseEvent, id: string) => void;
 }
 
 export function EventCard({ evento, onDelete }: EventCardProps) {
@@ -19,7 +19,7 @@ export function EventCard({ evento, onDelete }: EventCardProps) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow relative group">
+    <Card className="hover:shadow-lg transition-all relative group bg-card/60 backdrop-blur-md border-white/5 hover:border-primary/40 overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg line-clamp-1">{evento.nome}</CardTitle>
@@ -32,7 +32,7 @@ export function EventCard({ evento, onDelete }: EventCardProps) {
         <div className="flex items-center gap-2"><Clock className="w-4 h-4"/> <span>{evento.horario_inicio}</span></div>
       </CardContent>
       {onDelete && (
-        <button onClick={() => onDelete(evento.id)} className="absolute top-4 right-4 bg-destructive text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(e, evento.id); }} className="absolute top-4 right-4 bg-destructive text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <Trash2 className="w-4 h-4" />
         </button>
       )}

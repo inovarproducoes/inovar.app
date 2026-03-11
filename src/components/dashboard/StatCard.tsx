@@ -11,7 +11,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon: Icon, description, className }: StatCardProps) {
   return (
-    <Card className={className}>
+    <Card className={`bg-card/60 backdrop-blur-xl border-white/5 hover:border-primary/30 transition-colors shadow-sm ${className || ''}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <Icon className="w-4 h-4 text-muted-foreground" />

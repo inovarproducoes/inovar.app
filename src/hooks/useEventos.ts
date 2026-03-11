@@ -4,7 +4,8 @@ import { eventosService } from '@/services/eventosService';
 export function useEventos(dias?: number) {
   return useQuery({
     queryKey: ['eventos', dias],
-    queryFn: () => eventosService.getEventos(dias)
+    queryFn: () => eventosService.getEventos(dias),
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 }
 
@@ -12,7 +13,8 @@ export function useEvento(id: string) {
   return useQuery({
     queryKey: ['evento', id],
     queryFn: () => eventosService.getEventoById(id),
-    enabled: !!id
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5 // 5 minutes
   });
 }
 
