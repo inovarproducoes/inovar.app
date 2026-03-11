@@ -40,7 +40,7 @@ export function useUpdateEvento() {
 }
 
 export function useEventosStats() {
-  return useQuery({
+  const { data } = useQuery({
     queryKey: ['eventos-stats'],
     queryFn: async () => {
       const res = await fetch('/api/eventos/stats');
@@ -55,6 +55,7 @@ export function useEventosStats() {
       distribuicaoPorTipo: []
     }
   });
+  return data;
 }
 
 export function useCreateEvento() {
