@@ -40,11 +40,15 @@ enum TipoParticipante {
   palestrante 
 }
 
-enum StatusAluno { 
-  ativo 
-  inativo 
-  transferido 
-  formado 
+enum StatusAluno {
+  ativo
+  inativo
+  transferido
+  formado
+  inadimplente
+  trancado
+  concluido
+  cancelado
 }
 
 enum StatusParticipacao { 

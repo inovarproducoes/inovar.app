@@ -9,12 +9,23 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatarCPF } from "@/lib/cpfUtils";
+import { toast } from "sonner";
+import { TipoEvento, StatusEvento } from "@/types/database";
 
 export default function NovoEventoPage() {
   const router = useRouter();
   const { mutateAsync: createEvento } = useCreateEvento();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    nome: string; tipo_evento: TipoEvento; descricao: string; status: StatusEvento;
+    data_inicio: string; data_fim: string; horario_inicio: string; horario_fim: string;
+    local_nome: string; endereco_completo: string; cidade: string; estado: string; cep: string; link_maps: string;
+    capacidade_maxima: number; vagas_disponiveis: number;
+    cliente_nome: string; cliente_email: string; cliente_telefone: string; cliente_empresa: string;
+    responsavel_nome: string; responsavel_cpf: string; responsavel_email: string;
+    observacoes: string; necessidades_especiais: string;
+    valor_total: number; valor_entrada: number;
+  }>({
     nome: "", tipo_evento: "corporativo", descricao: "", status: "planejamento",
     data_inicio: "", data_fim: "", horario_inicio: "", horario_fim: "",
     local_nome: "", endereco_completo: "", cidade: "", estado: "", cep: "", link_maps: "",
@@ -34,10 +45,10 @@ export default function NovoEventoPage() {
         valor_pendente: formData.valor_total - formData.valor_entrada,
         vagas_disponiveis: formData.vagas_disponiveis || formData.capacidade_maxima,
         responsavel_cpf: formData.responsavel_cpf.replace(/\D/g, '')
-      } as any);
+      });
       router.push("/eventos");
     } catch (err) {
-      alert("Erro ao criar evento");
+      toast.error("Erro ao criar evento. Verifique os dados e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -66,7 +77,7 @@ export default function NovoEventoPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Tipo de Evento</label>
-                  <Select value={formData.tipo_evento} onValueChange={(v) => setFormData({...formData, tipo_evento: v})}>
+                  <Select value={formData.tipo_evento} onValueChange={(v) => setFormData({...formData, tipo_evento: v as TipoEvento})}>
                     <SelectTrigger><SelectValue placeholder="Selecione o tipo" /></SelectTrigger>
                     <SelectContent>
                       {["corporativo", "casamento", "festa", "workshop", "conferencia", "aniversario", "formatura", "outro"].map(t => <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>)}
@@ -75,7 +86,7 @@ export default function NovoEventoPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Status</label>
-                  <Select value={formData.status} onValueChange={(v) => setFormData({...formData, status: v})}>
+                  <Select value={formData.status} onValueChange={(v) => setFormData({...formData, status: v as StatusEvento})}>
                     <SelectTrigger><SelectValue placeholder="Selecione o status" /></SelectTrigger>
                     <SelectContent>
                       {["planejamento", "confirmado", "em_andamento", "finalizado", "cancelado"].map(t => <SelectItem key={t} value={t} className="capitalize">{t.replace("_", " ")}</SelectItem>)}

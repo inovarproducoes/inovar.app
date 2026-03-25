@@ -1,11 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { alunosService } from '@/services/alunosService';
 
-export function useAlunos(filtros?: any) {
+interface AlunosFiltros {
+  termo?: string;
+  turma?: string;
+  curso?: string;
+  status?: string;
+}
+
+export function useAlunos(filtros?: AlunosFiltros) {
   return useQuery({
     queryKey: ['alunos', filtros],
     queryFn: () => alunosService.buscarAlunos(filtros),
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5
   });
 }
 
@@ -24,6 +31,6 @@ export function useAlunosDoEvento(evId: string) {
     queryKey: ['evento-alunos', evId],
     queryFn: () => alunosService.buscarAlunosDoEvento(evId),
     enabled: !!evId,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    staleTime: 1000 * 60 * 5
   });
 }

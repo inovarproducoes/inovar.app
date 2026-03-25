@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { useState } from "react";
+import { Evento } from "@/types/database";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useRouter } from "next/navigation";
@@ -40,14 +41,14 @@ export default function EventosPage() {
 
   let filtered = eventos || [];
   if (statusFilter !== "todos") {
-    filtered = filtered.filter((e: any) => e.status === statusFilter);
+    filtered = filtered.filter((e: Evento) => e.status === statusFilter);
   }
   if (tipoFilter !== "todos") {
-    filtered = filtered.filter((e: any) => e.tipo_evento === tipoFilter);
+    filtered = filtered.filter((e: Evento) => e.tipo_evento === tipoFilter);
   }
   if (busca) {
     const q = busca.toLowerCase();
-    filtered = filtered.filter((e: any) => e.nome.toLowerCase().includes(q) || e.local_nome.toLowerCase().includes(q));
+    filtered = filtered.filter((e: Evento) => e.nome.toLowerCase().includes(q) || e.local_nome.toLowerCase().includes(q));
   }
 
   const handleDelete = (id: string, e?: React.MouseEvent) => {
@@ -109,7 +110,7 @@ export default function EventosPage() {
         </div>
       ) : view === "grid" ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((ev: any) => (
+          {filtered.map((ev: Evento) => (
             <Link key={ev.id} href={`/eventos/${ev.id}`} className="block relative group">
               <EventCard evento={ev} onDelete={(e, id) => handleDelete(id, e)} />
             </Link>
@@ -129,7 +130,7 @@ export default function EventosPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((ev: any) => (
+              {filtered.map((ev: Evento) => (
                 <tr key={ev.id} onClick={() => router.push(`/eventos/${ev.id}`)} className="border-b transition-colors hover:bg-muted/50 cursor-pointer">
                   <td className="px-6 py-4 font-medium">{ev.nome}</td>
                   <td className="px-6 py-4 capitalize">{ev.tipo_evento}</td>

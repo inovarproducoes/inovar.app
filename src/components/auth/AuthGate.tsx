@@ -20,7 +20,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "inovar2025") {
+    const appPassword = process.env.NEXT_PUBLIC_APP_PASSWORD ?? "inovar2025";
+    if (password === appPassword) {
       sessionStorage.setItem("inovar_auth", "true");
       setIsAuthenticated(true);
     } else {

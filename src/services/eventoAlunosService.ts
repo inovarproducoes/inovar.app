@@ -1,9 +1,11 @@
 import { eventosService } from "./eventosService";
 import { alunosService } from "./alunosService";
 import { formatarCPF } from "@/lib/cpfUtils";
+import { Evento } from "@/types/database";
+import { AlunoFormData } from "@/types/alunos";
 
 export const eventoAlunosService = {
-  criarEventoComAlunos: async (eventoData: any, alunos: any[]) => {
+  criarEventoComAlunos: async (eventoData: Partial<Evento>, alunos: Partial<AlunoFormData>[]) => {
     // 1. Criar Evento
     const evento = await eventosService.createEvento(eventoData);
     
@@ -17,12 +19,16 @@ export const eventoAlunosService = {
       
       // Existe por matricula?
       try {
-        const existenteMat = await alunosService.buscarAlunoPorMatricula(aluno.matricula);
+        const existenteMat = aluno.matricula
+          ? await alunosService.buscarAlunoPorMatricula(aluno.matricula)
+          : null;
         if (existenteMat) {
            alunoId = existenteMat.id;
            alunosExistentes++;
         }
-      } catch (e) {}
+      } catch {
+        // Aluno não encontrado por matrícula — será criado a seguir
+      }
 
       // Se não, tenta criar
       if (!alunoId) {
@@ -33,7 +39,7 @@ export const eventoAlunosService = {
            });
            alunoId = criado.id;
            alunosCriados++;
-         } catch (e: any) {
+         } catch {
            // Em caso de erro (email/matricula ja existe fallback)
            alunoId = null;
          }
@@ -50,7 +56,7 @@ export const eventoAlunosService = {
               confirma_presenca: false
             });
             relacionamentosCriados++;
-         } catch (e) {
+         } catch {
            // Ignora erro se já vinculado
          }
       }

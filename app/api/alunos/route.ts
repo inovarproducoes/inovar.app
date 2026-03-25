@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, StatusAluno } from "@prisma/client";
+
+const STATUS_ALUNO_VALIDOS: StatusAluno[] = [
+  'ativo', 'inativo', 'transferido', 'formado',
+  'inadimplente', 'trancado', 'concluido', 'cancelado'
+];
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const termo = url.searchParams.get("termo");
   const turma = url.searchParams.get("turma");
   const curso = url.searchParams.get("curso");
-  const status = url.searchParams.get("status") as any;
+  const statusParam = url.searchParams.get("status");
+  const status = statusParam && STATUS_ALUNO_VALIDOS.includes(statusParam as StatusAluno)
+    ? (statusParam as StatusAluno)
+    : null;
   
   try {
     const where: Prisma.AlunoWhereInput = {};
@@ -24,7 +32,9 @@ export async function GET(req: NextRequest) {
     if (status) where.status = status;
 
     const alunos = await prisma.aluno.findMany({ where, orderBy: { nome: 'asc' } });
-    return NextResponse.json(alunos);
+    return NextResponse.json(alunos, {
+      headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
+    });
   } catch (error) {
     return NextResponse.json({ error: "Erro ao buscar alunos" }, { status: 500 });
   }

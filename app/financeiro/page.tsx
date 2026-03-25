@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, DollarSign, AlertCircle, CheckCircle2, QrCode, FileText, Clock } from "lucide-react";
 import { formatarCPF } from "@/lib/cpfUtils";
+import { formatarData, formatarMoeda } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export default function FinanceiroPage() {
   const [cpf, setCpf] = useState("");
   const [loading, setLoading] = useState(false);
   const [buscaFeita, setBuscaFeita] = useState(false);
 
-  // Mocked state for presentation since we don't have n8n running locally
   const [aluno, setAluno] = useState<any>(null);
   const [parcelas, setParcelas] = useState<any[]>([]);
   const [resumo, setResumo] = useState({
@@ -23,13 +24,12 @@ export default function FinanceiroPage() {
   const handleBuscar = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (cpf.length !== 14) {
-      alert("Por favor, digite um CPF válido.");
+      toast.error("CPF inválido", { description: "Digite um CPF completo no formato 000.000.000-00." });
       return;
     }
     setLoading(true);
     setBuscaFeita(true);
     
-    // Simulate API Call to /api/sge proxy
     setTimeout(() => {
        setAluno({ Nome: "João Silva Sauro", CPF: cpf });
        setParcelas([
@@ -44,6 +44,7 @@ export default function FinanceiroPage() {
        setLoading(false);
     }, 1200);
   };
+
 
   return (
     <MainLayout title="Financeiro (SGE)" subtitle="Consulta consolidada de parcelas no Sistema de Gestão Escolar">
@@ -73,19 +74,19 @@ export default function FinanceiroPage() {
            <div className="grid md:grid-cols-4 gap-4">
               <div className="bg-card p-4 rounded-xl border flex flex-col justify-center">
                 <span className="text-muted-foreground text-sm flex items-center gap-2"><DollarSign className="w-4 h-4"/> Total Original</span>
-                <span className="text-xl font-bold mt-1">R$ {resumo.totalOriginal.toFixed(2)}</span>
+                <span className="text-xl font-bold mt-1">{formatarMoeda(resumo.totalOriginal)}</span>
               </div>
               <div className="bg-card p-4 rounded-xl border flex flex-col justify-center">
                 <span className="text-destructive text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4"/> Multas e Juros</span>
-                <span className="text-xl font-bold text-destructive mt-1">R$ {(resumo.totalMultas + resumo.totalJuros).toFixed(2)}</span>
+                <span className="text-xl font-bold text-destructive mt-1">{formatarMoeda(resumo.totalMultas + resumo.totalJuros)}</span>
               </div>
               <div className="bg-success/10 border-success/20 p-4 rounded-xl border flex flex-col justify-center">
                 <span className="text-success md:text-sm text-xs flex items-center gap-2"><CheckCircle2 className="w-4 h-4"/> Total Pago ({resumo.parcelasPagas} parc.)</span>
-                <span className="text-xl font-bold text-success mt-1">R$ {resumo.totalPago.toFixed(2)}</span>
+                <span className="text-xl font-bold text-success mt-1">{formatarMoeda(resumo.totalPago)}</span>
               </div>
               <div className="bg-warning/10 border-warning/20 p-4 rounded-xl border flex flex-col justify-center">
                 <span className="text-warning-foreground md:text-sm text-xs flex items-center gap-2"><Clock className="w-4 h-4"/> Valor Pendente</span>
-                <span className="text-xl font-bold mt-1">R$ {(resumo.totalAtualizado - resumo.totalPago).toFixed(2)}</span>
+                <span className="text-xl font-bold mt-1">{formatarMoeda(resumo.totalAtualizado - resumo.totalPago)}</span>
               </div>
            </div>
 
@@ -109,8 +110,8 @@ export default function FinanceiroPage() {
                         <p className="text-xs text-muted-foreground">{p.TipoParcela}</p>
                       </td>
                       <td className="px-6 py-4">{formatarData(p.DataVencimento)}</td>
-                      <td className="px-6 py-4">R$ {p.ValorOriginal.toFixed(2)}</td>
-                      <td className="px-6 py-4 font-medium">R$ {p.Valor.toFixed(2)}</td>
+                      <td className="px-6 py-4">{formatarMoeda(p.ValorOriginal)}</td>
+                      <td className="px-6 py-4 font-medium">{formatarMoeda(p.Valor)}</td>
                       <td className="px-6 py-4">
                         {p.Status === 'Pago' && <Badge className="bg-success hover:bg-success/90">Pago</Badge>}
                         {p.Status === 'Vencida' && <Badge variant="destructive">Vencida</Badge>}
@@ -131,13 +132,7 @@ export default function FinanceiroPage() {
               </table>
            </div>
         </div>
-      )}
-    </MainLayout>
+       )}
+     </MainLayout>
   );
-
-  function formatarData(dataStr: string) {
-    if (!dataStr) return "-";
-    const [y,m,d] = dataStr.split("-");
-    return `${d}/${m}/${y}`;
-  }
 }

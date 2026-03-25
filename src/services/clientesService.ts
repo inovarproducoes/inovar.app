@@ -7,17 +7,17 @@ export const clientesService = {
     return res.json() as Promise<Cliente[]>;
   },
   buscarHistoricoConversas: async (telefone: string) => {
-    const res = await fetch(process.env.N8N_WEBHOOK_BASE + "/conversas", {
+    const res = await fetch("/api/clientes/conversas", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ telefone })
     });
-    if (!res.ok) throw new Error("Erro via n8n");
+    if (!res.ok) throw new Error("Erro ao buscar histórico");
     return res.json() as Promise<HistoricoConversa>;
   },
   alternarAgenteCliente: async (telefone: string, ativo: boolean) => {
-    const res = await fetch(process.env.N8N_WEBHOOK_BASE + "/agente/status", {
+    const res = await fetch("/api/clientes/agente", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ telefone, ativo })
     });
-    if (!res.ok) throw new Error("Erro alternar agente n8n");
+    if (!res.ok) throw new Error("Erro ao alternar agente");
     return res.json();
   }
 }

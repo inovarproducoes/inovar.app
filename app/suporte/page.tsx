@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Bot, User, Trash2, Sparkles, AlertCircle } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
   id: number;
@@ -37,12 +36,12 @@ export default function SuporteIAPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("https://n8n.inovarapp.com/webhook-test/6e9c13fc-d215-4fa8-b0a3-000000000000", {
+      const res = await fetch("/api/suporte", {
          method: "POST",
          headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ 
-             conversa_id: "demo-id", 
-             pergunta: messageToSend, 
+         body: JSON.stringify({
+             conversa_id: "demo-id",
+             pergunta: messageToSend,
              usuario: "Admin",
              timestamp: new Date().toISOString(),
              historico: messages.slice(-5)

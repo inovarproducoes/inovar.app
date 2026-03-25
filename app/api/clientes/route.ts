@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
         : undefined,
       orderBy: { nome: 'asc' }
     });
-    return NextResponse.json(clientes);
+    return NextResponse.json(clientes, {
+      headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
+    });
   } catch (error) {
     return NextResponse.json({ error: "Erro ao buscar clientes" }, { status: 500 });
   }

@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: `Erro interno no proxy SGE: ${error}` }, { status: 500 });
+    console.error("GET /api/sge:", error);
+    return NextResponse.json({ error: "Erro interno no proxy SGE" }, { status: 500 });
   }
 }

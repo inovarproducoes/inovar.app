@@ -88,6 +88,44 @@
 
 /* Scrollbar 8px, thumb com cor primary */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: hsl(var(--primary)); border-radius: var(--radius); }
-::-webkit-scrollbar-thumb:hover { background: hsl(267 75% 65%); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.5); border-radius: var(--radius); }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary)); }
+
+/* Animação de entrada — usa will-change para compositing na GPU */
+main {
+  animation: fadeInUp 0.2s ease-out both;
+  will-change: opacity, transform;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remove will-change após animação para liberar memória GPU */
+main.animation-done {
+  will-change: auto;
+}
+
+/* Esconde scrollbar sem perder funcionalidade (Firefox + Chrome/Edge) */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Transição suave para links e botões */
+a, button {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}

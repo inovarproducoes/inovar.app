@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
+import { Fornecedor } from "@/types/database";
 import { MapPin, Calendar, Users, DollarSign, Clock, UsersIcon, ShieldCheck, ArrowLeft, Edit2, Trash2, Building, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -34,10 +35,14 @@ export default function EventoDetalhesPage() {
 
   const percentOcupado = evento.capacidade_maxima > 0 ? ((evento.capacidade_maxima - evento.vagas_disponiveis) / evento.capacidade_maxima) * 100 : 0;
 
-  let fornecedores = [];
+  let fornecedores: Fornecedor[] = [];
   try {
-    fornecedores = evento.fornecedores ? (typeof evento.fornecedores === 'string' ? JSON.parse(evento.fornecedores) : evento.fornecedores) : [];
-  } catch (e) {
+    const raw = evento.fornecedores;
+    const parsed: Array<Fornecedor | string> = raw
+      ? (typeof raw === 'string' ? JSON.parse(raw) : raw)
+      : [];
+    fornecedores = parsed.filter((f): f is Fornecedor => typeof f === 'object' && f !== null);
+  } catch {
     fornecedores = [];
   }
 
@@ -227,7 +232,7 @@ export default function EventoDetalhesPage() {
               <CardContent>
                 {fornecedores.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {fornecedores.map((f: any, i: number) => (
+                    {fornecedores.map((f: Fornecedor, i: number) => (
                       <Badge key={i} variant="secondary" className="px-3 py-1 font-normal">
                         <span className="font-semibold mr-1">{f.nome}:</span> {f.contato}
                       </Badge>
