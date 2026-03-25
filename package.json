@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "db:push": "npx prisma db push",
+    "db:seed": "npx prisma db seed"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

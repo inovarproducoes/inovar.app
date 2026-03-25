@@ -3,9 +3,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Criando Quadro Inicial...');
+  console.log('Criando Quadro Inicial (SQLite mode)...');
   
-  // Create first board
   const board = await prisma.quadro.create({
     data: {
       nome: 'Gestão de Formaturas 2025',
@@ -31,15 +30,15 @@ async function main() {
   if (backlogId) {
     await prisma.tarefa.createMany({
       data: [
-        { titulo: 'Contratar Floricultura', descricao: 'Orçar com 3 fornecedores diferentes', prioridade: 'media', coluna_id: backlogId, quadro_id: board.id, ordem: 0, etiquetas: ['Suprimentos'] },
-        { titulo: 'Definir Playlist DJ', descricao: 'Validar com a comissão de formatura', prioridade: 'baixa', coluna_id: backlogId, quadro_id: board.id, ordem: 1, etiquetas: ['Entretenimento'] },
+        { titulo: 'Contratar Floricultura', descricao: 'Orçar com 3 fornecedores diferentes', prioridade: 'media', coluna_id: backlogId, quadro_id: board.id, ordem: 0, etiquetas: 'Suprimentos' },
+        { titulo: 'Definir Playlist DJ', descricao: 'Validar com a comissão de formatura', prioridade: 'baixa', coluna_id: backlogId, quadro_id: board.id, ordem: 1, etiquetas: 'Entretenimento' },
       ]
     });
   }
 
   if (inProgressId) {
     await prisma.tarefa.create({
-      data: { titulo: 'Enviar Convites Oficiais', descricao: 'Digital e impresso para os oradores', prioridade: 'alta', coluna_id: inProgressId, quadro_id: board.id, ordem: 0, etiquetas: ['Comunicação'] }
+      data: { titulo: 'Enviar Convites Oficiais', descricao: 'Digital e impresso para os oradores', prioridade: 'alta', coluna_id: inProgressId, quadro_id: board.id, ordem: 0, etiquetas: 'Comunicação' }
     });
   }
 

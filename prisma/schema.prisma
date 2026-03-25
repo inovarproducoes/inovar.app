@@ -3,80 +3,17 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// ===== ENUMS =====
-enum TipoEvento {
-  corporativo
-  casamento
-  festa
-  workshop
-  conferencia
-  aniversario
-  formatura
-  outro
-}
-
-enum StatusEvento {
-  planejamento
-  confirmado
-  em_andamento
-  finalizado
-  cancelado
-}
-
-enum StatusParticipante { 
-  pendente 
-  confirmado 
-  cancelado 
-}
-
-enum TipoParticipante { 
-  vip 
-  comum 
-  staff 
-  palestrante 
-}
-
-enum StatusAluno {
-  ativo
-  inativo
-  transferido
-  formado
-  inadimplente
-  trancado
-  concluido
-  cancelado
-}
-
-enum StatusParticipacao { 
-  pendente 
-  confirmado 
-  cancelado 
-  compareceu 
-  ausente 
-}
-
-enum Periodo { 
-  matutino 
-  vespertino 
-  noturno 
-  integral 
-}
-
-enum StatusTurma { 
-  ativa 
-  inativa 
-  concluida 
-}
+// Modelos do Inovar App simplificados para SQLite (Enums convertidos para String)
 
 model Evento {
   id                     String             @id @default(uuid())
   nome                   String
   descricao              String?
-  tipo_evento            TipoEvento
+  tipo_evento            String             // SQLite não suporta Enums
   data_inicio            String
   data_fim               String
   horario_inicio         String
@@ -89,7 +26,7 @@ model Evento {
   link_maps              String?
   capacidade_maxima      Int
   vagas_disponiveis      Int
-  status                 StatusEvento       @default(planejamento)
+  status                 String             @default("planejamento")
   valor_total            Float              @default(0)
   valor_entrada          Float              @default(0)
   valor_pendente         Float              @default(0)
@@ -102,8 +39,8 @@ model Evento {
   responsavel_email      String?
   observacoes            String?
   necessidades_especiais String?
-  fornecedores           Json?
-  checklist              Json?
+  fornecedores           String?            // SQLite trata Json como String/Text
+  checklist              String?            // SQLite trata Json como String/Text
   created_at             DateTime           @default(now())
   updated_at             DateTime           @updatedAt
 
@@ -132,7 +69,7 @@ model Aluno {
   telefone_responsavel String?
   email_responsavel    String?
   foto_url             String?
-  status               StatusAluno   @default(ativo)
+  status               String        @default("ativo")
   observacoes          String?
   created_by           String?
   created_at           DateTime      @default(now())
@@ -150,7 +87,7 @@ model EventoAluno {
   id                     String             @id @default(uuid())
   evento_id              String
   aluno_id               String
-  status_participacao    StatusParticipacao @default(pendente)
+  status_participacao    String             @default("pendente")
   funcao                 String?
   mesa                   String?
   acompanhantes          Int                @default(0)
@@ -172,8 +109,8 @@ model Participante {
   nome               String
   email              String?
   telefone           String?
-  status_confirmacao StatusParticipante @default(pendente)
-  tipo_participante  TipoParticipante   @default(comum)
+  status_confirmacao String             @default("pendente")
+  tipo_participante  String             @default("comum")
   observacoes        String?
   created_at         DateTime           @default(now())
   
@@ -187,7 +124,7 @@ model FAQ {
   categoria      String
   pergunta       String
   resposta       String
-  palavras_chave String[]
+  palavras_chave String   @default("") // SQLite não suporta String[]
   ordem          Int      @default(0)
   ativo          Boolean  @default(true)
   visualizacoes  Int      @default(0)
@@ -202,12 +139,12 @@ model Turma {
   nome        String      @unique
   ano         Int
   ano_letivo  Int?
-  periodo     Periodo?
+  periodo     String?
   curso       String
   coordenador String?
   sala        String?
   capacidade  Int?
-  status      StatusTurma @default(ativa)
+  status      String      @default("ativa")
 
   @@map("turmas")
 }
@@ -216,21 +153,11 @@ model Cliente {
   id           String   @id @default(uuid())
   nome         String
   telefone     String   @unique
-  documento    String
   agente_ativo Boolean  @default(true)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
   @@map("clientes")
-}
-
-// ===== KANBAN / GESTÃO DE TAREFAS =====
-
-enum PrioridadeTarefa {
-  baixa
-  media
-  alta
-  urgente
 }
 
 model Quadro {
@@ -269,9 +196,9 @@ model Tarefa {
   titulo          String
   descricao       String?
   data_vencimento DateTime?
-  prioridade      PrioridadeTarefa  @default(media)
+  prioridade      String            @default("media")
   responsavel_nome String?
-  etiquetas       String[]          @default([])
+  etiquetas       String            @default("") // SQLite não suporta String[]
   ordem           Int               @default(0)
   coluna_id       String
   quadro_id       String
@@ -285,4 +212,3 @@ model Tarefa {
   @@index([quadro_id])
   @@map("tarefas")
 }
-

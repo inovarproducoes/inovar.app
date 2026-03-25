@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: inovar-db-local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: inovarapp2025
+      POSTGRES_DB: inovar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

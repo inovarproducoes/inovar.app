@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, PrioridadeTarefa } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         descricao,
         coluna_id,
         quadro_id,
-        prioridade: (prioridade as PrioridadeTarefa) || 'media',
+        prioridade: prioridade || 'media',
         responsavel_nome,
         data_vencimento: data_vencimento ? new Date(data_vencimento) : null,
         ordem: taskCount
@@ -51,7 +51,7 @@ export async function PUT(req: Request) {
         ordem,
         titulo,
         descricao,
-        prioridade: (prioridade as PrioridadeTarefa),
+        prioridade: prioridade,
         data_vencimento: data_vencimento ? new Date(data_vencimento) : undefined
       }
     });

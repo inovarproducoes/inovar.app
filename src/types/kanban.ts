@@ -1,4 +1,4 @@
-import { PrioridadeTarefa } from "@prisma/client";
+export type PrioridadeTarefa = "baixa" | "media" | "alta" | "urgente";
 
 export interface ITask {
   id: string;

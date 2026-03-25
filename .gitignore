@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -41,8 +39,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Agent files
+# Agent/Claude files
 .claude/
 .gemini/
 .agents/
 .agent/
+
+# Database (SQLite local)
+prisma/*.db
+prisma/*.db-journal
+
+# Logs
+*.log
+ts_errors.log*
+errors.log*
