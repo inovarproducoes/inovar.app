@@ -41,9 +41,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
+    const { fornecedores, checklist, ...rest } = validation.data;
+    
     const updatedEvento = await prisma.evento.update({
       where: { id },
-      data: validation.data
+      data: {
+        ...rest,
+        fornecedores: fornecedores ? JSON.stringify(fornecedores) : null,
+        checklist: checklist ? JSON.stringify(checklist) : null
+      }
     });
     return NextResponse.json(updatedEvento);
   } catch (error) {

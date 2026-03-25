@@ -48,7 +48,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newEvento = await prisma.evento.create({ data: validation.data });
+    const { fornecedores, checklist, ...rest } = validation.data;
+    const newEvento = await prisma.evento.create({
+      data: {
+        ...rest,
+        fornecedores: fornecedores ? JSON.stringify(fornecedores) : null,
+        checklist: checklist ? JSON.stringify(checklist) : null
+      }
+    });
     return NextResponse.json(newEvento, { status: 201 });
   } catch (error) {
     console.error("POST /api/eventos:", error);
