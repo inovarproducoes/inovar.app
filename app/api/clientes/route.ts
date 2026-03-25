@@ -27,17 +27,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
+    const body = await req.json();
     
-    // Removemos 'documento' se ele vier na requisição para não dar erro no Prisma
-    if (data.documento) {
-      delete data.documento;
-    }
-    
-    // Garante valores padrão se não existirem
+    // Filtramos o payload para salvar SOMENTE os campos necessários,
+    // garantindo que campos extras do n8n (como documento) não quebrem o banco.
     const payload = {
-      ...data,
-      agente_ativo: data.agente_ativo ?? true
+      nome: body.nome as string,
+      telefone: body.telefone as string,
+      agente_ativo: (body.agente_ativo ?? true) as boolean
     };
 
     const existing = await prisma.cliente.findUnique({
