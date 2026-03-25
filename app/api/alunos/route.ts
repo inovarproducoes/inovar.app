@@ -22,10 +22,10 @@ export async function GET(req: NextRequest) {
     const where: Prisma.AlunoWhereInput = {};
     if (termo) {
       where.OR = [
-        { nome: { contains: termo, mode: 'insensitive' } },
-        { matricula: { contains: termo, mode: 'insensitive' } },
-        { email: { contains: termo, mode: 'insensitive' } },
-        { cpf_responsavel: { contains: termo, mode: 'insensitive' } },
+        { nome: { contains: termo } },
+        { matricula: { contains: termo } },
+        { email: { contains: termo } },
+        { cpf_responsavel: { contains: termo } },
       ];
     }
     if (turma) where.turma = turma;

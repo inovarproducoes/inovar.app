@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
       where: termo
         ? {
             OR: [
-              { nome: { contains: termo, mode: 'insensitive' } },
+              { nome: { contains: termo } },
               { telefone: { contains: termo } }
             ]
           }
