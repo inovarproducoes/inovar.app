@@ -10,11 +10,12 @@ import {
   SortableContext, 
   verticalListSortingStrategy 
 } from "@dnd-kit/sortable";
+import type { ITask } from "@/types/kanban";
 
 interface ColumnContainerProps {
   id: string;
   title: string;
-  tasks: any[];
+  tasks: ITask[];
   boardId: string;
   onUpdate: () => void;
 }

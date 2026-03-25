@@ -3,11 +3,12 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
-import { User, Calendar, MessageCircle, Clock, Paperclip } from "lucide-react";
+import { MessageCircle, Clock, Paperclip } from "lucide-react";
+import type { ITask } from "@/types/kanban";
 
 interface TaskCardProps {
   id: string;
-  task: any;
+  task: ITask;
 }
 
 export function TaskCard({ id, task }: TaskCardProps) {
@@ -42,7 +43,7 @@ export function TaskCard({ id, task }: TaskCardProps) {
       className={`bg-card p-4 rounded-xl shadow-sm border border-border group hover:border-primary/40 transition-all cursor-grab active:cursor-grabbing select-none ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-2' : ''}`}
     >
       <div className="flex justify-between items-start mb-2">
-        <div className={`w-8 h-1 rounded-full ${priorityColors[task.prioridade as keyof typeof priorityColors] || 'bg-muted'}`}/>
+        <div className={`w-8 h-1 rounded-full ${priorityColors[task.prioridade] || 'bg-muted'}`}/>
         <button className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           <MessageCircle className="w-3.5 h-3.5"/>
         </button>
@@ -61,14 +62,14 @@ export function TaskCard({ id, task }: TaskCardProps) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-muted-foreground">
              <Clock className="w-3.5 h-3.5"/>
-             <span className="text-[10px] font-medium">12/10</span>
+             <span className="text-[10px] font-medium">Auto</span>
           </div>
-          {task.anexos > 0 && (
+          {task.anexos && task.anexos > 0 ? (
             <div className="flex items-center gap-1 text-muted-foreground">
                <Paperclip className="w-3 h-3"/>
                <span className="text-[10px]">{task.anexos}</span>
             </div>
-          )}
+          ) : null}
         </div>
         <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/20">
           {task.responsavel_nome ? task.responsavel_nome.substring(0, 1) : "U"}
