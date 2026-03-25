@@ -53,7 +53,7 @@ export default function SuporteIAPage() {
       const respostaIA = data.resposta || data.message || data.text || "Desculpe, obtive uma resposta vazia.";
       
       setMessages(prev => [...prev, { id: Date.now(), role: 'bot', text: respostaIA }]);
-    } catch (error) {
+    } catch {
        // Since the webhook won't work locally without n8n, we simulate a mock reply.
        setTimeout(() => {
          setMessages(prev => [...prev, { id: Date.now(), role: 'bot', text: `Simulação: Entendi que você falou sobre "${messageToSend}". Como este é um ambiente de demonstração sem a API n8n rodando, estou respondendo com este placeholder mockado.`, isError: true }]);

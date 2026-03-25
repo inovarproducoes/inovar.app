@@ -2,19 +2,17 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useEventos, useDeleteEvento } from "@/hooks/useEventos";
 import { EventCard } from "@/components/dashboard/EventCard";
-import { RecentEventsTable } from "@/components/dashboard/RecentEventsTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { PlusCircle, LayoutGrid, List, Trash2, Calendar, FileText } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusCircle, LayoutGrid, List, Trash2, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { useState } from "react";
 import { Evento } from "@/types/database";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 
 export default function EventosPage() {

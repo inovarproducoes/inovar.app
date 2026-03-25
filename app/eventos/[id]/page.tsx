@@ -2,7 +2,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useEvento, useUpdateEvento, useDeleteEvento } from "@/hooks/useEventos";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { Fornecedor } from "@/types/database";
-import { MapPin, Calendar, Users, DollarSign, Clock, UsersIcon, ShieldCheck, ArrowLeft, Edit2, Trash2, Building, Mail, Phone } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, UsersIcon, ShieldCheck, ArrowLeft, Edit2, Trash2, Building, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";

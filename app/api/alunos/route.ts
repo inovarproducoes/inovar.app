@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(alunos, {
       headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao buscar alunos" }, { status: 500 });
   }
 }
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     const newAluno = await prisma.aluno.create({ data });
     return NextResponse.json(newAluno, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao criar aluno" }, { status: 500 });
   }
 }

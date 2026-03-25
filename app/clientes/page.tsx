@@ -3,6 +3,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { clientesService } from "@/services/clientesService";
+import { Cliente } from "@/types/clientes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export default function ClientesPage() {
   const debouncedBusca = useDebounce(busca, 300);
   const [origem, setOrigem] = useState("todas");
   const [novoCliente, setNovoCliente] = useState({nome: "", telefone: "", email: "", tipo_documento: "fisica", documento: "", origem: "manual", agente_ativo: true});
-  const [clienteDetalhes, setClienteDetalhes] = useState<any>(null);
+  const [clienteDetalhes, setClienteDetalhes] = useState<Cliente | null>(null);
 
   const { data: clientes, isLoading } = useQuery({
     queryKey: ['clientes', debouncedBusca],

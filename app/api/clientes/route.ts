@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(clientes, {
       headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao buscar clientes" }, { status: 500 });
   }
 }
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
     const newCliente = await prisma.cliente.create({ data });
     return NextResponse.json(newCliente, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao criar cliente" }, { status: 500 });
   }
 }

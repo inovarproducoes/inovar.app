@@ -14,8 +14,25 @@ export default function FinanceiroPage() {
   const [loading, setLoading] = useState(false);
   const [buscaFeita, setBuscaFeita] = useState(false);
 
-  const [aluno, setAluno] = useState<any>(null);
-  const [parcelas, setParcelas] = useState<any[]>([]);
+  interface AlunoFinanceiro {
+    Nome: string;
+    CPF: string;
+  }
+
+  interface Parcela {
+    DescricaoProjeto: string;
+    TipoParcela: string;
+    DataVencimento: string;
+    ValorOriginal: number;
+    Valor: number;
+    ValorPago: number;
+    Multa: number;
+    Juros: number;
+    Status: 'Pago' | 'Vencida' | 'Pendente';
+  }
+
+  const [aluno, setAluno] = useState<AlunoFinanceiro | null>(null);
+  const [parcelas, setParcelas] = useState<Parcela[]>([]);
   const [resumo, setResumo] = useState({
     totalOriginal: 0, totalAtualizado: 0, totalPago: 0,
     totalMultas: 0, totalJuros: 0, parcelasPendentes: 0, parcelasPagas: 0

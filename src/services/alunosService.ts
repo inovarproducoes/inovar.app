@@ -28,7 +28,7 @@ export const alunosService = {
     }
     return res.json() as Promise<Aluno>;
   },
-  vincularAlunoEvento: async (data: { evento_id: string; aluno_id: string; [key: string]: any }) => {
+  vincularAlunoEvento: async (data: { evento_id: string; aluno_id: string; [key: string]: string | number | boolean | null | undefined }) => {
     const res = await fetch(`/api/evento-alunos`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
     });

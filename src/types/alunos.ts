@@ -13,7 +13,7 @@ export interface Aluno {
   created_at: string; updated_at: string; created_by?: string | null;
 }
 
-export interface AlunoFormData extends Omit<Aluno, 'id' | 'created_at' | 'updated_at' | 'created_by'> {}
+export type AlunoFormData = Omit<Aluno, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
 
 export interface EventoAluno {
   id: string; evento_id: string; aluno_id: string;

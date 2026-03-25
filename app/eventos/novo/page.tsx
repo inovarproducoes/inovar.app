@@ -47,7 +47,7 @@ export default function NovoEventoPage() {
         responsavel_cpf: formData.responsavel_cpf.replace(/\D/g, '')
       });
       router.push("/eventos");
-    } catch (err) {
+    } catch {
       toast.error("Erro ao criar evento. Verifique os dados e tente novamente.");
     } finally {
       setLoading(false);

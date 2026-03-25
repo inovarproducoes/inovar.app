@@ -2,7 +2,7 @@ import { Evento } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { MapPin, Calendar, Clock, Trash2, Users } from "lucide-react";
+import { MapPin, Calendar, Trash2, Users } from "lucide-react";
 
 interface EventCardProps {
   evento: Evento;

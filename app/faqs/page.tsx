@@ -73,7 +73,7 @@ export default function FAQsPage() {
          ))}
          {categorias.length === 0 && (
            <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
-             Não encontramos nenhuma FAQ para "{busca}".
+             Não encontramos nenhuma FAQ para &quot;{busca}&quot;.
            </div>
          )}
        </div>
