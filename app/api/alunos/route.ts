@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import type { Prisma, StatusAluno } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+import { StatusAluno } from "@/types/alunos";
 
 const STATUS_ALUNO_VALIDOS: StatusAluno[] = [
   'ativo', 'inativo', 'transferido', 'formado',
