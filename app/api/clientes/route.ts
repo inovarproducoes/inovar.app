@@ -27,14 +27,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { nome, telefone, agente_ativo, documento: _documento, ...rest } = await req.json();
+    const data = await req.json();
     
-    // Ignoramos 'documento' propositalmente pois foi removido do banco
+    // Removemos 'documento' se ele vier na requisição para não dar erro no Prisma
+    if (data.documento) {
+      delete data.documento;
+    }
+    
+    // Garante valores padrão se não existirem
     const payload = {
-      nome,
-      telefone,
-      agente_ativo: agente_ativo ?? true,
-      ...rest
+      ...data,
+      agente_ativo: data.agente_ativo ?? true
     };
 
     const existing = await prisma.cliente.findUnique({
