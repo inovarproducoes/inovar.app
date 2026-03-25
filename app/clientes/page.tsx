@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatarCPF } from "@/lib/cpfUtils";
 
 export default function ClientesPage() {
   const [busca, setBusca] = useState("");

@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { nome, telefone, agente_ativo, documento, ...rest } = await req.json();
+    const { nome, telefone, agente_ativo, documento: _documento, ...rest } = await req.json();
     
     // Ignoramos 'documento' propositalmente pois foi removido do banco
     const payload = {
