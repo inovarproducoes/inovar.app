@@ -109,6 +109,7 @@ model Evento {
 
   participantes          Participante[]
   evento_alunos          EventoAluno[]
+  quadro                 Quadro?
 
   @@index([data_inicio])
   @@index([status])
@@ -222,3 +223,66 @@ model Cliente {
 
   @@map("clientes")
 }
+
+// ===== KANBAN / GESTÃO DE TAREFAS =====
+
+enum PrioridadeTarefa {
+  baixa
+  media
+  alta
+  urgente
+}
+
+model Quadro {
+  id          String   @id @default(uuid())
+  nome        String
+  descricao   String?
+  evento_id   String?  @unique
+  cor_tema    String?  @default("#4f46e5")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  evento      Evento?  @relation(fields: [evento_id], references: [id], onDelete: SetNull)
+  colunas     Coluna[]
+  tarefas     Tarefa[]
+
+  @@map("quadros")
+}
+
+model Coluna {
+  id         String   @id @default(uuid())
+  nome       String
+  ordem      Int      @default(0)
+  quadro_id  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  quadro     Quadro   @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
+  tarefas    Tarefa[]
+
+  @@index([quadro_id])
+  @@map("colunas")
+}
+
+model Tarefa {
+  id              String            @id @default(uuid())
+  titulo          String
+  descricao       String?
+  data_vencimento DateTime?
+  prioridade      PrioridadeTarefa  @default(media)
+  responsavel_nome String?
+  etiquetas       String[]          @default([])
+  ordem           Int               @default(0)
+  coluna_id       String
+  quadro_id       String
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+
+  coluna          Coluna            @relation(fields: [coluna_id], references: [id], onDelete: Cascade)
+  quadro          Quadro            @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
+
+  @@index([coluna_id])
+  @@index([quadro_id])
+  @@map("tarefas")
+}
+

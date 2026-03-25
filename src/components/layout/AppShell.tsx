@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Calendar, Users, Briefcase,
-  DollarSign, HelpCircle, MessageCircle, GraduationCap, Bell
+  DollarSign, HelpCircle, MessageCircle, GraduationCap, Bell, Layout
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -33,6 +33,7 @@ const PREFETCH_MAP: Record<string, { queryKey: unknown[]; queryFn: () => Promise
 
 const menuItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Kanban OS", href: "/kanban", icon: Layout },
   { name: "Eventos", href: "/eventos", icon: Calendar },
   { name: "Participantes", href: "/participantes", icon: Users },
   { name: "Alunos", href: "/alunos", icon: GraduationCap },
