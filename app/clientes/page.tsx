@@ -22,7 +22,7 @@ export default function ClientesPage() {
   const [busca, setBusca] = useState("");
   const debouncedBusca = useDebounce(busca, 300);
   const [origem, setOrigem] = useState("todas");
-  const [novoCliente, setNovoCliente] = useState({nome: "", telefone: "", email: "", tipo_documento: "fisica", documento: "", origem: "manual", agente_ativo: true});
+  const [novoCliente, setNovoCliente] = useState({nome: "", telefone: "", email: "", origem: "manual", agente_ativo: true});
   const [clienteDetalhes, setClienteDetalhes] = useState<Cliente | null>(null);
 
   const { data: clientes, isLoading } = useQuery({
@@ -53,7 +53,7 @@ export default function ClientesPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-         <Input placeholder="Buscar por nome, telefone ou documento..." className="w-full md:max-w-md" value={busca} onChange={e => setBusca(e.target.value)} />
+         <Input placeholder="Buscar por nome ou telefone..." className="w-full md:max-w-md" value={busca} onChange={e => setBusca(e.target.value)} />
          <Select value={origem} onValueChange={setOrigem}>
            <SelectTrigger className="w-[200px]"><SelectValue placeholder="Origem" /></SelectTrigger>
            <SelectContent>
@@ -76,20 +76,7 @@ export default function ClientesPage() {
                  </DialogDescription>
                </DialogHeader>
                <div className="grid gap-4 py-4">
-                 <div className="grid grid-cols-4 items-center gap-4">
-                   <Label className="text-right">Tipo</Label>
-                   <Select value={novoCliente.tipo_documento} onValueChange={v => setNovoCliente({...novoCliente, tipo_documento: v})}>
-                     <SelectTrigger className="col-span-3"><SelectValue /></SelectTrigger>
-                     <SelectContent>
-                       <SelectItem value="fisica">Pessoa Física</SelectItem>
-                       <SelectItem value="juridica">Pessoa Jurídica</SelectItem>
-                     </SelectContent>
-                   </Select>
-                 </div>
-                 <div className="grid grid-cols-4 items-center gap-4">
-                   <Label className="text-right">Documento</Label>
-                   <Input className="col-span-3" placeholder={novoCliente.tipo_documento === 'fisica' ? 'CPF' : 'CNPJ'} value={novoCliente.documento} onChange={e => setNovoCliente({...novoCliente, documento: novoCliente.tipo_documento === 'fisica' ? formatarCPF(e.target.value) : e.target.value})} maxLength={18} />
-                 </div>
+
                  <div className="grid grid-cols-4 items-center gap-4">
                    <Label className="text-right">Nome *</Label>
                    <Input className="col-span-3" placeholder="Ex: Maria" value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} />
@@ -122,9 +109,8 @@ export default function ClientesPage() {
            <thead className="bg-muted text-muted-foreground uppercase text-xs">
              <tr>
                <th className="px-6 py-3">Nome / Empresa</th>
-               <th className="px-6 py-3">Contato</th>
-               <th className="px-6 py-3">Documento</th>
-               <th className="px-6 py-3">Origem</th>
+                <th className="px-6 py-3">Contato</th>
+                <th className="px-6 py-3">Origem</th>
                <th className="px-6 py-3 text-center">Agente Sophia</th>
                <th className="px-6 py-3 text-right">Ações</th>
              </tr>
@@ -135,7 +121,6 @@ export default function ClientesPage() {
                  <tr key={i} className="border-b">
                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 mb-1"/><Skeleton className="h-3 w-20"/></td>
                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 mb-1"/><Skeleton className="h-3 w-32"/></td>
-                   <td className="px-6 py-4"><Skeleton className="h-4 w-24"/></td>
                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full"/></td>
                    <td className="px-6 py-4 text-center"><Skeleton className="h-5 w-10 rounded-full mx-auto"/></td>
                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-24 ml-auto"/></td>
@@ -152,7 +137,7 @@ export default function ClientesPage() {
                    <p className="text-sm font-medium">{cliente.telefone}</p>
                    {cliente.email && <p className="text-xs text-muted-foreground">{cliente.email}</p>}
                  </td>
-                 <td className="px-6 py-4">{cliente.documento || <span className="text-muted-foreground">-</span>}</td>
+
                  <td className="px-6 py-4">
                    <Badge variant="outline" className="capitalize text-xs font-normal">{'Manual'}</Badge>
                  </td>

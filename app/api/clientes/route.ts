@@ -27,16 +27,28 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
+    const { nome, telefone, agente_ativo, documento, ...rest } = await req.json();
+    
+    // Ignoramos 'documento' propositalmente pois foi removido do banco
+    const payload = {
+      nome,
+      telefone,
+      agente_ativo: agente_ativo ?? true,
+      ...rest
+    };
+
     const existing = await prisma.cliente.findUnique({
-      where: { telefone: data.telefone }
+      where: { telefone: payload.telefone }
     });
+    
     if (existing) {
       return NextResponse.json({ error: "Telefone já existe", id: existing.id }, { status: 409 });
     }
-    const newCliente = await prisma.cliente.create({ data });
+    
+    const newCliente = await prisma.cliente.create({ data: payload });
     return NextResponse.json(newCliente, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Erro ao criar cliente:", error);
     return NextResponse.json({ error: "Erro ao criar cliente" }, { status: 500 });
   }
 }
