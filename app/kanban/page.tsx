@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { 
   DndContext, 
   closestCenter, 
-  KeyboardSensor, 
   PointerSensor, 
   useSensor, 
   useSensors,
@@ -17,7 +16,6 @@ import {
 import { 
   arrayMove, 
   SortableContext, 
-  sortableKeyboardCoordinates, 
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
@@ -42,9 +40,44 @@ export default function KanbanPage() {
   const [mounted, setMounted] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
+
+  const SAMPLE_BOARD: IBoard = {
+    id: "sample-id",
+    nome: "Quadro de Atividades (Amostra)",
+    descricao: "Controle seus eventos",
+    colunas: [
+      {
+        id: "col-1",
+        nome: "Backlog",
+        ordem: 0,
+        quadro_id: "sample-id",
+        tarefas: [
+          { id: "task-1", titulo: "Definir Buffet do Casamento", descricao: "Escolher o cardápio principal", prioridade: "urgente", responsavel_nome: "Maria", coluna_id: "col-1", quadro_id: "sample-id", ordem: 0, etiquetas: ["Buffet", "Importante"], anexos: 2 },
+          { id: "task-2", titulo: "Contratar DJ", descricao: "Verificar referências e som", prioridade: "alta", responsavel_nome: "Pedro", coluna_id: "col-1", quadro_id: "sample-id", ordem: 1, etiquetas: ["Som", "DJ"] }
+        ]
+      },
+      {
+        id: "col-2",
+        nome: "Em Andamento",
+        ordem: 1,
+        quadro_id: "sample-id",
+        tarefas: [
+          { id: "task-3", titulo: "Envio dos Convites", descricao: "Mandar via WhatsApp e e-mail", prioridade: "media", responsavel_nome: "Ana", coluna_id: "col-2", quadro_id: "sample-id", ordem: 0, etiquetas: ["Convite"] }
+        ]
+      },
+      {
+        id: "col-3",
+        nome: "Concluído",
+        ordem: 2,
+        quadro_id: "sample-id",
+        tarefas: [
+          { id: "task-4", titulo: "Reunião de Alinhamento", descricao: "Concluído com sucesso", prioridade: "baixa", responsavel_nome: "Diretoria", coluna_id: "col-3", quadro_id: "sample-id", ordem: 0, etiquetas: ["OK"] }
+        ]
+      }
+    ]
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -54,13 +87,21 @@ export default function KanbanPage() {
 
   const fetchBoards = async () => {
     try {
+      setLoading(true);
       const res = await fetch('/api/kanban/boards');
-      const data = await res.json();
-      if (data.length > 0) {
-        setActiveBoard(data[0]);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setActiveBoard(data[0]);
+        } else {
+          setActiveBoard(SAMPLE_BOARD);
+        }
+      } else {
+        setActiveBoard(SAMPLE_BOARD);
       }
     } catch {
-      toast.error("Erro ao carregar quadros");
+      setActiveBoard(SAMPLE_BOARD);
+      toast.error("Exibindo quadro de amostra");
     } finally {
       setLoading(false);
     }
