@@ -25,7 +25,7 @@ async function main() {
   ]);
 
   console.log('Semeando Turmas...');
-  const turmas = await Promise.all([
+  const turmasData = await Promise.all([
     prisma.turma.create({ data: { nome: '3º Ano A - Médio', ano: 2025, ano_letivo: 2025, periodo: 'matutino', curso: 'Ensino Médio', coordenador: 'Márcia Silva', sala: '101' } }),
     prisma.turma.create({ data: { nome: 'Direito - 10º Período', ano: 2025, ano_letivo: 2025, periodo: 'noturno', curso: 'Graduação', coordenador: 'Dr. Roberto', sala: 'Auditorio' } }),
   ]);
@@ -39,8 +39,8 @@ async function main() {
         idade: 17 + (i % 5),
         email: `aluno${i + 1}@alu.inovar.app`,
         telefone: `(62) 98888-77${String(i).padStart(2, '0')}`,
-        turma: turmas[i % turmas.length].nome,
-        curso: turmas[i % turmas.length].curso,
+        turma: turmasData[i % turmasData.length].nome,
+        curso: turmasData[i % turmasData.length].curso,
         cidade: 'Goiânia',
         status: 'ativo'
       }
@@ -53,8 +53,6 @@ async function main() {
     { nome: 'Casamento Aline & João', tipo: 'casamento', status: 'pendente', data: '2025-05-15', valor: 18000 },
     { nome: 'Curso Dashboards IA', tipo: 'curso', status: 'confirmado', data: '2025-04-20', valor: 5000 },
     { nome: 'Palestra Transformação Digital', tipo: 'palestra', status: 'concluido', data: '2024-11-10', valor: 3500 },
-    { nome: 'Workshop Agile Coaching', tipo: 'workshop', status: 'pendente', data: '2025-06-05', valor: 8500 },
-    { nome: 'Aniversário 15 anos Sofia', tipo: 'aniversario', status: 'confirmado', data: '2025-01-12', valor: 12500 },
   ];
 
   for (const ev of eventosData) {
@@ -85,44 +83,28 @@ async function main() {
     });
   }
 
-  console.log('Semeando Quadro e Kanban...');
-  await prisma.quadro.create({
+  console.log('Semeando Quadro de Operações...');
+  const quadro = await prisma.quadro.create({
     data: {
       nome: 'Painel de Operações Inovar',
       descricao: 'Controle de fluxo de eventos e tarefas administrativas',
-      colunas: {
-        create: [
-          {
-            nome: 'Backlog',
-            ordem: 0,
-            tarefas: {
-              create: [
-                { titulo: 'Configurar Servidor Easypanel', descricao: 'Ajustar variáveis de ambiente do Postgres', prioridade: 'urgente', responsavel_nome: 'Henrique', ordem: 0, etiquetas: 'Servidor,DevOps' },
-                { titulo: 'Revisar Contratos SESI', descricao: 'Verificar cláusulas de rescisão', prioridade: 'alta', responsavel_nome: 'IA', ordem: 1, etiquetas: 'Jurídico' },
-              ]
-            }
-          },
-          {
-            nome: 'Em Andamento',
-            ordem: 1,
-            tarefas: {
-              create: [
-                { titulo: 'Implementar Dashboard IA', descricao: 'Criar gráficos de tendência de eventos', prioridade: 'media', responsavel_nome: 'Admin', ordem: 0, etiquetas: 'Feature' },
-              ]
-            }
-          },
-          {
-            nome: 'Concluído',
-            ordem: 2,
-            tarefas: {
-              create: [
-                { titulo: 'Instalar n8n local', descricao: 'Workflow de entrada de alunos ok', prioridade: 'baixa', responsavel_nome: 'Henrique', ordem: 0, etiquetas: 'Integração' },
-              ]
-            }
-          }
-        ]
-      }
     }
+  });
+
+  const colunas = await Promise.all([
+    prisma.coluna.create({ data: { nome: 'Backlog', ordem: 0, quadro_id: quadro.id } }),
+    prisma.coluna.create({ data: { nome: 'Em Andamento', ordem: 1, quadro_id: quadro.id } }),
+    prisma.coluna.create({ data: { nome: 'Concluído', ordem: 2, quadro_id: quadro.id } }),
+  ]);
+
+  console.log('Semeando Tarefas de Operação...');
+  await prisma.tarefa.createMany({
+    data: [
+      { titulo: 'Configurar Servidor Easypanel', descricao: 'Ajustar variáveis de ambiente do Postgres', prioridade: 'urgente', responsavel_nome: 'Henrique', ordem: 0, etiquetas: 'Servidor,DevOps', coluna_id: colunas[0].id, quadro_id: quadro.id },
+      { titulo: 'Revisar Contratos SESI', descricao: 'Verificar cláusulas de rescisão', prioridade: 'alta', responsavel_nome: 'IA', ordem: 1, etiquetas: 'Jurídico', coluna_id: colunas[0].id, quadro_id: quadro.id },
+      { titulo: 'Implementar Dashboard IA', descricao: 'Criar gráficos de tendência de eventos', prioridade: 'media', responsavel_nome: 'Admin', ordem: 0, etiquetas: 'Feature', coluna_id: colunas[1].id, quadro_id: quadro.id },
+      { titulo: 'Instalar n8n local', descricao: 'Workflow de entrada de alunos ok', prioridade: 'baixa', responsavel_nome: 'Henrique', ordem: 0, etiquetas: 'Integração', coluna_id: colunas[2].id, quadro_id: quadro.id },
+    ]
   });
 
   console.log('Seed concluído com sucesso!');
