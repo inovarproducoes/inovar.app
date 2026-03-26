@@ -3,12 +3,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
-import {
-    Calendar,
-    MessageSquare,
-    Paperclip,
-    MoreHorizontal,
-    UserCircle2
+import { 
+    MessageSquare, 
+    Paperclip, 
+    MoreHorizontal 
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ITask, PrioridadeTarefa } from "@/types/kanban";
