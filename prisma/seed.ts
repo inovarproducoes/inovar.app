@@ -26,8 +26,8 @@ async function main() {
 
   console.log('Semeando Turmas...');
   const turmasData = await Promise.all([
-    prisma.turma.create({ data: { nome: '3º Ano A - Médio', ano: 2025, ano_letivo: 2025, periodo: 'matutino', curso: 'Ensino Médio', coordenador: 'Márcia Silva', sala: '101' } }),
-    prisma.turma.create({ data: { nome: 'Direito - 10º Período', ano: 2025, ano_letivo: 2025, periodo: 'noturno', curso: 'Graduação', coordenador: 'Dr. Roberto', sala: 'Auditorio' } }),
+    prisma.turma.create({ data: { nome: '3º Ano A - Médio', ano: 2026, ano_letivo: 2026, periodo: 'matutino', curso: 'Ensino Médio', coordenador: 'Márcia Silva', sala: '101' } }),
+    prisma.turma.create({ data: { nome: 'Direito - 10º Período', ano: 2026, ano_letivo: 2026, periodo: 'noturno', curso: 'Graduação', coordenador: 'Dr. Roberto', sala: 'Auditorio' } }),
   ]);
 
   console.log('Semeando Alunos...');
@@ -35,7 +35,7 @@ async function main() {
     await prisma.aluno.create({
       data: {
         nome: `Aluno ${i + 1} de Teste`,
-        matricula: `2025${String(i + 1).padStart(4, '0')}`,
+        matricula: `2026${String(i + 1).padStart(4, '0')}`,
         idade: 17 + (i % 5),
         email: `aluno${i + 1}@alu.inovar.app`,
         telefone: `(62) 98888-77${String(i).padStart(2, '0')}`,
@@ -47,23 +47,23 @@ async function main() {
     });
   }
 
-  console.log('Semeando 15 Eventos de Operação...');
+  console.log('Semeando 15 Eventos para 2026/2027...');
   const eventosComplexos = [
-    { nome: 'Formatura Eng. Civil 2025', tipo: 'formatura', status: 'confirmado', data: '2025-12-10', valor: 25000 },
-    { nome: 'Casamento Aline & João', tipo: 'casamento', status: 'pendente', data: '2025-05-15', valor: 35000 },
-    { nome: 'Curso Dashboards IA', tipo: 'curso', status: 'confirmado', data: '2025-04-20', valor: 5500 },
-    { nome: 'Palestra Transformação Digital', tipo: 'palestra', status: 'concluido', data: '2024-11-10', valor: 4200 },
-    { nome: 'Show Aniversário da Cidade', tipo: 'show', status: 'confirmado', data: '2025-10-24', valor: 150000 },
-    { nome: 'Workshop Liderança Ágil', tipo: 'workshop', status: 'confirmado', data: '2025-06-12', valor: 12000 },
-    { nome: 'Aniversário 15 anos Sofia', tipo: 'aniversario', status: 'confirmado', data: '2025-01-20', valor: 15500 },
-    { nome: 'Seminário Direito Público', tipo: 'seminario', status: 'pendente', data: '2025-08-05', valor: 3200 },
-    { nome: 'Congresso Tecnologia 2025', tipo: 'outro', status: 'confirmado', data: '2025-09-15', valor: 85000 },
-    { nome: 'Jantar Beneficente APAE', tipo: 'jantar', status: 'confirmado', data: '2025-03-22', valor: 9000 },
-    { nome: 'Lançamento Imobiliário Portal', tipo: 'palestra', status: 'pendente', data: '2025-02-14', valor: 11000 },
-    { nome: 'Treinamento Equipe Vendas', tipo: 'workshop', status: 'concluido', data: '2024-10-05', valor: 2500 },
-    { nome: 'Feira Regional de Negócios', tipo: 'outro', status: 'confirmado', data: '2025-07-18', valor: 45000 },
-    { nome: 'Baile de Máscaras 2025', tipo: 'show', status: 'confirmado', data: '2025-11-30', valor: 32000 },
-    { nome: 'Curso Extensão Nutrição', tipo: 'curso', status: 'pendente', data: '2025-05-02', valor: 1500 },
+    { nome: 'Formatura Eng. Civil 2026', tipo: 'formatura', status: 'confirmado', data: '2026-12-10', valor: 25000 },
+    { nome: 'Casamento Aline & João', tipo: 'casamento', status: 'pendente', data: '2026-05-15', valor: 35000 },
+    { nome: 'Curso Dashboards IA', tipo: 'curso', status: 'confirmado', data: '2026-04-20', valor: 5500 },
+    { nome: 'Palestra Transformação Digital', tipo: 'palestra', status: 'concluido', data: '2026-03-10', valor: 4200 },
+    { nome: 'Show Aniversário da Cidade', tipo: 'show', status: 'confirmado', data: '2026-10-24', valor: 150000 },
+    { nome: 'Workshop Liderança Ágil', tipo: 'workshop', status: 'confirmado', data: '2026-06-12', valor: 12000 },
+    { nome: 'Aniversário 15 anos Sofia', tipo: 'aniversario', status: 'confirmado', data: '2026-03-25', valor: 15500 },
+    { nome: 'Seminário Direito Público', tipo: 'seminario', status: 'pendente', data: '2026-08-05', valor: 3200 },
+    { nome: 'Congresso Tecnologia 2026', tipo: 'outro', status: 'confirmado', data: '2026-09-15', valor: 85000 },
+    { nome: 'Jantar Beneficente APAE', tipo: 'jantar', status: 'confirmado', data: '2026-03-22', valor: 9000 },
+    { nome: 'Lançamento Imobiliário Portal', tipo: 'palestra', status: 'pendente', data: '2026-04-14', valor: 11000 },
+    { nome: 'Treinamento Equipe Vendas', tipo: 'workshop', status: 'concluido', data: '2026-03-05', valor: 2500 },
+    { nome: 'Feira Regional de Negócios', tipo: 'outro', status: 'confirmado', data: '2026-07-18', valor: 45000 },
+    { nome: 'Baile de Máscaras 2026', tipo: 'show', status: 'confirmado', data: '2026-11-30', valor: 32000 },
+    { nome: 'Curso Extensão Nutrição', tipo: 'curso', status: 'pendente', data: '2027-02-02', valor: 1500 },
   ];
 
   for (const ev of eventosComplexos) {
@@ -120,7 +120,7 @@ async function main() {
     ]
   });
 
-  console.log('Seed concluído com sucesso!');
+  console.log('Seed de 2026 concluído com sucesso!');
 }
 
 main()
