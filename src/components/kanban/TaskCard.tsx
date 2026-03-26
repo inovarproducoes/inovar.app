@@ -63,13 +63,15 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
 
       <h3 className="font-bold text-[13.5px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
       {task.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{task.descricao}</p>}
-
-      <div className="flex flex-wrap gap-2 mb-3">
-        {task.etiquetas?.map((tag: string, i: number) => (
-          <Badge key={i} variant="secondary" className="text-[9px] px-1.5 py-0 font-normal uppercase tracking-wider">{tag}</Badge>
-        ))}
-      </div>
-
+      {(task.etiquetas && task.etiquetas.length > 0) && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {(task.etiquetas || []).map((tag, idx) => (
+            <span key={idx} className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground uppercase">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="flex items-center justify-between pt-3 border-t border-border/30">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-muted-foreground/60">

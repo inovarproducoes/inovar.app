@@ -92,7 +92,18 @@ export default function KanbanPage() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          setActiveBoard(data[0]);
+          // Sanitizar dados do banco
+          const sanitizedBoard = {
+            ...data[0],
+            colunas: data[0].colunas.map((col: IColumn) => ({
+              ...col,
+              tarefas: col.tarefas.map((t: ITask) => ({
+                ...t,
+                etiquetas: Array.isArray(t.etiquetas) ? t.etiquetas : []
+              }))
+            }))
+          };
+          setActiveBoard(sanitizedBoard);
         } else {
           setActiveBoard(SAMPLE_BOARD);
         }
