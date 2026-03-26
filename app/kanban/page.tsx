@@ -233,15 +233,40 @@ export default function KanbanPage() {
   };
 
   if (loading) return (
-    <MainLayout title="Kanban OS text-foreground">
+    <MainLayout title="Kanban de Gestão" subtitle="Organize e monitore o fluxo de trabalho dos eventos">
       <div className="p-8 space-y-4">
         <Skeleton className="h-10 w-64"/>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Skeleton className="h-[600px]"/><Skeleton className="h-[600px]"/><Skeleton className="h-[600px]"/><Skeleton className="h-[600px]"/>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[500px]">
+          <Skeleton className="h-full"/><Skeleton className="h-full"/><Skeleton className="h-full"/><Skeleton className="h-full"/>
         </div>
       </div>
     </MainLayout>
   );
+
+  if (!activeBoard) {
+    return (
+      <MainLayout title="Kanban de Gestão" subtitle="Organize e monitore o fluxo de trabalho dos eventos">
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-250px)] text-muted-foreground p-8">
+          <div className="bg-muted/30 p-8 rounded-full mb-6">
+            <Layout className="w-20 h-20 opacity-20" />
+          </div>
+          <h3 className="text-2xl font-bold text-foreground mb-2">Nenhum Quadro Encontrado</h3>
+          <p className="max-w-md text-center mb-8 opacity-70">
+            Parece que o seu banco de dados de produção ainda não tem quadros de Kanban configurados. 
+            Rode o Seed no terminal ou crie um novo quadro.
+          </p>
+          <div className="flex gap-4">
+            <Button size="lg" className="gap-2" onClick={fetchBoards}>
+              <Search className="w-4 h-4" /> Tentar Carregar
+            </Button>
+            <Button size="lg" variant="outline" className="gap-2" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
+              <Plus className="w-4 h-4" /> Criar Primeiro Quadro
+            </Button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title="Kanban de Gestão" subtitle="Organize e monitore o fluxo de trabalho dos eventos">
@@ -286,7 +311,7 @@ export default function KanbanPage() {
                     id={col.id}
                     title={col.nome} 
                     tasks={col.tarefas.filter((t) => t.titulo.toLowerCase().includes(busca.toLowerCase()))}
-                    boardId={activeBoard.id}
+                    boardId={activeBoard?.id || ""}
                     onUpdate={fetchBoards}
                     onEditTask={handleEditTask}
                   />
