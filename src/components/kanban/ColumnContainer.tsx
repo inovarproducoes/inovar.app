@@ -3,14 +3,15 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TaskCard } from "./TaskCard";
-import { Plus, MoreVertical } from "lucide-react";
+import { Plus, MoreVertical, GripVertical, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { 
-  SortableContext, 
-  verticalListSortingStrategy 
+import {
+  SortableContext,
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable";
+import { Progress } from "@/components/ui/progress";
 import type { ITask } from "@/types/kanban";
 
 interface ColumnContainerProps {
@@ -30,7 +31,7 @@ export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTas
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
+  } = useSortable({
     id,
     data: {
       type: "Column",
@@ -70,22 +71,32 @@ export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTas
       style={style}
       className={`w-[320px] md:w-[350px] flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/20 backdrop-blur-sm rounded-2xl border ${isDragging ? 'border-primary shadow-2xl scale-[1.02] rotate-1 z-30' : 'border-border/40'} flex-shrink-0 transition-all duration-200`}
     >
-      <div 
-        {...attributes} 
+      {/* Column Header */}
+      <div
+        {...attributes}
         {...listeners}
-        className="p-5 flex justify-between items-center cursor-grab active:cursor-grabbing hover:bg-black/5 dark:hover:bg-white/5 rounded-t-2xl transition-colors"
+        className="p-4 flex flex-col gap-3 group/header cursor-grab active:cursor-grabbing"
       >
-        <div className="flex items-center gap-2.5">
-           <h4 className="font-bold text-[14px] text-foreground/80 tracking-tight">{title}</h4>
-           <Badge variant="secondary" className="h-5 px-1.5 min-w-[20px] justify-center text-[10px] font-bold bg-muted/50 border-none">
-             {tasks.length}
-           </Badge>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-sm tracking-tight text-foreground/90 uppercase">{title}</h3>
+            <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[10px] py-0 h-4 min-w-[18px] flex items-center justify-center font-bold">
+              {tasks.length}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-1 opacity-0 group-hover/header:opacity-100 transition-opacity">
+            <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={handleAddTask}><Plus className="w-3.5 h-3.5"/></button>
+            <button className="p-1 hover:bg-muted rounded-md transition-colors"><MoreVertical className="w-3.5 h-3.5"/></button>
+          </div>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 md:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10" onClick={handleAddTask}>
-            <Plus className="w-4 h-4"/>
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><MoreVertical className="w-4 h-4"/></Button>
+
+        {/* Column Stats & Progress */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+            <span>Progresso</span>
+            <span>{tasks.length > 0 ? (title === "Concluído" ? "100%" : "30%") : "0%"}</span>
+          </div>
+          <Progress value={tasks.length > 0 ? (title === "Concluído" ? 100 : 30) : 0} className="h-1 bg-muted/40" />
         </div>
       </div>
 

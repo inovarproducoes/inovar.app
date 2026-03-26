@@ -3,8 +3,15 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Clock, Paperclip } from "lucide-react";
-import type { ITask } from "@/types/kanban";
+import {
+    Calendar,
+    MessageSquare,
+    Paperclip,
+    MoreHorizontal,
+    UserCircle2
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { ITask, PrioridadeTarefa } from "@/types/kanban";
 
 interface TaskCardProps {
   id: string;
@@ -20,7 +27,7 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ 
+  } = useSortable({
     id,
     data: {
       type: "Task",
@@ -31,17 +38,19 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
   };
 
-  const priorityStyles = {
-    baixa: { color: "bg-emerald-500", label: "Baixa", text: "text-emerald-700 bg-emerald-50" },
-    media: { color: "bg-amber-500", label: "Média", text: "text-amber-700 bg-amber-50" },
-    alta: { color: "bg-rose-500", label: "Alta", text: "text-rose-700 bg-rose-50" },
-    urgente: { color: "bg-red-600 animate-pulse", label: "Urgente", text: "text-white bg-red-600" }
+  const getPriorityColor = (p: PrioridadeTarefa) => {
+    switch (p) {
+      case "urgente": return { bg: "bg-red-500/15", text: "text-red-600", dot: "bg-red-500" };
+      case "alta": return { bg: "bg-orange-500/15", text: "text-orange-600", dot: "bg-orange-500" };
+      case "media": return { bg: "bg-blue-500/15", text: "text-blue-600", dot: "bg-blue-500" };
+      case "baixa": return { bg: "bg-emerald-500/15", text: "text-emerald-600", dot: "bg-emerald-500" };
+      default: return { bg: "bg-slate-500/15", text: "text-slate-600", dot: "bg-slate-500" };
+    }
   };
 
-  const priority = priorityStyles[task.prioridade as keyof typeof priorityStyles] || priorityStyles.media;
+  const priority = getPriorityColor(task.prioridade);
 
   return (
     <div
@@ -53,40 +62,50 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
       className={`bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-border/50 group hover:border-primary/40 hover:shadow-md transition-all cursor-pointer select-none ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-2 opacity-30 cursor-grabbing' : ''}`}
     >
       <div className="flex justify-between items-start mb-3">
-        <Badge variant="outline" className={`text-[10px] px-2 py-0 border-none font-bold uppercase ${priority.text}`}>
-          {priority.label}
+        <Badge variant="outline" className={`text-[10px] px-2 py-0 border-none font-bold uppercase ${priority.text} ${priority.bg}`}>
+           <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${priority.dot}`} />
+           {task.prioridade}
         </Badge>
-        <button className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-          <MessageCircle className="w-3.5 h-3.5"/>
+        <button className="text-muted-foreground/30 hover:text-foreground transition-colors">
+          <MoreHorizontal className="w-4 h-4"/>
         </button>
       </div>
 
-      <h3 className="font-bold text-[13.5px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
-      {task.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{task.descricao}</p>}
-      {(task.etiquetas && task.etiquetas.length > 0) && (
-        <div className="flex flex-wrap gap-1 mb-4">
-          {(task.etiquetas || []).map((tag, idx) => (
-            <span key={idx} className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground uppercase">
-              {tag}
-            </span>
+      <h3 className="font-bold text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
+      {task.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{task.descricao}</p>}
+
+      {/* Tags */}
+      {task.etiquetas && (
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {(task.etiquetas || []).map((tag: string, idx: number) => (
+            <Badge 
+                key={idx} 
+                variant="secondary" 
+                className="text-[9px] px-2 py-0 h-4 border-none bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 transition-colors font-bold uppercase tracking-tight"
+            >
+              {tag.trim()}
+            </Badge>
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between pt-3 border-t border-border/30">
+
+      <div className="flex items-center justify-between pt-4 border-t border-border/30">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-muted-foreground/60">
-             <Clock className="w-3 h-3"/>
-             <span className="text-[10px] font-medium">Hoje</span>
+          <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
+            <MessageSquare className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />
+            <span className="text-[10px] font-medium">4</span>
           </div>
-          {task.anexos && task.anexos > 0 && (
-            <div className="flex items-center gap-1 text-muted-foreground/60">
-               <Paperclip className="w-3 h-3"/>
-               <span className="text-[10px]">{task.anexos}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
+            <Paperclip className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />
+            <span className="text-[10px] font-medium">{task.anexos || 0}</span>
+          </div>
         </div>
-        <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/20 shadow-inner">
-          {task.responsavel_nome ? task.responsavel_nome.substring(0, 1).toUpperCase() : "I"}
+
+        <div className="flex items-center -space-x-2">
+            <Avatar className="w-6 h-6 border-2 border-background ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${task.responsavel_nome || 'admin'}`} />
+                <AvatarFallback className="text-[8px]">{task.responsavel_nome?.substring(0,2) || "AD"}</AvatarFallback>
+            </Avatar>
         </div>
       </div>
     </div>
