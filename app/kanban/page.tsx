@@ -10,6 +10,9 @@ import {
   useSensor, 
   useSensors,
   DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
 } from "@dnd-kit/core";
 import { 
   arrayMove, 
@@ -22,14 +25,20 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Layout, Settings, Search, Filter } from "lucide-react";
 import { ColumnContainer } from "@/components/kanban/ColumnContainer";
+import { TaskCard } from "@/components/kanban/TaskCard";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { IBoard, IColumn } from "@/types/kanban";
+import { TaskEditSheet } from "@/components/kanban/TaskEditSheet";
+import type { IBoard, IColumn, ITask } from "@/types/kanban";
 
 export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
   const [activeBoard, setActiveBoard] = useState<IBoard | null>(null);
   const [busca, setBusca] = useState("");
+  const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [activeTask, setActiveTask] = useState<ITask | null>(null);
+  const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -54,16 +63,174 @@ export default function KanbanPage() {
     }
   };
 
+  const handleEditTask = (task: ITask) => {
+    setSelectedTask(task);
+    setIsEditOpen(true);
+  };
+
+  const onDragStart = (event: DragStartEvent) => {
+     if (event.active.data.current?.type === "Column") {
+       setActiveColumn(event.active.data.current.column);
+       return;
+     }
+
+     if (event.active.data.current?.type === "Task") {
+       setActiveTask(event.active.data.current.task);
+       return;
+     }
+  };
+
+  const onDragOver = (event: any) => {
+    const { active, over } = event;
+    if (!over || !activeBoard) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    if (activeId === overId) return;
+
+    const isActiveATask = active.data.current?.type === "Task";
+    const isOverATask = over.data.current?.type === "Task";
+
+    if (!isActiveATask) return;
+
+    // Imagem da tarefa sendo movida sobre outra tarefa
+    if (isActiveATask && isOverATask) {
+      setActiveBoard((board: any) => {
+        if (!board) return board;
+        const activeColumn = board.colunas.find((col: any) => 
+          col.tarefas.some((t: any) => t.id === activeId)
+        );
+        const overColumn = board.colunas.find((col: any) => 
+          col.tarefas.some((t: any) => t.id === overId)
+        );
+
+        if (!activeColumn || !overColumn) return board;
+
+        if (activeColumn.id !== overColumn.id) {
+          const activeIndex = activeColumn.tarefas.findIndex((t: any) => t.id === activeId);
+          const overIndex = overColumn.tarefas.findIndex((t: any) => t.id === overId);
+
+          const taskToMove = activeColumn.tarefas[activeIndex];
+          taskToMove.coluna_id = overColumn.id;
+
+          const newActiveTasks = [...activeColumn.tarefas];
+          newActiveTasks.splice(activeIndex, 1);
+
+          const newOverTasks = [...overColumn.tarefas];
+          newOverTasks.splice(overIndex, 0, taskToMove);
+
+          return {
+            ...board,
+            colunas: board.colunas.map((c: any) => {
+              if (c.id === activeColumn.id) return { ...c, tarefas: newActiveTasks };
+              if (c.id === overColumn.id) return { ...c, tarefas: newOverTasks };
+              return c;
+            })
+          };
+        }
+        return board;
+      });
+    }
+
+    const isOverAColumn = over.data.current?.type === "Column";
+
+    // Imagem da tarefa sendo movida sobre uma coluna vazia
+    if (isActiveATask && isOverAColumn) {
+      setActiveBoard((board: any) => {
+        if (!board) return board;
+        const activeColumn = board.colunas.find((col: any) => 
+          col.tarefas.some((t: any) => t.id === activeId)
+        );
+        const overColumn = board.colunas.find((col: any) => col.id === overId);
+
+        if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) return board;
+
+        const activeIndex = activeColumn.tarefas.findIndex((t: any) => t.id === activeId);
+        const taskToMove = activeColumn.tarefas[activeIndex];
+        taskToMove.coluna_id = overColumn.id;
+
+        const newActiveTasks = [...activeColumn.tarefas];
+        newActiveTasks.splice(activeIndex, 1);
+
+        const newOverTasks = [...overColumn.tarefas, taskToMove];
+
+        return {
+          ...board,
+          colunas: board.colunas.map((c: any) => {
+            if (c.id === activeColumn.id) return { ...c, tarefas: newActiveTasks };
+            if (c.id === overColumn.id) return { ...c, tarefas: newOverTasks };
+            return c;
+          })
+        };
+      });
+    }
+  };
+
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || !activeBoard) return;
 
-    if (active.id !== over.id) {
+    if (active.id === over.id) return;
+
+    const isActiveAColumn = active.data.current?.type === "Column";
+
+    // Reordenar colunas
+    if (isActiveAColumn) {
       const oldIndex = activeBoard.colunas.findIndex((c: IColumn) => c.id === active.id);
       const newIndex = activeBoard.colunas.findIndex((c: IColumn) => c.id === over.id);
       
       const newCols = arrayMove(activeBoard.colunas, oldIndex, newIndex);
       setActiveBoard({ ...activeBoard, colunas: newCols });
+      // Aqui faríamos o sync com o banco via API mais tarde
+      return;
+    }
+
+    // Reordenar tarefas na mesma coluna ou persistir movimentação
+    const activeId = active.id;
+    const overId = over.id;
+
+    const activeColumn = activeBoard.colunas.find((col: IColumn) => 
+      col.tarefas.some((t: ITask) => t.id === activeId)
+    );
+    const overColumn = activeBoard.colunas.find((col: IColumn) => 
+      col.tarefas.some((t: ITask) => t.id === overId) || col.id === overId
+    );
+
+    if (!activeColumn || !overColumn) return;
+
+    if (activeColumn.id === overColumn.id) {
+      const oldIndex = activeColumn.tarefas.findIndex((t) => t.id === activeId);
+      const newIndex = activeColumn.tarefas.findIndex((t) => t.id === overId);
+      
+      if (oldIndex !== newIndex) {
+        const newTasks = arrayMove(activeColumn.tarefas, oldIndex, newIndex);
+        setActiveBoard({
+          ...activeBoard,
+          colunas: activeBoard.colunas.map(c => c.id === activeColumn.id ? { ...c, tarefas: newTasks } : c)
+        });
+      }
+    }
+
+    // Persistência...
+    setActiveTask(null);
+    setActiveColumn(null);
+
+    const task = activeBoard.colunas.flatMap(c => c.tarefas).find(t => t.id === activeId);
+    
+    if (task) {
+      try {
+        await fetch(`/api/kanban/tasks/${task.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            coluna_id: task.coluna_id,
+            ordem: task.ordem
+          })
+        });
+      } catch (err) {
+        console.error("Erro ao sincronizar tarefa", err);
+      }
     }
   };
 
@@ -80,8 +247,8 @@ export default function KanbanPage() {
 
   return (
     <MainLayout title="Kanban de Gestão" subtitle="Organize e monitore o fluxo de trabalho dos eventos">
-      <div className="flex flex-col h-full -mx-6 -my-6 bg-muted/30">
-        <div className="bg-background border-b px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 z-20 gap-4">
+      <div className="flex flex-col h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] -mx-6 -my-6 bg-slate-50/50 dark:bg-transparent">
+        <div className="bg-background/80 backdrop-blur-md border-b px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 z-20 gap-4 shadow-sm">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
               <Layout className="w-5 h-5 text-primary"/> {activeBoard?.nome || "Sem Quadros"}
@@ -105,9 +272,15 @@ export default function KanbanPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-x-auto p-6 scrollbar-thin">
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-            <div className="flex gap-6 h-full min-h-[500px]">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 scrollbar-thin scrollbar-thumb-primary/10 hover:scrollbar-thumb-primary/20 transition-all">
+          <DndContext 
+            sensors={sensors} 
+            collisionDetection={closestCenter} 
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnd={onDragEnd}
+          >
+            <div className="flex gap-6 h-full min-h-[500px] w-max">
               <SortableContext items={activeBoard?.colunas?.map((c: IColumn) => c.id) || []} strategy={horizontalListSortingStrategy}>
                 {activeBoard?.colunas?.map((col: IColumn) => (
                   <ColumnContainer 
@@ -117,19 +290,46 @@ export default function KanbanPage() {
                     tasks={col.tarefas.filter((t) => t.titulo.toLowerCase().includes(busca.toLowerCase()))}
                     boardId={activeBoard.id}
                     onUpdate={fetchBoards}
+                    onEditTask={handleEditTask}
                   />
                 ))}
               </SortableContext>
               
               <button 
-                className="w-80 h-[100px] flex-shrink-0 border-2 border-dashed border-muted-foreground/20 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted/50 transition-all group"
+                className="w-80 md:w-96 h-[120px] flex-shrink-0 border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:text-primary hover:bg-primary/5 hover:border-primary/40 transition-all group"
                 onClick={() => toast.info("Adicionar coluna disponível em breve")}
               >
-                <Plus className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform"/> Adicionar Coluna
+                <div className="p-3 bg-primary/5 rounded-full mb-2 group-hover:scale-110 transition-transform">
+                  <Plus className="w-5 h-5"/>
+                </div>
+                <span className="text-sm font-bold">Nova Coluna</span>
               </button>
             </div>
+
+            <DragOverlay>
+               {activeColumn && (
+                 <ColumnContainer 
+                    id={activeColumn.id}
+                    title={activeColumn.nome}
+                    tasks={activeBoard?.colunas.find(c => c.id === activeColumn.id)?.tarefas || []}
+                    boardId={activeBoard?.id || ""}
+                    onUpdate={() => {}}
+                    onEditTask={() => {}}
+                 />
+               )}
+               {activeTask && (
+                 <TaskCard id={activeTask.id} task={activeTask} />
+               )}
+            </DragOverlay>
           </DndContext>
         </div>
+
+        <TaskEditSheet 
+          task={selectedTask}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          onUpdate={fetchBoards}
+        />
       </div>
     </MainLayout>
   );
