@@ -39,6 +39,7 @@ export default function KanbanPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<ITask | null>(null);
   const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -46,7 +47,9 @@ export default function KanbanPage() {
   );
 
   useEffect(() => {
+    setMounted(true);
     fetchBoards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchBoards = async () => {
@@ -232,8 +235,8 @@ export default function KanbanPage() {
     }
   };
 
-  if (loading) return (
-    <MainLayout title="Kanban de Gestão" subtitle="Organize e monitore o fluxo de trabalho dos eventos">
+  if (!mounted || loading) return (
+    <MainLayout title="Carregando Kanban..." subtitle="Organize e monitore o fluxo de trabalho dos eventos">
       <div className="p-8 space-y-4">
         <Skeleton className="h-10 w-64"/>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[500px]">
