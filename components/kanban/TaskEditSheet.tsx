@@ -21,7 +21,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2, Save, X } from "lucide-react";
+import { Trash2, Save } from "lucide-react";
 import type { ITask, PrioridadeTarefa } from "@/types/kanban";
 
 interface TaskEditSheetProps {

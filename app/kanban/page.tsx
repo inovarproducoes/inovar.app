@@ -80,7 +80,7 @@ export default function KanbanPage() {
      }
   };
 
-  const onDragOver = (event: any) => {
+  const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over || !activeBoard) return;
 
@@ -94,25 +94,24 @@ export default function KanbanPage() {
 
     if (!isActiveATask) return;
 
-    // Imagem da tarefa sendo movida sobre outra tarefa
+    // Movendo tarefa sobre outra tarefa
     if (isActiveATask && isOverATask) {
-      setActiveBoard((board: any) => {
+      setActiveBoard((board: IBoard | null) => {
         if (!board) return board;
-        const activeColumn = board.colunas.find((col: any) => 
-          col.tarefas.some((t: any) => t.id === activeId)
+        const activeColumn = board.colunas.find((col: IColumn) => 
+          col.tarefas.some((t: ITask) => t.id === activeId)
         );
-        const overColumn = board.colunas.find((col: any) => 
-          col.tarefas.some((t: any) => t.id === overId)
+        const overColumn = board.colunas.find((col: IColumn) => 
+          col.tarefas.some((t: ITask) => t.id === overId)
         );
 
         if (!activeColumn || !overColumn) return board;
 
         if (activeColumn.id !== overColumn.id) {
-          const activeIndex = activeColumn.tarefas.findIndex((t: any) => t.id === activeId);
-          const overIndex = overColumn.tarefas.findIndex((t: any) => t.id === overId);
+          const activeIndex = activeColumn.tarefas.findIndex((t: ITask) => t.id === activeId);
+          const overIndex = overColumn.tarefas.findIndex((t: ITask) => t.id === overId);
 
-          const taskToMove = activeColumn.tarefas[activeIndex];
-          taskToMove.coluna_id = overColumn.id;
+          const taskToMove = { ...activeColumn.tarefas[activeIndex], coluna_id: overColumn.id };
 
           const newActiveTasks = [...activeColumn.tarefas];
           newActiveTasks.splice(activeIndex, 1);
@@ -122,7 +121,7 @@ export default function KanbanPage() {
 
           return {
             ...board,
-            colunas: board.colunas.map((c: any) => {
+            colunas: board.colunas.map((c: IColumn) => {
               if (c.id === activeColumn.id) return { ...c, tarefas: newActiveTasks };
               if (c.id === overColumn.id) return { ...c, tarefas: newOverTasks };
               return c;
@@ -135,20 +134,19 @@ export default function KanbanPage() {
 
     const isOverAColumn = over.data.current?.type === "Column";
 
-    // Imagem da tarefa sendo movida sobre uma coluna vazia
+    // Movendo tarefa sobre uma coluna
     if (isActiveATask && isOverAColumn) {
-      setActiveBoard((board: any) => {
+      setActiveBoard((board: IBoard | null) => {
         if (!board) return board;
-        const activeColumn = board.colunas.find((col: any) => 
-          col.tarefas.some((t: any) => t.id === activeId)
+        const activeColumn = board.colunas.find((col: IColumn) => 
+          col.tarefas.some((t: ITask) => t.id === activeId)
         );
-        const overColumn = board.colunas.find((col: any) => col.id === overId);
+        const overColumn = board.colunas.find((col: IColumn) => col.id === overId);
 
         if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) return board;
 
-        const activeIndex = activeColumn.tarefas.findIndex((t: any) => t.id === activeId);
-        const taskToMove = activeColumn.tarefas[activeIndex];
-        taskToMove.coluna_id = overColumn.id;
+        const activeIndex = activeColumn.tarefas.findIndex((t: ITask) => t.id === activeId);
+        const taskToMove = { ...activeColumn.tarefas[activeIndex], coluna_id: overColumn.id };
 
         const newActiveTasks = [...activeColumn.tarefas];
         newActiveTasks.splice(activeIndex, 1);
@@ -157,7 +155,7 @@ export default function KanbanPage() {
 
         return {
           ...board,
-          colunas: board.colunas.map((c: any) => {
+          colunas: board.colunas.map((c: IColumn) => {
             if (c.id === activeColumn.id) return { ...c, tarefas: newActiveTasks };
             if (c.id === overColumn.id) return { ...c, tarefas: newOverTasks };
             return c;
@@ -200,14 +198,14 @@ export default function KanbanPage() {
     if (!activeColumn || !overColumn) return;
 
     if (activeColumn.id === overColumn.id) {
-      const oldIndex = activeColumn.tarefas.findIndex((t) => t.id === activeId);
-      const newIndex = activeColumn.tarefas.findIndex((t) => t.id === overId);
+      const oldIndex = activeColumn.tarefas.findIndex((t: ITask) => t.id === activeId);
+      const newIndex = activeColumn.tarefas.findIndex((t: ITask) => t.id === overId);
       
       if (oldIndex !== newIndex) {
         const newTasks = arrayMove(activeColumn.tarefas, oldIndex, newIndex);
         setActiveBoard({
           ...activeBoard,
-          colunas: activeBoard.colunas.map(c => c.id === activeColumn.id ? { ...c, tarefas: newTasks } : c)
+          colunas: activeBoard.colunas.map((c: IColumn) => c.id === activeColumn.id ? { ...c, tarefas: newTasks } : c)
         });
       }
     }
