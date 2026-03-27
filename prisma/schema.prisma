@@ -230,3 +230,23 @@ model Tarefa {
   @@index([quadro_id])
   @@map("tarefas")
 }
+
+model OS {
+  id               String   @id @default(uuid())
+  numero           Int      @unique @default(autoincrement())
+  nome             String
+  descricao        String?
+  status           String   @default("pendente")
+  responsavel_nome String?
+  aluno_id         String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("ordens_servico")
+}
+
+model n8n_chat_histories {
+  id         Int    @id @default(autoincrement())
+  session_id String @db.VarChar(255)
+  message    Json
+}
