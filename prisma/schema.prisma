@@ -182,31 +182,31 @@ model Cliente {
 }
 
 model Quadro {
-  id         String   @id @default(uuid())
-  nome       String
-  descricao  String?
-  evento_id  String?  @unique
-  cor_tema   String?  @default("#4f46e5")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  colunas    Coluna[]
-  evento     Evento?  @relation(fields: [evento_id], references: [id])
-  tarefas    Tarefa[]
+  id             String   @id @default(uuid())
+  nome           String
+  descricao      String?
+  evento_id      String?  @unique
+  cor_tema       String?  @default("#4f46e5")
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  colunas        Coluna[]
   ordens_servico OS[]
+  evento         Evento?  @relation(fields: [evento_id], references: [id])
+  tarefas        Tarefa[]
 
   @@map("quadros")
 }
 
 model Coluna {
-  id         String   @id @default(uuid())
-  nome       String
-  ordem      Int      @default(0)
-  quadro_id  String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  quadro     Quadro   @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
-  tarefas    Tarefa[]
+  id             String   @id @default(uuid())
+  nome           String
+  ordem          Int      @default(0)
+  quadro_id      String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  quadro         Quadro   @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
   ordens_servico OS[]
+  tarefas        Tarefa[]
 
   @@index([quadro_id])
   @@map("colunas")
@@ -235,16 +235,16 @@ model Tarefa {
 
 model OS {
   id               String   @id @default(uuid())
-  numero           Int      @unique @default(autoincrement())
+  numero           String   @unique
   nome             String
   descricao        String?
   status           String   @default("pendente")
   responsavel_nome String?
   aluno_id         String?
-  coluna_id        String?
-  quadro_id        String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
+  coluna_id        String?
+  quadro_id        String?
   coluna           Coluna?  @relation(fields: [coluna_id], references: [id])
   quadro           Quadro?  @relation(fields: [quadro_id], references: [id])
 

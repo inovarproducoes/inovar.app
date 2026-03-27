@@ -38,7 +38,7 @@ export async function GET() {
             quadro_id: board.id,
             etiquetas: ['OS'],
             isOS: true,
-            numero_os: os.numero
+            numero_os: String(os.numero)
           }));
 
           return {

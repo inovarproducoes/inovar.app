@@ -12,7 +12,7 @@ export interface ITask {
   etiquetas: string[];
   anexos?: number;
   isOS?: boolean;
-  numero_os?: number;
+  numero_os?: string | number;
 }
 
 export interface IColumn {
