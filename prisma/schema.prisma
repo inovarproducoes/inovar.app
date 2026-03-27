@@ -7,13 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelos do Inovar App simplificados para SQLite (Enums convertidos para String)
-
 model Evento {
-  id                     String             @id @default(uuid())
+  id                     String         @id @default(uuid())
   nome                   String
   descricao              String?
-  tipo_evento            String             // SQLite não suporta Enums
   data_inicio            String
   data_fim               String
   horario_inicio         String
@@ -26,10 +23,9 @@ model Evento {
   link_maps              String?
   capacidade_maxima      Int
   vagas_disponiveis      Int
-  status                 String             @default("planejamento")
-  valor_total            Float              @default(0)
-  valor_entrada          Float              @default(0)
-  valor_pendente         Float              @default(0)
+  valor_total            Float          @default(0)
+  valor_entrada          Float          @default(0)
+  valor_pendente         Float          @default(0)
   cliente_nome           String?
   cliente_email          String?
   cliente_telefone       String?
@@ -39,13 +35,14 @@ model Evento {
   responsavel_email      String?
   observacoes            String?
   necessidades_especiais String?
-  fornecedores           String?            // SQLite trata Json como String/Text
-  checklist              String?            // SQLite trata Json como String/Text
-  created_at             DateTime           @default(now())
-  updated_at             DateTime           @updatedAt
-
-  participantes          Participante[]
+  fornecedores           String?
+  checklist              String?
+  created_at             DateTime       @default(now())
+  updated_at             DateTime       @updatedAt
+  tipo_evento            String
+  status                 String         @default("planejamento")
   evento_alunos          EventoAluno[]
+  participantes          Participante[]
   quadro                 Quadro?
 
   @@index([data_inicio])
@@ -69,14 +66,13 @@ model Aluno {
   telefone_responsavel String?
   email_responsavel    String?
   foto_url             String?
-  status               String        @default("ativo")
   observacoes          String?
   created_by           String?
   created_at           DateTime      @default(now())
   updated_at           DateTime      @updatedAt
-
+  status               String        @default("ativo")
   evento_alunos        EventoAluno[]
-  parcelas            Parcela[]
+  parcelas             Parcela[]
 
   @@index([status])
   @@index([turma])
@@ -85,19 +81,18 @@ model Aluno {
 }
 
 model Parcela {
-  id              String   @id @default(uuid())
-  aluno_id        String
-  valor           Float
-  data_vencimento String   // Formato YYYY-MM-DD
-  data_pagamento  String?
-  status          String   @default("pendente") // pago, pendente, atrasado
-  link_boleto     String?
-  link_pix        String?
-  identificador_parcela String? @unique // ID que vem do seu sistema financeiro/ERP
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  aluno           Aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+  id                    String   @id @default(uuid())
+  aluno_id              String
+  valor                 Float
+  data_vencimento       String
+  data_pagamento        String?
+  status                String   @default("pendente")
+  link_boleto           String?
+  link_pix              String?
+  identificador_parcela String?  @unique
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  aluno                 Aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
 
   @@index([aluno_id])
   @@index([status])
@@ -105,37 +100,35 @@ model Parcela {
 }
 
 model EventoAluno {
-  id                     String             @id @default(uuid())
+  id                     String    @id @default(uuid())
   evento_id              String
   aluno_id               String
-  status_participacao    String             @default("pendente")
   funcao                 String?
   mesa                   String?
-  acompanhantes          Int                @default(0)
+  acompanhantes          Int       @default(0)
   necessidades_especiais String?
-  confirma_presenca      Boolean            @default(false)
+  confirma_presenca      Boolean   @default(false)
   data_confirmacao       DateTime?
   observacoes            String?
-  
-  evento                 Evento             @relation(fields: [evento_id], references: [id], onDelete: Cascade)
-  aluno                  Aluno              @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+  status_participacao    String    @default("pendente")
+  aluno                  Aluno     @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+  evento                 Evento    @relation(fields: [evento_id], references: [id], onDelete: Cascade)
 
   @@unique([evento_id, aluno_id])
   @@map("evento_alunos")
 }
 
 model Participante {
-  id                 String             @id @default(uuid())
+  id                 String   @id @default(uuid())
   evento_id          String
   nome               String
   email              String?
   telefone           String?
-  status_confirmacao String             @default("pendente")
-  tipo_participante  String             @default("comum")
   observacoes        String?
-  created_at         DateTime           @default(now())
-  
-  evento             Evento             @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  created_at         DateTime @default(now())
+  status_confirmacao String   @default("pendente")
+  tipo_participante  String   @default("comum")
+  evento             Evento   @relation(fields: [evento_id], references: [id], onDelete: Cascade)
 
   @@map("participantes")
 }
@@ -145,7 +138,7 @@ model FAQ {
   categoria      String
   pergunta       String
   resposta       String
-  palavras_chave String   @default("") // SQLite não suporta String[]
+  palavras_chave String   @default("")
   ordem          Int      @default(0)
   ativo          Boolean  @default(true)
   visualizacoes  Int      @default(0)
@@ -156,16 +149,16 @@ model FAQ {
 }
 
 model Turma {
-  id          String      @id @default(uuid())
-  nome        String      @unique
+  id          String  @id @default(uuid())
+  nome        String  @unique
   ano         Int
   ano_letivo  Int?
-  periodo     String?
   curso       String
   coordenador String?
   sala        String?
   capacidade  Int?
-  status      String      @default("ativa")
+  periodo     String?
+  status      String  @default("ativa")
 
   @@map("turmas")
 }
@@ -174,32 +167,31 @@ model Cliente {
   id           String   @id @default(uuid())
   nome         String
   telefone     String   @unique
-  email        String?
-  empresa      String?
-  cargo        String?
-  interesse    String?  // Descrição do que o cliente busca
-  lead_score   Int      @default(0) // 0-100 para priorização
-  fonte        String   @default("whatsapp")
   agente_ativo Boolean  @default(true)
-  observacoes  String?
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+  cargo        String?
+  email        String?
+  empresa      String?
+  fonte        String   @default("whatsapp")
+  interesse    String?
+  lead_score   Int      @default(0)
+  observacoes  String?
 
   @@map("clientes")
 }
 
 model Quadro {
-  id          String   @id @default(uuid())
-  nome        String
-  descricao   String?
-  evento_id   String?  @unique
-  cor_tema    String?  @default("#4f46e5")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  evento      Evento?  @relation(fields: [evento_id], references: [id], onDelete: SetNull)
-  colunas     Coluna[]
-  tarefas     Tarefa[]
+  id         String   @id @default(uuid())
+  nome       String
+  descricao  String?
+  evento_id  String?  @unique
+  cor_tema   String?  @default("#4f46e5")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  colunas    Coluna[]
+  evento     Evento?  @relation(fields: [evento_id], references: [id])
+  tarefas    Tarefa[]
 
   @@map("quadros")
 }
@@ -211,7 +203,6 @@ model Coluna {
   quadro_id  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
   quadro     Quadro   @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
   tarefas    Tarefa[]
 
@@ -220,21 +211,20 @@ model Coluna {
 }
 
 model Tarefa {
-  id              String            @id @default(uuid())
-  titulo          String
-  descricao       String?
-  data_vencimento DateTime?
-  prioridade      String            @default("media")
+  id               String    @id @default(uuid())
+  titulo           String
+  descricao        String?
+  data_vencimento  DateTime?
   responsavel_nome String?
-  etiquetas       String            @default("") // SQLite não suporta String[]
-  ordem           Int               @default(0)
-  coluna_id       String
-  quadro_id       String
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @updatedAt
-
-  coluna          Coluna            @relation(fields: [coluna_id], references: [id], onDelete: Cascade)
-  quadro          Quadro            @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
+  etiquetas        String    @default("")
+  ordem            Int       @default(0)
+  coluna_id        String
+  quadro_id        String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  prioridade       String    @default("media")
+  coluna           Coluna    @relation(fields: [coluna_id], references: [id], onDelete: Cascade)
+  quadro           Quadro    @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
 
   @@index([coluna_id])
   @@index([quadro_id])
