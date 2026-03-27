@@ -18,8 +18,44 @@ export async function GET() {
       },
       orderBy: { created_at: 'desc' }
     });
-    return NextResponse.json(boards);
-  } catch {
+
+    // Se houver um quadro de OS, buscar os dados da tabela OS para exibir lá
+    const ordensServico = await prisma.oS.findMany({
+      orderBy: { created_at: 'desc' }
+    });
+
+    // Mapear as OS para o formato de tarefas para o Kanban exibir
+    const boardsWithOS = boards.map(board => {
+      if (board.nome.toLowerCase().includes('os')) {
+        return {
+          ...board,
+          colunas: board.colunas.map(col => {
+            // Se for a primeira coluna (ex: Backlog), injetar as OS lá
+            if (col.ordem === 0) {
+              const osAsTasks = ordensServico.map(os => ({
+                id: os.id,
+                titulo: `#OS-${os.numero}: ${os.nome}`,
+                descricao: os.descricao || 'Chamada sem descrição',
+                status: os.status,
+                ordem: -1, // Garantir que fiquem no topo
+                prioridade: 'alta',
+                isOS: true // Flag para a UI saber que é uma OS
+              }));
+              return {
+                ...col,
+                tarefas: [...osAsTasks, ...col.tarefas]
+              };
+            }
+            return col;
+          })
+        };
+      }
+      return board;
+    });
+
+    return NextResponse.json(boardsWithOS);
+  } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'Erro ao buscar quadros' }, { status: 500 });
   }
 }
