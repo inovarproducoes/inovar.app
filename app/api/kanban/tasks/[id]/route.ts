@@ -28,7 +28,7 @@ export async function PATCH(
         });
         return NextResponse.json(updated);
       }
-    } catch (e) {
+    } catch {
       // Ignorar e tentar OS
     }
 
@@ -75,13 +75,13 @@ export async function DELETE(
     try {
       await prisma.tarefa.delete({ where: { id } });
       return NextResponse.json({ success: true });
-    } catch (e) { }
+    } catch { }
 
     // Tentar deletar como OS
     try {
       await prisma.oS.delete({ where: { id } });
       return NextResponse.json({ success: true });
-    } catch (e) { }
+    } catch { }
 
     return NextResponse.json({ error: 'Item não encontrado' }, { status: 404 });
   } catch (error) {
