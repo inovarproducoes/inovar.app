@@ -23,6 +23,10 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+  			brown: {
+  				DEFAULT: 'hsl(var(--brown))',
+  				foreground: 'hsl(var(--brown-foreground))'
+  			},
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

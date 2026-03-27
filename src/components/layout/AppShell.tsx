@@ -58,22 +58,41 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={onClose} />
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={onClose} />
       )}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar flex flex-col transform transition-transform md:relative md:translate-x-0 border-r border-sidebar-border ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="h-16 flex items-center px-4 justify-between border-b border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground text-xs font-bold">I</span>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col transform transition-transform duration-200 md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ background: "hsl(var(--sidebar-background))" }}>
+
+        {/* Logo */}
+        <div className="h-16 flex items-center px-5 justify-between shrink-0"
+          style={{ borderBottom: "1px solid hsl(var(--sidebar-border))" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brown)))" }}>
+              <span className="text-white text-sm font-black">I</span>
             </div>
-            <span className="text-lg font-bold text-sidebar-foreground">Inovar App</span>
+            <div>
+              <span className="text-sm font-bold tracking-wide" style={{ color: "hsl(var(--sidebar-foreground))" }}>
+                Inovar App
+              </span>
+              <p className="text-[10px] leading-none mt-0.5" style={{ color: "hsl(var(--sidebar-foreground) / 0.45)" }}>
+                Gestão Inteligente
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="md:hidden text-sidebar-foreground">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="md:hidden p-1 rounded-md hover:bg-white/10 transition-colors"
+            style={{ color: "hsl(var(--sidebar-foreground))" }}>
+            <X className="w-4 h-4" />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-2">
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 no-scrollbar">
+          <p className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-3"
+            style={{ color: "hsl(var(--sidebar-foreground) / 0.35)" }}>
+            Menu
+          </p>
+          <ul className="space-y-0.5">
             {menuItems.map(item => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
@@ -84,24 +103,60 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
                     onClick={onClose}
                     onMouseEnter={() => handlePrefetch(item.href)}
                     onFocus={() => handlePrefetch(item.href)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}`}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium relative group transition-all"
+                    style={isActive ? {
+                      background: "hsl(var(--brown) / 0.15)",
+                      color: "hsl(var(--sidebar-primary))",
+                      borderLeft: "3px solid hsl(var(--sidebar-primary))",
+                      paddingLeft: "calc(0.75rem - 3px)",
+                    } : {
+                      color: "hsl(var(--sidebar-foreground) / 0.75)",
+                    }}
+                    onMouseOver={e => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLElement).style.background = "hsl(var(--sidebar-accent))";
+                        (e.currentTarget as HTMLElement).style.color = "hsl(var(--sidebar-foreground))";
+                      }
+                    }}
+                    onMouseOut={e => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLElement).style.background = "transparent";
+                        (e.currentTarget as HTMLElement).style.color = "hsl(var(--sidebar-foreground) / 0.75)";
+                      }
+                    }}
                   >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    {item.name}
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{item.name}</span>
+                    {isActive && (
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full status-dot-active"
+                        style={{ background: "hsl(var(--sidebar-primary))" }} />
+                    )}
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-        <div className="p-4 border-t border-sidebar-border flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">A</div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-sidebar-foreground truncate">Administrador</div>
-            <div className="text-xs text-muted-foreground truncate">admin@inovar.com</div>
+
+        {/* User */}
+        <div className="p-4 shrink-0" style={{ borderTop: "1px solid hsl(var(--sidebar-border))" }}>
+          <div className="flex items-center gap-3 px-2 py-2 rounded-lg"
+            style={{ background: "hsl(var(--sidebar-accent))" }}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.7), hsl(var(--brown) / 0.7))", color: "white" }}>
+              A
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold truncate" style={{ color: "hsl(var(--sidebar-foreground))" }}>
+                Administrador
+              </p>
+              <p className="text-[10px] truncate" style={{ color: "hsl(var(--sidebar-foreground) / 0.45)" }}>
+                admin@inovar.com
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 }
@@ -109,18 +164,23 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const { title, subtitle } = usePageTitle();
   return (
-    <header className="h-16 border-b bg-card flex items-center justify-between px-4 lg:px-8 shrink-0">
+    <header className="h-16 bg-card border-b flex items-center justify-between px-4 lg:px-6 shrink-0">
       <div className="flex items-center gap-4">
-        <button className="md:hidden text-foreground" onClick={onMenuClick}>
+        <button
+          className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+          onClick={onMenuClick}
+        >
           <Menu className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-lg font-bold text-foreground">{title}</h1>
-          {subtitle && <p className="text-sm text-muted-foreground hidden sm:block">{subtitle}</p>}
+          <h1 className="text-xl font-bold text-foreground leading-tight">{title}</h1>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground hidden sm:block mt-0.5">{subtitle}</p>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <button className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors">
+        <button className="relative w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
           <Bell className="w-4 h-4" />
         </button>
       </div>
@@ -132,7 +192,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  // Prefetch silencioso de todos os módulos 1s após o carregamento inicial
   useEffect(() => {
     const timer = setTimeout(() => {
       Object.values(PREFETCH_MAP).forEach(({ queryKey, queryFn }) => {
@@ -145,9 +204,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex w-full h-screen overflow-hidden bg-background">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex-1 flex flex-col h-full w-full overflow-hidden">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
       </div>

@@ -33,10 +33,10 @@ export default function Dashboard() {
   return (
     <MainLayout title="Dashboard" subtitle="Visão geral do sistema Inovar App">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard title="Total de Eventos" value={total} icon={Calendar} trend={{ value: tendencias.total, label: 'vs. mês anterior', isPositive: true }} className="bg-blue-50/5 dark:bg-card/60" />
-        <StatCard title="Próximos Eventos" value={proximos} icon={CalendarCheck} description="Para os próximos dias" className="bg-orange-50/5 dark:bg-card/60" />
-        <StatCard title="Total Participantes" value={vagasOcupadas} icon={Users} trend={{ value: tendencias.vagas, label: 'vs. mês anterior', isPositive: true }} className="bg-emerald-50/5 dark:bg-card/60" />
-        <StatCard title="Taxa de Ocupação" value={`${taxaOcupacao}%`} icon={TrendingUp} trend={{ value: tendencias.taxa, label: 'vs. mês anterior', isPositive: true }} className="bg-yellow-50/5 dark:bg-card/60" />
+        <StatCard title="Total de Eventos" value={total} icon={Calendar} accent="purple" trend={{ value: tendencias.total, label: 'vs. mês anterior', isPositive: true }} />
+        <StatCard title="Próximos Eventos" value={proximos} icon={CalendarCheck} accent="brown" description="Para os próximos dias" />
+        <StatCard title="Total Participantes" value={vagasOcupadas} icon={Users} accent="green" trend={{ value: tendencias.vagas, label: 'vs. mês anterior', isPositive: true }} />
+        <StatCard title="Taxa de Ocupação" value={`${taxaOcupacao}%`} icon={TrendingUp} accent="blue" trend={{ value: tendencias.taxa, label: 'vs. mês anterior', isPositive: true }} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-8">

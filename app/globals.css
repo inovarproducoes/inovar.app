@@ -4,76 +4,104 @@
 
 @layer base {
   :root {
-    --background: 270 20% 97%;
-    --foreground: 270 25% 8%;
+    /* Fundo quente levemente off-white */
+    --background: 30 18% 97%;
+    --foreground: 258 35% 8%;
+
     --card: 0 0% 100%;
-    --card-foreground: 270 25% 8%;
+    --card-foreground: 258 35% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 270 25% 8%;
-    --primary: 267 75% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 270 15% 92%;
-    --secondary-foreground: 270 25% 8%;
-    --muted: 270 10% 95%;
-    --muted-foreground: 253 10% 40%;
-    --accent: 280 65% 48%;
-    --accent-foreground: 210 40% 98%;
-    --success: 152 60% 42%;
-    --success-foreground: 210 40% 98%;
+    --popover-foreground: 258 35% 8%;
+
+    /* Roxo vibrante */
+    --primary: 267 72% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Marrom caramelo */
+    --brown: 24 60% 42%;
+    --brown-foreground: 0 0% 100%;
+
+    --secondary: 30 18% 92%;
+    --secondary-foreground: 258 35% 8%;
+    --muted: 270 12% 94%;
+    --muted-foreground: 258 14% 46%;
+
+    --accent: 267 72% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 152 58% 40%;
+    --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 270 25% 8%;
-    --info: 217 91% 60%;
-    --info-foreground: 210 40% 98%;
+    --warning-foreground: 258 35% 8%;
+    --info: 217 88% 58%;
+    --info-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
+
     --border: 270 10% 88%;
     --input: 270 10% 88%;
-    --ring: 267 75% 55%;
+    --ring: 267 72% 55%;
     --radius: 0.75rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Sidebar escura e premium mesmo no modo claro */
+    --sidebar-background: 258 38% 10%;
+    --sidebar-foreground: 30 12% 88%;
+    --sidebar-primary: 24 60% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 258 30% 18%;
+    --sidebar-accent-foreground: 30 12% 92%;
+    --sidebar-border: 258 25% 20%;
+    --sidebar-ring: 267 72% 55%;
   }
 
   .dark {
-    --background: 260 20% 7%;
-    --foreground: 270 5% 95%;
-    --card: 260 20% 11%;
-    --card-foreground: 270 5% 95%;
-    --popover: 260 20% 11%;
-    --popover-foreground: 270 5% 95%;
-    --primary: 267 75% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 260 15% 16%;
-    --secondary-foreground: 270 5% 95%;
-    --muted: 260 15% 16%;
-    --muted-foreground: 260 10% 65%;
-    --accent: 280 65% 48%;
-    --accent-foreground: 210 40% 98%;
-    --success: 152 60% 42%;
-    --success-foreground: 210 40% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 270 25% 8%;
-    --info: 217 91% 60%;
-    --info-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 260 15% 18%;
-    --input: 260 15% 18%;
-    --ring: 267 75% 55%;
-    --sidebar-background: 260 20% 8%;
-    --sidebar-foreground: 270 5% 95%;
-    --sidebar-primary: 267 75% 55%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 260 15% 16%;
-    --sidebar-accent-foreground: 270 5% 95%;
-    --sidebar-border: 260 15% 18%;
-    --sidebar-ring: 267 75% 55%;
+    /* Fundo muito escuro com leve tom roxo */
+    --background: 258 28% 6%;
+    --foreground: 30 10% 94%;
+
+    --card: 258 24% 9%;
+    --card-foreground: 30 10% 94%;
+    --popover: 258 24% 9%;
+    --popover-foreground: 30 10% 94%;
+
+    /* Roxo levemente mais claro no dark */
+    --primary: 267 72% 62%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Marrom caramelo um pouco mais quente no dark */
+    --brown: 24 65% 52%;
+    --brown-foreground: 0 0% 100%;
+
+    --secondary: 258 20% 15%;
+    --secondary-foreground: 30 10% 90%;
+    --muted: 258 20% 13%;
+    --muted-foreground: 258 10% 62%;
+
+    --accent: 267 72% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 152 58% 44%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 52%;
+    --warning-foreground: 258 35% 8%;
+    --info: 217 88% 62%;
+    --info-foreground: 0 0% 100%;
+    --destructive: 0 80% 62%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 258 18% 16%;
+    --input: 258 18% 16%;
+    --ring: 267 72% 62%;
+
+    /* Sidebar mais escura que o background */
+    --sidebar-background: 258 35% 5%;
+    --sidebar-foreground: 30 10% 90%;
+    --sidebar-primary: 24 65% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 258 28% 12%;
+    --sidebar-accent-foreground: 30 10% 90%;
+    --sidebar-border: 258 22% 13%;
+    --sidebar-ring: 267 72% 62%;
   }
 }
 
@@ -82,50 +110,71 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
   }
 }
 
-/* Scrollbar 8px, thumb com cor primary */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+/* ─── Scrollbar premium ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--primary) / 0.5); border-radius: var(--radius); }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary)); }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.35);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--brown) / 0.7); }
 
-/* Animação de entrada — usa will-change para compositing na GPU */
+/* ─── Animação de entrada do conteúdo ───────────────────────── */
 main {
-  animation: fadeInUp 0.2s ease-out both;
+  animation: fadeInUp 0.18s ease-out both;
   will-change: opacity, transform;
 }
-
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+main.animation-done { will-change: auto; }
 
-/* Remove will-change após animação para liberar memória GPU */
-main.animation-done {
-  will-change: auto;
-}
+/* ─── Sem scrollbar visível ─────────────────────────────────── */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* Esconde scrollbar sem perder funcionalidade (Firefox + Chrome/Edge) */
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Transição suave para links e botões */
+/* ─── Transições base em links e botões ─────────────────────── */
 a, button {
   transition-property: color, background-color, border-color, opacity, box-shadow, transform;
-  transition-duration: 150ms;
+  transition-duration: 140ms;
   transition-timing-function: ease;
 }
+
+/* ─── Cards premium com brilho sutil na borda ao hover ──────── */
+.card-premium {
+  position: relative;
+  overflow: hidden;
+}
+.card-premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--brown) / 0.06));
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.card-premium:hover::before { opacity: 1; }
+
+/* ─── Gradiente de acento roxo→marrom ───────────────────────── */
+.gradient-brand {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brown)));
+}
+.gradient-brand-subtle {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--brown) / 0.10));
+}
+
+/* ─── Badge de status com pulsação ─────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.status-dot-active { animation: pulse-dot 2s ease-in-out infinite; }
