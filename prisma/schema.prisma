@@ -76,11 +76,32 @@ model Aluno {
   updated_at           DateTime      @updatedAt
 
   evento_alunos        EventoAluno[]
+  parcelas            Parcela[]
 
   @@index([status])
   @@index([turma])
   @@index([curso])
   @@map("alunos")
+}
+
+model Parcela {
+  id              String   @id @default(uuid())
+  aluno_id        String
+  valor           Float
+  data_vencimento String   // Formato YYYY-MM-DD
+  data_pagamento  String?
+  status          String   @default("pendente") // pago, pendente, atrasado
+  link_boleto     String?
+  link_pix        String?
+  identificador_parcela String? @unique // ID que vem do seu sistema financeiro/ERP
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  aluno           Aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+
+  @@index([aluno_id])
+  @@index([status])
+  @@map("parcelas")
 }
 
 model EventoAluno {
