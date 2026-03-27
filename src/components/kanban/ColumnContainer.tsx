@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TaskCard } from "./TaskCard";
@@ -12,18 +14,42 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { Progress } from "@/components/ui/progress";
-import type { ITask } from "@/types/kanban";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Copy, Trash2, Edit2, Check } from "lucide-react";
+import type { ITask, IColumn } from "@/types/kanban";
 
 interface ColumnContainerProps {
   id: string;
   title: string;
   tasks: ITask[];
   boardId: string;
+  allColumns: IColumn[]; 
   onUpdate: () => void;
   onEditTask: (task: ITask) => void;
 }
 
-export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTask }: ColumnContainerProps) {
+export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdate, onEditTask }: ColumnContainerProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [targetColumnId, setTargetColumnId] = useState<string>("");
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [newTitle, setNewTitle] = useState(title);
+  const [copied, setCopied] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -44,7 +70,54 @@ export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTas
     transition,
   };
 
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(id);
+    setCopied(true);
+    toast.success("ID da coluna copiado!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRename = async () => {
+    try {
+      const res = await fetch('/api/kanban/columns', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, nome: newTitle })
+      });
+      if (res.ok) {
+        toast.success("Coluna renomeada");
+        setIsRenaming(false);
+        onUpdate();
+      }
+    } catch {
+      toast.error("Erro ao renomear");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (tasks.length > 0 && !targetColumnId) {
+      toast.error("Selecione uma coluna destino para as tarefas");
+      return;
+    }
+
+    try {
+      const resp = await fetch(`/api/kanban/columns/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetColumnId })
+      });
+      if (resp.ok) {
+        toast.success("Coluna deletada");
+        setIsDeleteDialogOpen(false);
+        onUpdate();
+      }
+    } catch {
+      toast.error("Erro ao deletar coluna");
+    }
+  };
+
   const handleAddTask = async () => {
+    // ... mantendo o original
     try {
       const resp = await fetch('/api/kanban/tasks', {
         method: 'POST',
@@ -78,15 +151,56 @@ export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTas
         className="p-4 flex flex-col gap-3 group/header cursor-grab active:cursor-grabbing"
       >
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold text-sm tracking-tight text-foreground/90 uppercase">{title}</h3>
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[10px] py-0 h-4 min-w-[18px] flex items-center justify-center font-bold">
-              {tasks.length}
-            </Badge>
+          <div className="flex items-center gap-2 flex-1">
+            {isRenaming ? (
+              <div className="flex items-center gap-1 w-full">
+                <input 
+                  autoFocus
+                  className="bg-background border rounded px-2 py-0.5 text-xs w-full focus:outline-primary"
+                  value={newTitle}
+                  onChange={e => setNewTitle(e.target.value)}
+                  onBlur={handleRename}
+                  onKeyDown={e => e.key === 'Enter' && handleRename()}
+                />
+              </div>
+            ) : (
+              <>
+                <h3 className="font-bold text-sm tracking-tight text-foreground/90 uppercase truncate">{title}</h3>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[10px] py-0 h-4 min-w-[18px] flex items-center justify-center font-bold">
+                  {tasks.length}
+                </Badge>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-1 opacity-0 group-hover/header:opacity-100 transition-opacity">
-            <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={handleAddTask}><Plus className="w-3.5 h-3.5"/></button>
-            <button className="p-1 hover:bg-muted rounded-md transition-colors"><MoreVertical className="w-3.5 h-3.5"/></button>
+            <button 
+              className="p-1 hover:bg-muted rounded-md transition-colors text-muted-foreground hover:text-primary" 
+              onClick={(e) => { e.stopPropagation(); handleCopyId(); }}
+              title="Copiar ID para n8n"
+            >
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5"/>}
+            </button>
+            <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={(e) => { e.stopPropagation(); handleAddTask(); }}><Plus className="w-3.5 h-3.5"/></button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={e => e.stopPropagation()}>
+                  <MoreVertical className="w-3.5 h-3.5"/>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setIsRenaming(true)}>
+                  <Edit2 className="w-4 h-4 mr-2" /> Renomear
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="text-destructive focus:text-destructive" 
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" /> Deletar Coluna
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -124,6 +238,45 @@ export function ColumnContainer({ id, title, tasks, boardId, onUpdate, onEditTas
            <Plus className="w-4 h-4 mr-2"/> Nova Tarefa
          </Button>
       </div>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deletar Coluna: {title}</DialogTitle>
+            <DialogDescription>
+              Esta coluna possui {tasks.length} tarefas/OS. Para onde deseja movê-las?
+            </DialogDescription>
+          </DialogHeader>
+
+          {tasks.length > 0 && (
+            <div className="py-4">
+              <label className="text-sm font-medium mb-2 block">Coluna Destino</label>
+              <Select value={targetColumnId} onValueChange={setTargetColumnId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma coluna..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {allColumns
+                    .filter(c => c.id !== id)
+                    .map(c => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.nome}
+                      </SelectItem>
+                    ))
+                  }
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={tasks.length > 0 && !targetColumnId}>
+              Confirmar Exclusão
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

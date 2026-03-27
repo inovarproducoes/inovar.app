@@ -11,6 +11,8 @@ export interface ITask {
   quadro_id: string;
   etiquetas: string[];
   anexos?: number;
+  isOS?: boolean;
+  numero_os?: number;
 }
 
 export interface IColumn {

@@ -118,6 +118,47 @@ export default function KanbanPage() {
     }
   };
 
+  const handleCreateBoard = async (isOS = false) => {
+    try {
+      const nome = isOS ? "Gestão de OS" : "Novo Quadro";
+      const res = await fetch('/api/kanban/boards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome,
+          descricao: isOS ? "Fluxo automático de Ordens de Serviço" : "Meu quadro de atividades",
+          isServiceOrderPipeline: isOS
+        })
+      });
+      if (res.ok) {
+        toast.success(isOS ? "Pipeline de OS criado!" : "Quadro criado!");
+        fetchBoards();
+      }
+    } catch {
+      toast.error("Erro ao criar quadro");
+    }
+  };
+
+  const handleAddColumn = async () => {
+    if (!activeBoard) return;
+    try {
+       const res = await fetch('/api/kanban/columns', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           nome: "Nova Coluna",
+           quadro_id: activeBoard.id
+         })
+       });
+       if (res.ok) {
+         toast.success("Coluna adicionada");
+         fetchBoards();
+       }
+    } catch {
+      toast.error("Erro ao adicionar coluna");
+    }
+  };
+
   const handleEditTask = (task: ITask) => {
     setSelectedTask(task);
     setIsEditOpen(true);
@@ -314,8 +355,8 @@ export default function KanbanPage() {
             <Button size="lg" className="gap-2" onClick={fetchBoards}>
               <Search className="w-4 h-4" /> Tentar Carregar
             </Button>
-            <Button size="lg" variant="outline" className="gap-2" onClick={() => toast.info("Funcionalidade em desenvolvimento")}>
-              <Plus className="w-4 h-4" /> Criar Primeiro Quadro
+            <Button size="lg" variant="outline" className="gap-2" onClick={() => handleCreateBoard(true)}>
+              <Plus className="w-4 h-4" /> Criar Pipeline de OS
             </Button>
           </div>
         </div>
@@ -343,8 +384,8 @@ export default function KanbanPage() {
               <Input placeholder="Buscar tarefas..." className="pl-9 h-9 w-full md:w-64 bg-muted/50 border-none" value={busca} onChange={e => setBusca(e.target.value)}/>
             </div>
             <Button variant="outline" size="icon" className="h-9 w-9"><Filter className="w-4 h-4"/></Button>
-            <Button className="gap-2 h-9" onClick={() => toast.info("Criar quadro disponível em breve")}>
-              <Plus className="w-4 h-4"/> Novo Quadro
+            <Button className="gap-2 h-9" onClick={() => handleCreateBoard(true)}>
+              <Plus className="w-4 h-4"/> Novo Pipeline OS
             </Button>
             <Button variant="ghost" size="icon" className="h-9 w-9"><Settings className="w-4 h-4"/></Button>
           </div>
@@ -367,6 +408,7 @@ export default function KanbanPage() {
                     title={col.nome} 
                     tasks={col.tarefas.filter((t) => t.titulo.toLowerCase().includes(busca.toLowerCase()))}
                     boardId={activeBoard?.id || ""}
+                    allColumns={activeBoard.colunas}
                     onUpdate={fetchBoards}
                     onEditTask={handleEditTask}
                   />
@@ -375,7 +417,7 @@ export default function KanbanPage() {
               
               <button 
                 className="w-80 md:w-96 h-[120px] flex-shrink-0 border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary/60 hover:text-primary hover:bg-primary/5 hover:border-primary/40 transition-all group"
-                onClick={() => toast.info("Adicionar coluna disponível em breve")}
+                onClick={handleAddColumn}
               >
                 <div className="p-3 bg-primary/5 rounded-full mb-2 group-hover:scale-110 transition-transform">
                   <Plus className="w-5 h-5"/>
@@ -385,16 +427,17 @@ export default function KanbanPage() {
             </div>
 
             <DragOverlay>
-               {activeColumn && (
-                 <ColumnContainer 
-                    id={activeColumn.id}
-                    title={activeColumn.nome}
-                    tasks={activeBoard?.colunas.find(c => c.id === activeColumn.id)?.tarefas || []}
-                    boardId={activeBoard?.id || ""}
-                    onUpdate={() => {}}
-                    onEditTask={() => {}}
-                 />
-               )}
+                {activeColumn && activeBoard && (
+                  <ColumnContainer 
+                     id={activeColumn.id}
+                     title={activeColumn.nome}
+                     tasks={activeBoard.colunas.find(c => c.id === activeColumn.id)?.tarefas || []}
+                     boardId={activeBoard.id}
+                     allColumns={activeBoard.colunas}
+                     onUpdate={() => {}}
+                     onEditTask={() => {}}
+                  />
+                )}
                {activeTask && (
                  <TaskCard id={activeTask.id} task={activeTask} />
                )}

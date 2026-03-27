@@ -192,6 +192,7 @@ model Quadro {
   colunas    Coluna[]
   evento     Evento?  @relation(fields: [evento_id], references: [id])
   tarefas    Tarefa[]
+  ordens_servico OS[]
 
   @@map("quadros")
 }
@@ -205,6 +206,7 @@ model Coluna {
   updated_at DateTime @updatedAt
   quadro     Quadro   @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
   tarefas    Tarefa[]
+  ordens_servico OS[]
 
   @@index([quadro_id])
   @@map("colunas")
@@ -239,8 +241,12 @@ model OS {
   status           String   @default("pendente")
   responsavel_nome String?
   aluno_id         String?
+  coluna_id        String?
+  quadro_id        String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
+  coluna           Coluna?  @relation(fields: [coluna_id], references: [id])
+  quadro           Quadro?  @relation(fields: [quadro_id], references: [id])
 
   @@map("ordens_servico")
 }
