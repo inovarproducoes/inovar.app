@@ -235,7 +235,7 @@ model Tarefa {
 
 model OS {
   id               String   @id @default(uuid())
-  numero           String   @unique
+  numero           String?  @unique
   nome             String
   descricao        String?
   status           String   @default("pendente")

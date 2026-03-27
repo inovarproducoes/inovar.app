@@ -113,9 +113,9 @@ async function main() {
 
   console.log('Inundando as Primeiras Ordens de Serviço (OS)...');
   const osData = [
-    { nome: 'Suporte Financeiro VIP', descricao: 'Ajuste de boleto para Henrique', status: 'pendente', responsavel_nome: 'Administrador' },
-    { nome: 'Manutenção de Cadastro', descricao: 'Seringa no CPF do aluno de teste', status: 'em_andamento', responsavel_nome: 'TI Inovar' },
-    { nome: 'Solicitação de Histórico', descricao: 'Documentação do 3º ano pedida via IA', status: 'pendente', responsavel_nome: 'Secretaria' },
+    { numero: '1001', nome: 'Suporte Financeiro VIP', descricao: 'Ajuste de boleto para Henrique', status: 'pendente', responsavel_nome: 'Administrador' },
+    { numero: '1002', nome: 'Manutenção de Cadastro', descricao: 'Seringa no CPF do aluno de teste', status: 'em_andamento', responsavel_nome: 'TI Inovar' },
+    { numero: '1003', nome: 'Solicitação de Histórico', descricao: 'Documentação do 3º ano pedida via IA', status: 'pendente', responsavel_nome: 'Secretaria' },
   ];
 
   for (const os of osData) {
