@@ -153,7 +153,14 @@ model Cliente {
   id           String   @id @default(uuid())
   nome         String
   telefone     String   @unique
+  email        String?
+  empresa      String?
+  cargo        String?
+  interesse    String?  // Descrição do que o cliente busca
+  lead_score   Int      @default(0) // 0-100 para priorização
+  fonte        String   @default("whatsapp")
   agente_ativo Boolean  @default(true)
+  observacoes  String?
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
