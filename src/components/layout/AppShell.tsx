@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Calendar, Users, Briefcase,
-  DollarSign, HelpCircle, MessageCircle, GraduationCap, Bell, Layout
+  DollarSign, HelpCircle, MessageCircle, GraduationCap, Bell, Layout, LogOut
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,6 +55,11 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     queryClient.prefetchQuery({ queryKey: config.queryKey, queryFn: config.queryFn });
   }, [queryClient, router]);
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("inovar_auth");
+    window.location.reload();
+  };
+
   return (
     <>
       {isOpen && (
@@ -68,7 +73,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
           style={{ borderBottom: "1px solid hsl(var(--sidebar-border))" }}>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brown)))" }}>
+              style={{ background: "linear-gradient(110deg, hsl(var(--primary)), hsl(var(--brown)))" }}>
               <span className="text-white text-sm font-black">I</span>
             </div>
             <div>
@@ -138,8 +143,8 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
           </ul>
         </nav>
 
-        {/* User */}
-        <div className="p-4 shrink-0" style={{ borderTop: "1px solid hsl(var(--sidebar-border))" }}>
+        {/* User & Logout */}
+        <div className="p-4 shrink-0 flex flex-col gap-2" style={{ borderTop: "1px solid hsl(var(--sidebar-border))" }}>
           <div className="flex items-center gap-3 px-2 py-2 rounded-lg"
             style={{ background: "hsl(var(--sidebar-accent))" }}>
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
@@ -155,6 +160,14 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
               </p>
             </div>
           </div>
+          
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-all w-full text-left"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            <span>Sair do Sistema</span>
+          </button>
         </div>
       </aside>
     </>
