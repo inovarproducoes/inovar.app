@@ -1,5 +1,4 @@
 import { Evento } from "@/types/database";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { MapPin, Calendar, Trash2, Users } from "lucide-react";
 
