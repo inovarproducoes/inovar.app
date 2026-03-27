@@ -15,6 +15,44 @@ async function main() {
   await prisma.cliente.deleteMany();
   await prisma.fAQ.deleteMany();
 
+  console.log('Semeando FAQs Humanizadas (Persona de Elite)...');
+  const faqsHumanas = [
+    {
+      categoria: 'Geral',
+      pergunta: 'O que é o Inovar App?',
+      resposta: 'Olá! O Inovar App é o seu braço direito na gestão de eventos e educação. Nós somos uma plataforma feita para simplificar a sua vida, cuidando de cada detalhe, desde o registro de um aluno até a organização de uma grande formatura. Tudo com tecnologia de ponta e um toque humano que faz toda a diferença! 😊',
+      palavras_chave: 'inovar, sistema, suporte, ajuda'
+    },
+    {
+      categoria: 'Cadastro',
+      pergunta: 'Como faço para registrar um novo cliente?',
+      resposta: 'É super fácil! Basta me passar o nome e o telefone do cliente aqui mesmo ou usar o nosso painel CRM. Eu cuido de verificar se ele já está na nossa base para não criar duplicidade e deixo tudo prontinho para você começar o atendimento. Precisou, é só chamar! 🚀',
+      palavras_chave: 'crm, cadastro, cliente, novo'
+    },
+    {
+      categoria: 'Alunos',
+      pergunta: 'Como funciona o registro de alunos?',
+      resposta: 'Olha, o registro de alunos é um dos nossos pontos fortes. Nós validamos a matrícula e o e-mail para garantir que cada registro seja único e seguro. Assim que o aluno chega, ele já entra no fluxo da turma e dos eventos. É automação pura, mas com aquele carinho que a educação merece! 🎓',
+      palavras_chave: 'aluno, matricula, registro, escola'
+    },
+    {
+      categoria: 'Suporte',
+      pergunta: 'E se eu tiver algum problema técnico?',
+      resposta: 'Não se preocupe, você nunca está sozinho! Nossa equipe de suporte está sempre de prontidão. Se algo não estiver funcionando como deveria, é só me avisar aqui que eu já tento resolver ou encaminho para os nossos especialistas humanos na mesma hora. Estamos juntos nessa! 💪',
+      palavras_chave: 'erro, problema, bug, ajuda'
+    },
+    {
+      categoria: 'Eventos',
+      pergunta: 'Como vejo os próximos eventos no Dashboard?',
+      resposta: 'Basta acessar a sua Visão Geral! Lá eu preparei gráficos lindos pra você acompanhar as ocupações, os pagamentos e as datas de cada cerimônia em tempo real. Se o gráfico estiver vazio, pode ser só o ano selecionado no filtro, tá? Mas se precisar, eu te ajudo a encontrar qualquer evento! 📊',
+      palavras_chave: 'grafico, dashboard, evento, dados'
+    }
+  ];
+
+  for (const faq of faqsHumanas) {
+    await prisma.fAQ.create({ data: faq });
+  }
+
   console.log('Semeando Clientes...');
   await Promise.all([
     prisma.cliente.create({ data: { nome: 'SESI Goiânia', telefone: '(62) 3222-1111' } }),
@@ -120,7 +158,7 @@ async function main() {
     ]
   });
 
-  console.log('Seed de 2026 concluído com sucesso!');
+  console.log('Super Seed 2026 - Human edition concluído!');
 }
 
 main()
