@@ -8,9 +8,9 @@ export async function GET(req: NextRequest) {
   const aluno_id = url.searchParams.get("aluno_id");
 
   try {
-    const where: any = {};
-    if (evento_id) where.evento_id = evento_id;
-    if (aluno_id) where.aluno_id = aluno_id;
+    const where: Prisma.EventoAlunoWhereInput = {};
+    if (evento_id) where.evento_id = { equals: evento_id };
+    if (aluno_id) where.aluno_id = { equals: aluno_id };
 
     if (!evento_id && !aluno_id) {
        return NextResponse.json({ error: "evento_id ou aluno_id é obrigatório" }, { status: 400 });
