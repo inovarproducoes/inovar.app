@@ -11,34 +11,12 @@ async function main() {
   await prisma.coluna.deleteMany();
   await prisma.quadro.deleteMany();
   await prisma.eventoAluno.deleteMany();
-  await prisma.participante.deleteMany();
   await prisma.evento.deleteMany();
   await prisma.aluno.deleteMany();
   await prisma.turma.deleteMany();
   await prisma.cliente.deleteMany();
-  await prisma.fAQ.deleteMany();
   await prisma.oS.deleteMany();
   await prisma.parcela.deleteMany();
-
-  console.log('Semeando FAQs Humanizadas...');
-  const faqs = [
-    {
-      categoria: 'Suporte',
-      pergunta: 'Como vejo minhas parcelas?',
-      resposta: 'Basta me informar o seu CPF! Eu vou consultar o nosso sistema financeiro e te passar o valor, o vencimento e até o link para o pagamento via Pix ou Boleto. 😉',
-      palavras_chave: 'parcelas, pagamento, financeiro, cpf'
-    },
-    {
-      categoria: 'Geral',
-      pergunta: 'O que é o módulo OS?',
-      resposta: 'O módulo de Ordem de Serviço (OS) permite que você registre chamadas de suporte, manutenção ou solicitações acadêmicas com numeração automática e acompanhamento via Kanban! 🚀',
-      palavras_chave: 'os, ordem, serviço, chamada'
-    }
-  ];
-
-  for (const f of faqs) {
-    await prisma.fAQ.create({ data: f });
-  }
 
   console.log('Semeando Clientes CRM (Elite)...');
   await prisma.cliente.create({

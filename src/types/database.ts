@@ -1,9 +1,6 @@
 export type TipoEvento = 'corporativo' | 'casamento' | 'festa' | 'workshop' | 
                  'conferencia' | 'aniversario' | 'formatura' | 'outro';
 export type StatusEvento = 'planejamento' | 'confirmado' | 'em_andamento' | 'finalizado' | 'cancelado';
-export type StatusParticipante = 'pendente' | 'confirmado' | 'cancelado';
-export type TipoParticipante = 'vip' | 'comum' | 'staff' | 'palestrante';
-
 export interface ChecklistItem { item: string; feito: boolean; }
 export interface Fornecedor { nome: string; contato: string; }
 
@@ -23,20 +20,5 @@ export interface Evento {
   observacoes: string | null; necessidades_especiais: string | null;
   fornecedores: (Fornecedor | string)[] | null;
   checklist: ChecklistItem[] | null;
-  created_at: string; updated_at: string;
-}
-
-export interface Participante {
-  id: string; evento_id: string; nome: string;
-  email: string | null; telefone: string | null;
-  status_confirmacao: StatusParticipante;
-  tipo_participante: TipoParticipante;
-  observacoes: string | null; created_at: string;
-}
-
-export interface FAQ {
-  id: string; categoria: string; pergunta: string; resposta: string;
-  palavras_chave: string[] | null; ordem: number;
-  ativo: boolean; visualizacoes: number;
   created_at: string; updated_at: string;
 }
