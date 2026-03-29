@@ -5,12 +5,23 @@ import { Prisma } from "@prisma/client";
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const evento_id = url.searchParams.get("evento_id");
-  if (!evento_id) return NextResponse.json({ error: "evento_id é obrigatório" }, { status: 400 });
+  const aluno_id = url.searchParams.get("aluno_id");
 
   try {
+    const where: any = {};
+    if (evento_id) where.evento_id = evento_id;
+    if (aluno_id) where.aluno_id = aluno_id;
+
+    if (!evento_id && !aluno_id) {
+       return NextResponse.json({ error: "evento_id ou aluno_id é obrigatório" }, { status: 400 });
+    }
+
     const data = await prisma.eventoAluno.findMany({
-      where: { evento_id },
-      include: { aluno: true }
+      where,
+      include: { 
+        aluno: true,
+        evento: true
+      }
     });
     return NextResponse.json(data);
   } catch (error) {

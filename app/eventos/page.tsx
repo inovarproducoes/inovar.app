@@ -120,6 +120,7 @@ export default function EventosPage() {
             <thead className="bg-muted text-muted-foreground uppercase text-xs">
               <tr>
                 <th className="px-6 py-3">Nome</th>
+                <th className="px-6 py-3">Instituição</th>
                 <th className="px-6 py-3">Tipo</th>
                 <th className="px-6 py-3">Data</th>
                 <th className="px-6 py-3">Local</th>
@@ -131,6 +132,7 @@ export default function EventosPage() {
               {filtered.map((ev: Evento) => (
                 <tr key={ev.id} onClick={() => router.push(`/eventos/${ev.id}`)} className="border-b transition-colors hover:bg-muted/50 cursor-pointer">
                   <td className="px-6 py-4 font-medium">{ev.nome}</td>
+                  <td className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase">{ev.instituicao || "Geral"}</td>
                   <td className="px-6 py-4 capitalize">{ev.tipo_evento}</td>
                   <td className="px-6 py-4">{format(new Date(ev.data_inicio), "dd/MM/yyyy")}</td>
                   <td className="px-6 py-4 truncate max-w-[200px]">{ev.local_nome}</td>

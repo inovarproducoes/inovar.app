@@ -6,6 +6,7 @@ export interface Fornecedor { nome: string; contato: string; }
 
 export interface Evento {
   id: string; nome: string; descricao: string | null;
+  instituicao?: string | null;
   tipo_evento: TipoEvento; data_inicio: string; data_fim: string;
   horario_inicio: string; horario_fim: string;
   local_nome: string; endereco_completo: string;

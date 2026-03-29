@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
         { matricula: { contains: termo, mode: 'insensitive' } },
         { email: { contains: termo, mode: 'insensitive' } },
         { cpf: { contains: termo, mode: 'insensitive' } },
+        { instituicao: { contains: termo, mode: 'insensitive' } },
+        { projeto: { contains: termo, mode: 'insensitive' } },
         { cpf_responsavel: { contains: termo, mode: 'insensitive' } },
       ];
     }

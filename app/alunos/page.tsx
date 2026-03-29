@@ -17,6 +17,7 @@ import { Search, Eye } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinanceiroTab } from "@/components/alunos/FinanceiroTab";
+import { EventosTab } from "@/components/alunos/EventosTab";
 
 export default function AlunosPage() {
   const [busca, setBusca] = useState("");
@@ -44,7 +45,7 @@ export default function AlunosPage() {
   const inadimplentes = alunosData?.filter(a => a.status === 'inadimplente' || a.status === 'trancado').length || 0;
   const concluidos = alunosData?.filter(a => a.status === 'formado' || a.status === 'concluido').length || 0;
 
-  const [novoAluno, setNovoAluno] = useState({nome: "", email: "", cpf: "", matricula: "", telefone: "", turma: "A", curso: "Administração", status: "ativo"});
+  const [novoAluno, setNovoAluno] = useState({nome: "", email: "", cpf: "", matricula: "", telefone: "", turma: "A", curso: "Administração", instituicao: "", projeto: "", status: "ativo"});
   const [alunoSelecionado, setAlunoSelecionado] = useState<Aluno | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
 
@@ -66,9 +67,10 @@ export default function AlunosPage() {
           
           {alunoSelecionado && (
             <Tabs defaultValue="dados" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="dados">Dados Básicos</TabsTrigger>
                 <TabsTrigger value="financeiro">Financeiro</TabsTrigger>
+                <TabsTrigger value="eventos">Eventos</TabsTrigger>
               </TabsList>
               
               <TabsContent value="dados" className="space-y-4">
@@ -79,7 +81,7 @@ export default function AlunosPage() {
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Email</Label>
-                    <Input className="col-span-3" value={alunoSelecionado.email} readOnly />
+                    <Input className="col-span-3" value={alunoSelecionado.email || ''} readOnly />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">CPF</Label>
@@ -87,21 +89,33 @@ export default function AlunosPage() {
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Matrícula</Label>
-                    <Input className="col-span-3" value={alunoSelecionado.matricula} readOnly />
+                    <Input className="col-span-3" value={alunoSelecionado.matricula || ''} readOnly />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Curso</Label>
-                    <Input className="col-span-3" value={alunoSelecionado.curso} readOnly />
+                    <Input className="col-span-3" value={alunoSelecionado.curso || ''} readOnly />
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-right">Turma</Label>
-                    <Input className="col-span-3" value={alunoSelecionado.turma} readOnly />
+                    <Input className="col-span-3" value={alunoSelecionado.turma || ''} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Instituição</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.instituicao || ''} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Projeto</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.projeto || ''} readOnly />
                   </div>
                 </div>
               </TabsContent>
               
               <TabsContent value="financeiro">
                 <FinanceiroTab alunoId={alunoSelecionado.id} />
+              </TabsContent>
+
+              <TabsContent value="eventos">
+                <EventosTab alunoId={alunoSelecionado.id} />
               </TabsContent>
             </Tabs>
           )}
@@ -185,19 +199,19 @@ export default function AlunosPage() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">Email *</Label>
-                <Input id="email" type="email" className="col-span-3" placeholder="joao@exemplo.com" value={novoAluno.email} onChange={e => setNovoAluno({...novoAluno, email: e.target.value})} />
+                <Input id="email" type="email" className="col-span-3" placeholder="email@exemplo.com" value={novoAluno.email || ''} onChange={e => setNovoAluno({...novoAluno, email: e.target.value})} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="cpf" className="text-right">CPF *</Label>
-                <Input id="cpf" className="col-span-3" placeholder="000.000.000-00" maxLength={14} value={novoAluno.cpf} onChange={e => setNovoAluno({...novoAluno, cpf: formatarCPF(e.target.value)})} />
+                <Input id="cpf" className="col-span-3" placeholder="000.000.000-00" maxLength={14} value={novoAluno.cpf || ''} onChange={e => setNovoAluno({...novoAluno, cpf: formatarCPF(e.target.value)})} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="matricula" className="text-right">Matrícula</Label>
-                <Input id="matricula" className="col-span-3" placeholder="Ex: 2024001" value={novoAluno.matricula} onChange={e => setNovoAluno({...novoAluno, matricula: e.target.value})} />
+                <Input id="matricula" className="col-span-3" placeholder="Ex: 2024001" value={novoAluno.matricula || ''} onChange={e => setNovoAluno({...novoAluno, matricula: e.target.value})} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="telefone" className="text-right">Telefone</Label>
-                <Input id="telefone" className="col-span-3" placeholder="(00) 00000-0000" value={novoAluno.telefone} onChange={e => setNovoAluno({...novoAluno, telefone: e.target.value})} />
+                <Input id="telefone" className="col-span-3" placeholder="(00) 00000-0000" value={novoAluno.telefone || ''} onChange={e => setNovoAluno({...novoAluno, telefone: e.target.value})} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="curso" className="text-right">Curso *</Label>
@@ -216,6 +230,14 @@ export default function AlunosPage() {
                     {TURMAS_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="instituicao" className="text-right">Instituição</Label>
+                <Input id="instituicao" className="col-span-3" placeholder="Ex: Colégio Adventista" value={novoAluno.instituicao} onChange={e => setNovoAluno({...novoAluno, instituicao: e.target.value})} />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="projeto" className="text-right">Projeto</Label>
+                <Input id="projeto" className="col-span-3" placeholder="Ex: Formatura 2026" value={novoAluno.projeto} onChange={e => setNovoAluno({...novoAluno, projeto: e.target.value})} />
               </div>
             </div>
             <DialogFooter>
@@ -267,9 +289,9 @@ export default function AlunosPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3 text-[13.5px] font-medium">{aluno.matricula}</td>
-                  <td className="px-5 py-3 hidden md:table-cell text-[13.5px]">{aluno.turma}</td>
-                  <td className="px-5 py-3 hidden lg:table-cell text-[13.5px] truncate max-w-[180px]" title={aluno.curso}>{aluno.curso}</td>
+                  <td className="px-5 py-3 text-[13.5px] font-medium">{aluno.matricula || '-'}</td>
+                  <td className="px-5 py-3 hidden md:table-cell text-[13.5px]">{aluno.turma || '-'}</td>
+                  <td className="px-5 py-3 hidden lg:table-cell text-[13.5px] truncate max-w-[180px]" title={aluno.curso || ''}>{aluno.curso || '-'}</td>
                   <td className="px-5 py-3 text-[13.5px]">{aluno.telefone || '-'}</td>
                   <td className="px-5 py-3">
                     <Badge variant="outline" className={`relative pl-3 capitalize ${
