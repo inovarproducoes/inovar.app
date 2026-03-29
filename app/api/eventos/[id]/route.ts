@@ -8,7 +8,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const evento = await prisma.evento.findUnique({
       where: { id },
       include: {
-        participantes: true,
         evento_alunos: { include: { aluno: true } }
       }
     });
