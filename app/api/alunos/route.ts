@@ -22,10 +22,11 @@ export async function GET(req: NextRequest) {
     const where: Prisma.AlunoWhereInput = {};
     if (termo) {
       where.OR = [
-        { nome: { contains: termo } },
-        { matricula: { contains: termo } },
-        { email: { contains: termo } },
-        { cpf_responsavel: { contains: termo } },
+        { nome: { contains: termo, mode: 'insensitive' } },
+        { matricula: { contains: termo, mode: 'insensitive' } },
+        { email: { contains: termo, mode: 'insensitive' } },
+        { cpf: { contains: termo, mode: 'insensitive' } },
+        { cpf_responsavel: { contains: termo, mode: 'insensitive' } },
       ];
     }
     if (turma) where.turma = turma;
@@ -36,7 +37,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(alunos, {
       headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=120" },
     });
-  } catch {
+  } catch (error) {
+    console.error("Erro ao buscar alunos:", error);
     return NextResponse.json({ error: "Erro ao buscar alunos" }, { status: 500 });
   }
 }
@@ -46,17 +48,25 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     const existingAluno = await prisma.aluno.findFirst({
       where: {
-        OR: [{ matricula: data.matricula }, { email: data.email }]
+        OR: [
+          { matricula: data.matricula }, 
+          { email: data.email },
+          ...(data.cpf ? [{ cpf: data.cpf }] : [])
+        ]
       }
     });
 
     if (existingAluno) {
-      return NextResponse.json({ error: "Aluno com essa matrícula ou email já existe", id: existingAluno.id }, { status: 409 });
+      return NextResponse.json({ 
+        error: "Aluno com essa matrícula, email ou CPF já existe", 
+        id: existingAluno.id 
+      }, { status: 409 });
     }
 
     const newAluno = await prisma.aluno.create({ data });
     return NextResponse.json(newAluno, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Erro ao criar aluno:", error);
     return NextResponse.json({ error: "Erro ao criar aluno" }, { status: 500 });
   }
 }

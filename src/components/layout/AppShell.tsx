@@ -35,12 +35,8 @@ const menuItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Kanban OS", href: "/kanban", icon: Layout },
   { name: "Eventos", href: "/eventos", icon: Calendar },
-  { name: "Participantes", href: "/participantes", icon: Users },
   { name: "Alunos", href: "/alunos", icon: GraduationCap },
   { name: "Clientes", href: "/clientes", icon: Briefcase },
-  { name: "Financeiro", href: "/financeiro", icon: DollarSign },
-  { name: "FAQs", href: "/faqs", icon: HelpCircle },
-  { name: "Suporte IA", href: "/suporte", icon: MessageCircle },
 ];
 
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {

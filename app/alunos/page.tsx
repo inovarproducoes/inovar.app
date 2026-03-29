@@ -13,8 +13,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { formatarCPF } from "@/lib/cpfUtils";
-import { Search, Edit2 } from "lucide-react";
+import { Search, Eye } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FinanceiroTab } from "@/components/alunos/FinanceiroTab";
 
 export default function AlunosPage() {
   const [busca, setBusca] = useState("");
@@ -43,9 +45,73 @@ export default function AlunosPage() {
   const concluidos = alunosData?.filter(a => a.status === 'formado' || a.status === 'concluido').length || 0;
 
   const [novoAluno, setNovoAluno] = useState({nome: "", email: "", cpf: "", matricula: "", telefone: "", turma: "A", curso: "Administração", status: "ativo"});
+  const [alunoSelecionado, setAlunoSelecionado] = useState<any>(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+
+  const handleVerAluno = (aluno: any) => {
+    setAlunoSelecionado(aluno);
+    setIsViewOpen(true);
+  };
 
   return (
     <MainLayout title="Alunos" subtitle="Gestão de alunos e matrículas">
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Aluno</DialogTitle>
+            <DialogDescription>
+              Visualize e gerencie os dados de {alunoSelecionado?.nome}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {alunoSelecionado && (
+            <Tabs defaultValue="dados" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="dados">Dados Básicos</TabsTrigger>
+                <TabsTrigger value="financeiro">Financeiro</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="dados" className="space-y-4">
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Nome</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.nome} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Email</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.email} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">CPF</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.cpf || alunoSelecionado.cpf_responsavel || ''} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Matrícula</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.matricula} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Curso</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.curso} readOnly />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Turma</Label>
+                    <Input className="col-span-3" value={alunoSelecionado.turma} readOnly />
+                  </div>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="financeiro">
+                <FinanceiroTab alunoId={alunoSelecionado.id} />
+              </TabsContent>
+            </Tabs>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsViewOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-card/60 backdrop-blur-xl p-4 rounded-xl border border-white/5 shadow-sm flex flex-col justify-center items-center hover:border-primary/30 transition-colors">
           <span className="text-3xl font-bold">{total}</span>
@@ -217,7 +283,9 @@ export default function AlunosPage() {
                     </Badge>
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted"><Edit2 className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted" onClick={() => handleVerAluno(aluno)}>
+                      <Eye className="h-4 w-4" />
+                    </Button>
                   </td>
                 </tr>
               ))}

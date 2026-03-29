@@ -42,7 +42,6 @@ model Evento {
   tipo_evento            String
   status                 String         @default("planejamento")
   evento_alunos          EventoAluno[]
-  participantes          Participante[]
   quadro                 Quadro?
 
   @@index([data_inicio])
@@ -55,6 +54,7 @@ model Aluno {
   id                   String        @id @default(uuid())
   matricula            String        @unique
   nome                 String
+  cpf                  String?       @unique
   idade                Int
   email                String        @unique
   telefone             String
@@ -77,18 +77,30 @@ model Aluno {
   @@index([status])
   @@index([turma])
   @@index([curso])
+  @@index([cpf])
   @@map("alunos")
 }
 
 model Parcela {
   id                    String   @id @default(uuid())
   aluno_id              String
+  numero_projeto        String?
+  descricao_projeto     String?
   valor                 Float
+  valor_original        Float?
+  multa                 Float?   @default(0)
+  juros                 Float?   @default(0)
+  valor_pago            Float?   @default(0)
   data_vencimento       String
   data_pagamento        String?
   status                String   @default("pendente")
-  link_boleto           String?
-  link_pix              String?
+  tipo_parcela          String?
+  tipo_lancamento       String?
+  guid_pix              String?
+  guid_boleto           String?
+  url_pix               String?
+  url_boleto            String?
+  linha_digitavel       String?
   identificador_parcela String?  @unique
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
@@ -116,36 +128,6 @@ model EventoAluno {
 
   @@unique([evento_id, aluno_id])
   @@map("evento_alunos")
-}
-
-model Participante {
-  id                 String   @id @default(uuid())
-  evento_id          String
-  nome               String
-  email              String?
-  telefone           String?
-  observacoes        String?
-  created_at         DateTime @default(now())
-  status_confirmacao String   @default("pendente")
-  tipo_participante  String   @default("comum")
-  evento             Evento   @relation(fields: [evento_id], references: [id], onDelete: Cascade)
-
-  @@map("participantes")
-}
-
-model FAQ {
-  id             String   @id @default(uuid())
-  categoria      String
-  pergunta       String
-  resposta       String
-  palavras_chave String   @default("")
-  ordem          Int      @default(0)
-  ativo          Boolean  @default(true)
-  visualizacoes  Int      @default(0)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-
-  @@map("faqs")
 }
 
 model Turma {
