@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TURMAS_OPTIONS, CURSOS_OPTIONS } from "@/types/alunos";
+import { TURMAS_OPTIONS, CURSOS_OPTIONS, Aluno } from "@/types/alunos";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
@@ -45,10 +45,10 @@ export default function AlunosPage() {
   const concluidos = alunosData?.filter(a => a.status === 'formado' || a.status === 'concluido').length || 0;
 
   const [novoAluno, setNovoAluno] = useState({nome: "", email: "", cpf: "", matricula: "", telefone: "", turma: "A", curso: "Administração", status: "ativo"});
-  const [alunoSelecionado, setAlunoSelecionado] = useState<any>(null);
+  const [alunoSelecionado, setAlunoSelecionado] = useState<Aluno | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
 
-  const handleVerAluno = (aluno: any) => {
+  const handleVerAluno = (aluno: Aluno) => {
     setAlunoSelecionado(aluno);
     setIsViewOpen(true);
   };

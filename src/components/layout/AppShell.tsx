@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
-  Menu, X, LayoutDashboard, Calendar, Users, Briefcase,
-  DollarSign, HelpCircle, MessageCircle, GraduationCap, Bell, Layout, LogOut
+  Menu, X, LayoutDashboard, Calendar, Briefcase,
+  GraduationCap, Bell, Layout, LogOut
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";

@@ -4,7 +4,7 @@ export type Periodo = 'matutino' | 'vespertino' | 'noturno' | 'integral';
 export type StatusTurma = 'ativa' | 'inativa' | 'concluida';
 
 export interface Aluno {
-  id: string; matricula: string; nome: string; idade: number;
+  id: string; matricula: string; nome: string; cpf?: string | null; idade: number;
   email: string; telefone: string; turma: string; curso: string;
   cidade?: string | null; responsavel?: string | null;
   cpf_responsavel?: string | null; telefone_responsavel?: string | null;

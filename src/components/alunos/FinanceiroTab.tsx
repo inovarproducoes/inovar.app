@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ExternalLink, Receipt } from "lucide-react";
+import { Receipt } from "lucide-react";
 
 interface Parcela {
   id: string;
