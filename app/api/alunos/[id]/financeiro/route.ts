@@ -17,8 +17,13 @@ export async function GET(
       return NextResponse.json({ error: "Aluno não encontrado" }, { status: 404 });
     }
 
+    interface ParcelaJSON {
+      DataVencimento?: string;
+      [key: string]: unknown;
+    }
+
     // O n8n envia um array JSON direto. Se for null, retorna array vazio.
-    let parcelas = aluno.financeiro_parcelas ? (aluno.financeiro_parcelas as any) : [];
+    let parcelas = aluno.financeiro_parcelas ? (aluno.financeiro_parcelas as ParcelaJSON[]) : [];
     
     // Garantir que seja sempre um array (caso o SGE mande um objeto único)
     if (!Array.isArray(parcelas)) {
@@ -26,7 +31,7 @@ export async function GET(
     }
     
     // Ordenar parcelas pela data de vencimento (se disponível)
-    parcelas.sort((a: any, b: any) => {
+    parcelas.sort((a: ParcelaJSON, b: ParcelaJSON) => {
         if (!a.DataVencimento || !b.DataVencimento) return 0;
         return new Date(a.DataVencimento).getTime() - new Date(b.DataVencimento).getTime();
     });
