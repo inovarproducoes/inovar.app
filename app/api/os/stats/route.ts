@@ -7,9 +7,9 @@ export async function GET() {
       orderBy: { created_at: "desc" },
     });
 
-    const abertas = todasOS.filter(os => ["pendente", "aberto", "nova", "novo", "na_fila"].includes(os.status.toLowerCase())).length;
-    const emAndamento = todasOS.filter(os => ["em_andamento", "execucao", "atendimento", "analise", "desenvolvimento", "em andamento"].includes(os.status.toLowerCase())).length;
-    const finalizadas = todasOS.filter(os => ["concluido", "concluída", "concluida", "finalizado", "finalizada", "resolvido", "fechado"].includes(os.status.toLowerCase())).length;
+    const abertas = todasOS.filter(os => ["pendente", "aberto", "aberta", "abertas", "nova", "novo", "na_fila"].includes(os.status.toLowerCase())).length;
+    const emAndamento = todasOS.filter(os => ["em_andamento", "em andamento", "em atendimento", "atendimento", "execucao", "analise", "desenvolvimento"].includes(os.status.toLowerCase())).length;
+    const finalizadas = todasOS.filter(os => ["concluido", "concluída", "concluida", "finalizado", "finalizada", "finalizadas", "resolvido", "fechado"].includes(os.status.toLowerCase())).length;
 
     const total = todasOS.length;
     const taxaFinalizacao = total > 0 ? Math.round((finalizadas / total) * 100) : 0;

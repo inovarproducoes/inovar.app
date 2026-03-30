@@ -2,21 +2,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
-  Menu, X, LayoutDashboard, Calendar, Briefcase,
+  Menu, X, LayoutDashboard, Briefcase,
   GraduationCap, Bell, Layout, LogOut
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { eventosService } from "@/services/eventosService";
 import { alunosService } from "@/services/alunosService";
 import { clientesService } from "@/services/clientesService";
 import { usePageTitle } from "@/context/PageTitleContext";
 
 const PREFETCH_MAP: Record<string, { queryKey: unknown[]; queryFn: () => Promise<unknown> }> = {
-  "/eventos": {
-    queryKey: ["eventos", undefined],
-    queryFn: () => eventosService.getEventos(),
-  },
   "/alunos": {
     queryKey: ["alunos", {}],
     queryFn: () => alunosService.buscarAlunos(),
@@ -25,16 +20,11 @@ const PREFETCH_MAP: Record<string, { queryKey: unknown[]; queryFn: () => Promise
     queryKey: ["clientes", ""],
     queryFn: () => clientesService.buscarClientes(),
   },
-  "/eventos-stats": {
-    queryKey: ["eventos-stats"],
-    queryFn: () => fetch("/api/eventos/stats").then(r => r.json()),
-  },
 };
 
 const menuItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Kanban OS", href: "/kanban", icon: Layout },
-  { name: "Eventos", href: "/eventos", icon: Calendar },
   { name: "Alunos", href: "/alunos", icon: GraduationCap },
   { name: "Clientes", href: "/clientes", icon: Briefcase },
 ];

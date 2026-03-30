@@ -7,51 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Evento {
-  id                     String         @id @default(uuid())
-  nome                   String
-  descricao              String?
-  data_inicio            String
-  data_fim               String
-  horario_inicio         String
-  horario_fim            String
-  local_nome             String
-  endereco_completo      String
-  cidade                 String
-  estado                 String
-  cep                    String?
-  link_maps              String?
-  capacidade_maxima      Int
-  vagas_disponiveis      Int
-  valor_total            Float          @default(0)
-  valor_entrada          Float          @default(0)
-  valor_pendente         Float          @default(0)
-  cliente_nome           String?
-  cliente_email          String?
-  cliente_telefone       String?
-  cliente_empresa        String?
-  responsavel_nome       String?
-  responsavel_cpf        String?
-  responsavel_email      String?
-  observacoes            String?
-  necessidades_especiais String?
-  fornecedores           String?
-  checklist              String?
-  created_at             DateTime       @default(now())
-  updated_at             DateTime       @default(now()) @updatedAt
-  tipo_evento            String
-  status                 String         @default("planejamento")
-  instituicao            String?
-  evento_alunos          EventoAluno[]
-  quadro                 Quadro?
-
-  @@unique([nome, instituicao])
-  @@index([data_inicio])
-  @@index([status])
-  @@index([tipo_evento])
-  @@map("eventos")
-}
-
 model Aluno {
   id                   String        @id @default(uuid())
   matricula            String?       @unique
@@ -75,7 +30,6 @@ model Aluno {
   status               String        @default("ativo")
   instituicao          String?
   projeto              String?
-  evento_alunos        EventoAluno[]
   financeiro_parcelas  Json?
 
   @@index([status])
@@ -88,25 +42,6 @@ model Aluno {
 }
 
 
-
-model EventoAluno {
-  id                     String    @id @default(uuid())
-  evento_id              String
-  aluno_id               String
-  funcao                 String?
-  mesa                   String?
-  acompanhantes          Int       @default(0)
-  necessidades_especiais String?
-  confirma_presenca      Boolean   @default(false)
-  data_confirmacao       DateTime?
-  observacoes            String?
-  status_participacao    String    @default("pendente")
-  aluno                  Aluno     @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
-  evento                 Evento    @relation(fields: [evento_id], references: [id], onDelete: Cascade)
-
-  @@unique([evento_id, aluno_id])
-  @@map("evento_alunos")
-}
 
 model Turma {
   id          String  @id @default(uuid())
@@ -145,13 +80,10 @@ model Quadro {
   id             String   @id @default(uuid())
   nome           String
   descricao      String?
-  evento_id      String?  @unique
-  cor_tema       String?  @default("#4f46e5")
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now()) @updatedAt
   colunas        Coluna[]
   ordens_servico OS[]
-  evento         Evento?  @relation(fields: [evento_id], references: [id])
   tarefas        Tarefa[]
 
   @@map("quadros")
