@@ -6,18 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import { 
     MessageSquare, 
     Paperclip, 
-    MoreHorizontal 
+    MoreHorizontal,
+    Trash2,
+    Building2,
+    FolderKanban
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import type { ITask, PrioridadeTarefa } from "@/types/kanban";
 
 interface TaskCardProps {
   id: string;
   task: ITask;
   onClick?: (task: ITask) => void;
+  onUpdate?: () => void;
 }
 
-export function TaskCard({ id, task, onClick }: TaskCardProps) {
+export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -36,6 +47,26 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Tem certeza que deseja excluir esta tarefa?")) return;
+
+    try {
+      const res = await fetch(`/api/kanban/tasks/${task.id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        toast.success("Tarefa excluída com sucesso");
+        onUpdate?.();
+      } else {
+        toast.error("Erro ao excluir tarefa");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao excluir tarefa");
+    }
   };
 
   const getPriorityColor = (p: PrioridadeTarefa) => {
@@ -64,13 +95,41 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${priority.dot}`} />
            {task.prioridade}
         </Badge>
-        <button className="text-muted-foreground/30 hover:text-foreground transition-colors">
-          <MoreHorizontal className="w-4 h-4"/>
-        </button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-muted-foreground/30 hover:text-foreground transition-colors p-1" onClick={e => e.stopPropagation()}>
+              <MoreHorizontal className="w-4 h-4"/>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleDelete} className="text-destructive focus:text-destructive">
+              <Trash2 className="w-4 h-4 mr-2"/> Excluir Task
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <h3 className="font-bold text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
       {task.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{task.descricao}</p>}
+
+      {/* Institution and Project Info (OS Only) */}
+      {task.isOS && (
+        <div className="flex flex-col gap-1.5 mb-4 border-l-2 border-primary/20 pl-3">
+          {task.instituicao && (
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+              <Building2 className="w-3 h-3 text-primary/60"/>
+              <span className="truncate">{task.instituicao}</span>
+            </div>
+          )}
+          {task.projeto_nome && (
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+              <FolderKanban className="w-3 h-3 text-primary/60"/>
+              <span className="truncate">{task.projeto_nome}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tags */}
       {task.etiquetas && (
@@ -91,7 +150,7 @@ export function TaskCard({ id, task, onClick }: TaskCardProps) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
             <MessageSquare className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />
-            <span className="text-[10px] font-medium">4</span>
+            <span className="text-[10px] font-medium">0</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
             <Paperclip className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />

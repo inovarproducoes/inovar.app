@@ -133,6 +133,9 @@ model OS {
   status           String   @default("pendente")
   responsavel_nome String?
   aluno_id         String?
+  aluno_nome       String?
+  projeto_nome     String?
+  instituicao      String?
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now()) @updatedAt
   coluna_id        String?

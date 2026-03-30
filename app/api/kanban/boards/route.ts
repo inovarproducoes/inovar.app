@@ -29,7 +29,7 @@ export async function GET() {
         colunas: board.colunas.map(col => {
           const osAsTasks = col.ordens_servico.map(os => ({
             id: os.id,
-            titulo: `#OS-${os.numero}: ${os.nome}`,
+            titulo: `OS - ${os.nome} (${os.aluno_nome || 'Sem Aluno'})`,
             descricao: os.descricao || 'Sem descrição',
             status: os.status,
             ordem: -1, 
@@ -38,7 +38,10 @@ export async function GET() {
             quadro_id: board.id,
             etiquetas: ['OS'],
             isOS: true,
-            numero_os: String(os.numero)
+            numero_os: String(os.numero),
+            aluno_nome: os.aluno_nome,
+            projeto_nome: os.projeto_nome,
+            instituicao: os.instituicao
           }));
 
           return {

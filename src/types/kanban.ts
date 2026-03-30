@@ -13,6 +13,9 @@ export interface ITask {
   anexos?: number;
   isOS?: boolean;
   numero_os?: string | number;
+  aluno_nome?: string | null;
+  projeto_nome?: string | null;
+  instituicao?: string | null;
 }
 
 export interface IColumn {

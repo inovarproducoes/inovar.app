@@ -9,10 +9,20 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { coluna_id, ordem } = await req.json();
+    const { 
+      coluna_id, 
+      ordem, 
+      titulo, 
+      descricao, 
+      prioridade, 
+      responsavel_nome,
+      aluno_nome,
+      projeto_nome,
+      instituicao
+    } = await req.json();
 
-    if (!id || !coluna_id) {
-      return NextResponse.json({ error: 'ID e Coluna ID são obrigatórios' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 });
     }
 
     // Tentar atualizar como Tarefa
@@ -22,15 +32,17 @@ export async function PATCH(
         const updated = await prisma.tarefa.update({
           where: { id },
           data: { 
-            coluna_id,
-            ordem: ordem !== undefined ? ordem : undefined
+            coluna_id: coluna_id || undefined,
+            ordem: ordem !== undefined ? ordem : undefined,
+            titulo: titulo || undefined,
+            descricao: descricao !== undefined ? descricao : undefined,
+            prioridade: prioridade || undefined,
+            responsavel_nome: responsavel_nome !== undefined ? responsavel_nome : undefined,
           }
         });
         return NextResponse.json(updated);
       }
-    } catch {
-      // Ignorar e tentar OS
-    }
+    } catch { }
 
     // Tentar atualizar como OS
     try {
@@ -40,21 +52,26 @@ export async function PATCH(
       });
       
       if (os) {
-        // Buscar nome da nova coluna para atualizar o status da OS (opcional mas recomendado)
-        const targetCol = await prisma.coluna.findUnique({ where: { id: coluna_id } });
+        const targetCol = coluna_id ? await prisma.coluna.findUnique({ where: { id: coluna_id } }) : null;
         
         const updatedOS = await prisma.oS.update({
           where: { id },
           data: { 
-            coluna_id,
-            quadro_id: targetCol?.quadro_id,
-            status: targetCol ? targetCol.nome.toLowerCase().replace(/\s+/g, '_') : os.status
+            coluna_id: coluna_id || undefined,
+            quadro_id: targetCol ? targetCol.quadro_id : undefined,
+            status: targetCol ? targetCol.nome.toLowerCase().replace(/\s+/g, '_') : undefined,
+            nome: titulo || undefined, // Mapeado de titulo para nome na OS
+            descricao: descricao !== undefined ? descricao : undefined,
+            responsavel_nome: responsavel_nome !== undefined ? responsavel_nome : undefined,
+            aluno_nome: aluno_nome !== undefined ? aluno_nome : undefined,
+            projeto_nome: projeto_nome !== undefined ? projeto_nome : undefined,
+            instituicao: instituicao !== undefined ? instituicao : undefined,
           }
         });
         return NextResponse.json(updatedOS);
       }
     } catch (e) {
-      console.error("Erro ao procurar OS", e);
+      console.error("Erro ao atualizar OS", e);
     }
 
     return NextResponse.json({ error: 'Item não encontrado' }, { status: 404 });
