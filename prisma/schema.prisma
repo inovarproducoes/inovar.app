@@ -76,7 +76,7 @@ model Aluno {
   instituicao          String?
   projeto              String?
   evento_alunos        EventoAluno[]
-  parcelas             Parcela[]
+  financeiro_parcelas  Json?
 
   @@index([status])
   @@index([turma])
@@ -87,35 +87,7 @@ model Aluno {
   @@map("alunos")
 }
 
-model Parcela {
-  id                    String   @id @default(uuid())
-  aluno_id              String
-  numero_projeto        String?
-  descricao_projeto     String?
-  valor                 Float
-  valor_original        Float?
-  multa                 Float?   @default(0)
-  juros                 Float?   @default(0)
-  valor_pago            Float?   @default(0)
-  data_vencimento       String
-  data_pagamento        String?
-  status                String   @default("pendente")
-  tipo_parcela          String?
-  tipo_lancamento       String?
-  guid_pix              String?
-  guid_boleto           String?
-  url_pix               String?
-  url_boleto            String?
-  linha_digitavel       String?
-  identificador_parcela String?  @unique
-  created_at            DateTime @default(now())
-  updated_at            DateTime @default(now()) @updatedAt
-  aluno                 Aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
 
-  @@index([aluno_id])
-  @@index([status])
-  @@map("parcelas")
-}
 
 model EventoAluno {
   id                     String    @id @default(uuid())

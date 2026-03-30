@@ -9,20 +9,23 @@ import { ptBR } from "date-fns/locale";
 import { Receipt } from "lucide-react";
 
 interface Parcela {
-  id: string;
-  numero_projeto: string;
-  descricao_projeto: string;
-  valor: number;
-  valor_original: number;
-  multa: number;
-  juros: number;
-  valor_pago: number;
-  data_vencimento: string;
-  data_pagamento: string | null;
-  status: string;
-  url_pix: string | null;
-  url_boleto: string | null;
-  linha_digitavel: string | null;
+  id?: string;
+  NumeroProjeto: string;
+  DescricaoProjeto: string;
+  Valor: number;
+  ValorOriginal: number;
+  Multa: number;
+  Juros: number;
+  ValorPago: number;
+  DataVencimento: string;
+  DataPagamento: string | null;
+  TipoParcela: string;
+  TipoLancamento: string | null;
+  GuidPIX: string | null;
+  GuidBoleto: string | null;
+  UrlPix: string | null;
+  UrlBoleto: string | null;
+  LinhaDigitavel: string | null;
 }
 
 export function FinanceiroTab({ alunoId }: { alunoId: string }) {
@@ -78,46 +81,46 @@ export function FinanceiroTab({ alunoId }: { alunoId: string }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {parcelas.map((parcela) => (
-            <TableRow key={parcela.id}>
+          {parcelas.map((parcela, idx) => (
+            <TableRow key={parcela.id || parcela.GuidBoleto || idx}>
               <TableCell className="font-medium text-xs">
-                {formatDate(parcela.data_vencimento)}
+                {formatDate(parcela.DataVencimento)}
               </TableCell>
               <TableCell>
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase">{parcela.numero_projeto}</span>
-                  <span className="text-xs truncate max-w-[200px]">{parcela.descricao_projeto}</span>
+                  <span className="text-[11px] font-bold text-muted-foreground uppercase">{parcela.NumeroProjeto}</span>
+                  <span className="text-xs truncate max-w-[200px]">{parcela.DescricaoProjeto}</span>
                 </div>
               </TableCell>
               <TableCell>
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold">{formatCurrency(parcela.valor)}</span>
-                  {parcela.valor_pago > 0 && <span className="text-[10px] text-success">Pago: {formatCurrency(parcela.valor_pago)}</span>}
+                  <span className="text-xs font-bold">{formatCurrency(parcela.Valor)}</span>
+                  {parcela.ValorPago > 0 && <span className="text-[10px] text-success">Pago: {formatCurrency(parcela.ValorPago)}</span>}
                 </div>
               </TableCell>
               <TableCell>
                 <Badge 
                   variant="outline" 
                   className={`text-[10px] px-1.5 h-5 capitalize ${
-                    parcela.status === "pago" 
+                    (parcela.DataPagamento && parcela.DataPagamento !== "0001-01-01T00:00:00") // SGE uses 0001-01-01 for unpaid
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400" 
                       : "bg-secondary text-muted-foreground"
                   }`}
                 >
-                  {parcela.status}
+                  {(parcela.DataPagamento && parcela.DataPagamento !== "0001-01-01T00:00:00") ? "Pago" : "Pendente"}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
-                  {parcela.url_pix && (
-                    <a href={parcela.url_pix} target="_blank" rel="noreferrer" title="Ver PIX">
+                  {parcela.UrlPix && (
+                    <a href={parcela.UrlPix} target="_blank" rel="noreferrer" title="Ver PIX">
                       <Badge variant="outline" className="h-6 w-6 p-0 flex items-center justify-center hover:bg-muted truncate">
                          P
                       </Badge>
                     </a>
                   )}
-                  {parcela.url_boleto && (
-                    <a href={parcela.url_boleto} target="_blank" rel="noreferrer" title="Ver Boleto">
+                  {parcela.UrlBoleto && (
+                    <a href={parcela.UrlBoleto} target="_blank" rel="noreferrer" title="Ver Boleto">
                       <Badge variant="outline" className="h-6 w-6 p-0 flex items-center justify-center hover:bg-muted">
                         <Receipt className="h-3 w-3 text-muted-foreground" />
                       </Badge>
