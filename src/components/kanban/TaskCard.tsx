@@ -7,7 +7,7 @@ import {
     MessageSquare, 
     Paperclip, 
     MoreHorizontal,
-    Trash2,
+    Archive,
     Building2,
     FolderKanban
 } from "lucide-react";
