@@ -1,6 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { AuthProvider } from "@/context/AuthContext";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { PageTitleProvider } from "@/context/PageTitleContext";
 import { AppShell } from "@/components/layout/AppShell";
@@ -26,15 +27,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider attribute="class" defaultTheme="dark" storageKey="inovar-theme" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <AuthGate>
-          <PageTitleProvider>
-            <AppShell>
-              {children}
-            </AppShell>
-          </PageTitleProvider>
-        </AuthGate>
+        <AuthProvider>
+          <AuthGate>
+            <PageTitleProvider>
+              <AppShell>
+                {children}
+              </AppShell>
+            </PageTitleProvider>
+          </AuthGate>
+        </AuthProvider>
         <Toaster richColors position="top-right" />
       </QueryClientProvider>
     </NextThemesProvider>
   );
 }
+

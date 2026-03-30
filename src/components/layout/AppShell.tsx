@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { alunosService } from "@/services/alunosService";
 import { clientesService } from "@/services/clientesService";
 import { usePageTitle } from "@/context/PageTitleContext";
+import { useAuth } from "@/context/AuthContext";
 
 const PREFETCH_MAP: Record<string, { queryKey: unknown[]; queryFn: () => Promise<unknown> }> = {
   "/alunos": {
@@ -34,6 +35,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { usuario, logout } = useAuth();
 
   const handlePrefetch = useCallback((href: string) => {
     router.prefetch(href);
@@ -42,9 +44,8 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     queryClient.prefetchQuery({ queryKey: config.queryKey, queryFn: config.queryFn });
   }, [queryClient, router]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("inovar_auth");
-    window.location.reload();
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -136,14 +137,14 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
             style={{ background: "hsl(var(--sidebar-accent))" }}>
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
               style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.7), hsl(var(--brown) / 0.7))", color: "white" }}>
-              A
+              {usuario?.nome?.charAt(0)?.toUpperCase() ?? "U"}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold truncate" style={{ color: "hsl(var(--sidebar-foreground))" }}>
-                Administrador
+                {usuario?.nome ?? "Usuário"}
               </p>
               <p className="text-[10px] truncate" style={{ color: "hsl(var(--sidebar-foreground) / 0.45)" }}>
-                admin@inovar.com
+                {usuario?.email ?? ""}
               </p>
             </div>
           </div>

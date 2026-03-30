@@ -148,6 +148,19 @@ model OS {
   @@map("ordens_servico")
 }
 
+model Usuario {
+  id         String   @id @default(uuid())
+  nome       String
+  email      String   @unique
+  senha_hash String
+  role       String   @default("user")
+  ativo      Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("usuarios")
+}
+
 model n8n_chat_histories {
   id         Int    @id @default(autoincrement())
   session_id String @db.VarChar(255)
