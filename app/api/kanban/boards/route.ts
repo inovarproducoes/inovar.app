@@ -14,6 +14,7 @@ export async function GET() {
               orderBy: { ordem: 'asc' }
             },
             ordens_servico: {
+              where: { arquivado: false },
               orderBy: { created_at: 'desc' }
             }
           }
@@ -39,6 +40,7 @@ export async function GET() {
             etiquetas: ['OS'],
             isOS: true,
             numero_os: String(os.numero),
+            responsavel_nome: os.nome, // Definir responsável como o nome do cliente
             aluno_nome: os.aluno_nome,
             aluno_cpf: os.aluno_cpf,
             projeto_nome: os.projeto_nome,

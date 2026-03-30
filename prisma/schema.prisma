@@ -137,6 +137,7 @@ model OS {
   aluno_cpf        String?
   projeto_nome     String?
   instituicao      String?
+  arquivado        Boolean  @default(false)
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now()) @updatedAt
   coluna_id        String?

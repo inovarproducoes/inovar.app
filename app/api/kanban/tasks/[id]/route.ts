@@ -96,10 +96,13 @@ export async function DELETE(
       return NextResponse.json({ success: true });
     } catch { }
 
-    // Tentar deletar como OS
+    // Tentar deletar como OS (Arquivo na verdade)
     try {
-      await prisma.oS.delete({ where: { id } });
-      return NextResponse.json({ success: true });
+      await prisma.oS.update({ 
+        where: { id },
+        data: { arquivado: true }
+      });
+      return NextResponse.json({ success: true, archived: true });
     } catch { }
 
     return NextResponse.json({ error: 'Item não encontrado' }, { status: 404 });

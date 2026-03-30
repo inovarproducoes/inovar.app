@@ -51,21 +51,21 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Tem certeza que deseja excluir esta tarefa?")) return;
+    if (!confirm("Tem certeza que deseja arquivar esta OS?")) return;
 
     try {
       const res = await fetch(`/api/kanban/tasks/${task.id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
-        toast.success("Tarefa excluída com sucesso");
+        toast.success("OS arquivada com sucesso");
         onUpdate?.();
       } else {
-        toast.error("Erro ao excluir tarefa");
+        toast.error("Erro ao arquivar OS");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Erro ao excluir tarefa");
+      toast.error("Erro ao arquivar OS");
     }
   };
 
@@ -103,8 +103,8 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleDelete} className="text-destructive focus:text-destructive">
-              <Trash2 className="w-4 h-4 mr-2"/> Excluir Task
+            <DropdownMenuItem onClick={handleDelete} className="text-amber-600 focus:text-amber-700">
+              <Archive className="w-4 h-4 mr-2"/> Arquivar OS
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
