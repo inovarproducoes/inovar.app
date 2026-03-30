@@ -16,8 +16,6 @@ async function main() {
   await prisma.turma.deleteMany();
   await prisma.cliente.deleteMany();
   await prisma.oS.deleteMany();
-  await prisma.parcela.deleteMany();
-
   console.log('Semeando Clientes CRM (Elite)...');
   await prisma.cliente.create({
     data: { 
@@ -47,16 +45,6 @@ async function main() {
       responsavel: 'Responsável Master',
       cpf_responsavel: '11023608138',
       status: 'ativo'
-    }
-  });
-
-  await prisma.parcela.create({
-    data: {
-      aluno_id: h.id,
-      valor: 450.00,
-      data_vencimento: '2026-04-10',
-      status: 'pendente',
-      identificador_parcela: 'PARC-2026-04-H'
     }
   });
 
