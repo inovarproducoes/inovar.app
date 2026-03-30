@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const todasOS = await prisma.oS.findMany({
+      where: { arquivado: false },
       orderBy: { created_at: "desc" },
     });
 
-    const abertas = todasOS.filter(os => ["pendente", "aberto", "aberta", "abertas", "nova", "novo", "na_fila"].includes(os.status.toLowerCase())).length;
-    const emAndamento = todasOS.filter(os => ["em_andamento", "em andamento", "em atendimento", "atendimento", "execucao", "analise", "desenvolvimento"].includes(os.status.toLowerCase())).length;
+    const abertas = todasOS.filter(os => ["pendente", "aberto", "aberta", "abertas", "nova", "novo", "na_fila", "nova_os"].includes(os.status.toLowerCase())).length;
+    const emAndamento = todasOS.filter(os => ["em_andamento", "em andamento", "em atendimento", "atendimento", "execucao", "analise", "desenvolvimento", "em_atendimento", "em_impedimento"].includes(os.status.toLowerCase())).length;
     const finalizadas = todasOS.filter(os => ["concluido", "concluída", "concluida", "finalizado", "finalizada", "finalizadas", "resolvido", "fechado"].includes(os.status.toLowerCase())).length;
 
     const total = todasOS.length;
