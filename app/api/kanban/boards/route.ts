@@ -58,7 +58,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { nome, descricao, evento_id, isServiceOrderPipeline } = await req.json();
+    const { nome, descricao, isServiceOrderPipeline } = await req.json();
 
     if (!nome) {
       return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
@@ -82,7 +82,6 @@ export async function POST(req: Request) {
       data: {
         nome,
         descricao,
-        evento_id,
         colunas: {
           create: defaultColumns
         }
