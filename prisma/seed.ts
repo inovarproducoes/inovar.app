@@ -10,8 +10,6 @@ async function main() {
   await prisma.tarefa.deleteMany();
   await prisma.coluna.deleteMany();
   await prisma.quadro.deleteMany();
-  await prisma.eventoAluno.deleteMany();
-  await prisma.evento.deleteMany();
   await prisma.aluno.deleteMany();
   await prisma.turma.deleteMany();
   await prisma.cliente.deleteMany();
@@ -48,25 +46,7 @@ async function main() {
     }
   });
 
-  console.log('Semeando Dashboard e Eventos...');
-  await prisma.evento.create({
-    data: {
-      nome: 'Mega Formatura 2026',
-      tipo_evento: 'formatura',
-      status: 'confirmado',
-      data_inicio: '2026-12-15',
-      data_fim: '2026-12-15',
-      horario_inicio: '20:00',
-      horario_fim: '04:00',
-      local_nome: 'Esplanada Hall',
-      endereco_completo: 'Setor Sul',
-      cidade: 'Goiânia',
-      estado: 'GO',
-      capacidade_maxima: 1000,
-      vagas_disponiveis: 200,
-      cliente_nome: 'Comissão 2026'
-    }
-  });
+  console.log('Semeando Dashboard de OS...');
 
   console.log('Semeando Quadro Kanban OS Povoado...');
   const q = await prisma.quadro.create({
