@@ -2,19 +2,16 @@
 import dynamic from "next/dynamic";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { EventCard } from "@/components/dashboard/EventCard";
-import { RecentEventsTable } from "@/components/dashboard/RecentEventsTable";
-import { DistribuicaoPorTipo } from "@/components/dashboard/DistribuicaoPorTipo";
-import { useEventosStats } from "@/hooks/useEventos";
-import { Evento } from "@/types/database";
-import { Calendar, Users, CalendarCheck, TrendingUp, PlusCircle } from "lucide-react";
+import { RecentOsTable } from "@/components/dashboard/RecentOsTable";
+import { useOsStats } from "@/hooks/useOS";
+import { FileText, ClipboardList, CheckCircle2, TrendingUp, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 // Recharts (~130KB) carregado apenas quando necessário
-const EventosPorMesChart = dynamic(
-  () => import("@/components/dashboard/EventosPorMesChart").then(m => ({ default: m.EventosPorMesChart })),
+const OsPorMesChart = dynamic(
+  () => import("@/components/dashboard/OsPorMesChart").then(m => ({ default: m.OsPorMesChart })),
   {
     ssr: false,
     loading: () => <Skeleton className="col-span-1 lg:col-span-2 h-[280px] w-full rounded-xl" />,
@@ -22,48 +19,44 @@ const EventosPorMesChart = dynamic(
 );
 
 export default function Dashboard() {
-  const { data: stats } = useEventosStats();
+  const { data: stats } = useOsStats();
 
   const {
-    total, proximos, vagasOcupadas, taxaOcupacao,
-    tendencias, eventosPorMes, distribuicaoPorTipo,
-    proximosEventos, recentes,
+    abertas, emAndamento, finalizadas, taxaFinalizacao,
+    tendencias, osPorMes, 
+    recentes,
   } = stats!;
 
   return (
-    <MainLayout title="Dashboard" subtitle="Visão geral do sistema Inovar App">
+    <MainLayout title="Dashboard" subtitle="Visão geral das Ordens de Serviço (OS)">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard title="Total de Eventos" value={total} icon={Calendar} accent="purple" trend={{ value: tendencias.total, label: 'vs. mês anterior', isPositive: true }} />
-        <StatCard title="Próximos Eventos" value={proximos} icon={CalendarCheck} accent="brown" description="Para os próximos dias" />
-        <StatCard title="Total Participantes" value={vagasOcupadas} icon={Users} accent="green" trend={{ value: tendencias.vagas, label: 'vs. mês anterior', isPositive: true }} />
-        <StatCard title="Taxa de Ocupação" value={`${taxaOcupacao}%`} icon={TrendingUp} accent="blue" trend={{ value: tendencias.taxa, label: 'vs. mês anterior', isPositive: true }} />
+        <StatCard title="OS Abertas / Pendentes" value={abertas} icon={ClipboardList} accent="blue" trend={{ value: tendencias.abertas, label: 'vs. mês anterior', isPositive: true }} />
+        <StatCard title="OS em Andamento" value={emAndamento} icon={FileText} accent="brown" description="Trabalho iniciado" />
+        <StatCard title="OS Finalizadas" value={finalizadas} icon={CheckCircle2} accent="green" trend={{ value: tendencias.finalizadas, label: 'vs. mês anterior', isPositive: true }} />
+        <StatCard title="Taxa de Finalização" value={`${taxaFinalizacao}%`} icon={TrendingUp} accent="purple" trend={{ value: tendencias.taxa, label: 'vs. mês anterior', isPositive: true }} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-8">
-        <EventosPorMesChart data={eventosPorMes} />
-        <DistribuicaoPorTipo data={distribuicaoPorTipo} />
+        <OsPorMesChart data={osPorMes} />
+        {/* Usando DistribuicaoPorTipo placeholder ou algo similar. Como OS não tem tipo por padrão, vamos deixar vazio por enquanto ou colocar algo genérico */}
+        <div className="col-span-1 rounded-xl border border-white/5 bg-card/60 backdrop-blur-xl p-6 flex flex-col items-center justify-center text-center">
+            <ClipboardList className="h-12 w-12 text-muted-foreground/30 mb-4" />
+            <h3 className="text-lg font-medium text-foreground">Distribuição</h3>
+            <p className="text-sm text-muted-foreground mt-2 max-w-[200px]">
+              Estatísticas detalhadas por tipos de chamados estarão disponíveis em breve.
+            </p>
+        </div>
       </div>
 
       <div className="space-y-6">
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Próximos Eventos</h2>
+            <h2 className="text-xl font-bold">Ordens de Serviço Recentes</h2>
             <Button asChild size="sm">
-              <Link href="/eventos/novo"><PlusCircle className="mr-2 h-4 w-4" />Novo Evento</Link>
+              <Link href="/kanban"><PlusCircle className="mr-2 h-4 w-4" />Painel Kanban</Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {proximosEventos.length === 0 ? (
-              <div className="col-span-full border border-dashed rounded-lg p-8 text-center bg-card/30">
-                <p className="text-muted-foreground">Nenhum evento próximo encontrado.</p>
-              </div>
-            ) : proximosEventos.map((ev: Evento) => <EventCard key={ev.id} evento={ev} />)}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold mb-4">Eventos Recentes</h2>
-          <RecentEventsTable eventos={recentes} />
+          <RecentOsTable ordens={recentes} />
         </div>
       </div>
     </MainLayout>
