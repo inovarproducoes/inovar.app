@@ -156,15 +156,27 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
 
           {task?.isOS && (
             <div className="space-y-6 pt-4 border-t border-border/30">
-              <div className="space-y-2">
-                <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome do Aluno</Label>
-                <Input 
-                  id="aluno_nome" 
-                  value={formData.aluno_nome || ""} 
-                  onChange={e => setFormData({...formData, aluno_nome: e.target.value})}
-                  className="bg-muted/30 border-none"
-                  placeholder="Nome do aluno vinculado..."
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome do Aluno</Label>
+                  <Input 
+                    id="aluno_nome" 
+                    value={formData.aluno_nome || ""} 
+                    onChange={e => setFormData({...formData, aluno_nome: e.target.value})}
+                    className="bg-muted/30 border-none"
+                    placeholder="Nome do aluno..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="aluno_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF do Aluno</Label>
+                  <Input 
+                    id="aluno_cpf" 
+                    value={formData.aluno_cpf || ""} 
+                    onChange={e => setFormData({...formData, aluno_cpf: e.target.value})}
+                    className="bg-muted/30 border-none"
+                    placeholder="000.000.000-00"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

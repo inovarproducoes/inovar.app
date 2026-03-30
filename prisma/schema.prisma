@@ -134,6 +134,7 @@ model OS {
   responsavel_nome String?
   aluno_id         String?
   aluno_nome       String?
+  aluno_cpf        String?
   projeto_nome     String?
   instituicao      String?
   created_at       DateTime @default(now())

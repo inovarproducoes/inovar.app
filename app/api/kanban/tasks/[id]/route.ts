@@ -17,6 +17,7 @@ export async function PATCH(
       prioridade, 
       responsavel_nome,
       aluno_nome,
+      aluno_cpf,
       projeto_nome,
       instituicao
     } = await req.json();
@@ -64,6 +65,7 @@ export async function PATCH(
             descricao: descricao !== undefined ? descricao : undefined,
             responsavel_nome: responsavel_nome !== undefined ? responsavel_nome : undefined,
             aluno_nome: aluno_nome !== undefined ? aluno_nome : undefined,
+            aluno_cpf: aluno_cpf !== undefined ? aluno_cpf : undefined,
             projeto_nome: projeto_nome !== undefined ? projeto_nome : undefined,
             instituicao: instituicao !== undefined ? instituicao : undefined,
           }

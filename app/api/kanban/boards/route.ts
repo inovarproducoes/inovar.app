@@ -40,6 +40,7 @@ export async function GET() {
             isOS: true,
             numero_os: String(os.numero),
             aluno_nome: os.aluno_nome,
+            aluno_cpf: os.aluno_cpf,
             projeto_nome: os.projeto_nome,
             instituicao: os.instituicao
           }));

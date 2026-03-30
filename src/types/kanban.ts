@@ -14,6 +14,7 @@ export interface ITask {
   isOS?: boolean;
   numero_os?: string | number;
   aluno_nome?: string | null;
+  aluno_cpf?: string | null;
   projeto_nome?: string | null;
   instituicao?: string | null;
 }
