@@ -5,12 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const { 
-      evento_nome, 
-      evento_instituicao, 
-      evento_data,
-      ...alunoData 
-    } = data;
+    const { ...alunoData } = data;
 
     // 1. Upsert Aluno (pelo CPF como chave de identificação principal para o n8n)
     let aluno;
