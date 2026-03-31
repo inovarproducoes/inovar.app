@@ -17,6 +17,7 @@ export interface ITask {
   aluno_cpf?: string | null;
   projeto_nome?: string | null;
   instituicao?: string | null;
+  created_at?: string | Date | null;
 }
 
 export interface IColumn {
