@@ -23,19 +23,18 @@ export async function GET() {
 
     // Mapear as OS para o formato de tarefas para o Kanban exibir de forma transparente
     const boardsWithOS = boards.map(board => {
-      const b = board as any;
       return {
-        ...b,
-        colunas: b.colunas.map((col: any) => {
-          const osAsTasks = col.ordens_servico.map((os: any) => ({
+        ...board,
+        colunas: board.colunas.map(col => {
+          const osAsTasks = col.ordens_servico.map(os => ({
             id: os.id,
             titulo: os.nome, // O nome da OS é o título principal
             descricao: os.descricao || 'Sem descrição',
             status: os.status,
             ordem: os.ordem || 0, 
-            prioridade: 'alta',
+            prioridade: 'alta' as const,
             coluna_id: col.id,
-            quadro_id: b.id,
+            quadro_id: board.id,
             etiquetas: ['OS'],
             isOS: true,
             numero_os: String(os.numero),
@@ -47,9 +46,11 @@ export async function GET() {
             created_at: os.created_at
           }));
 
+          const allTasks = [...osAsTasks, ...col.tarefas];
+
           return {
             ...col,
-            tarefas: [...osAsTasks, ...col.tarefas].sort((a: any, b: any) => (a.ordem || 0) - (b.ordem || 0))
+            tarefas: allTasks.sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
           };
         })
       };
