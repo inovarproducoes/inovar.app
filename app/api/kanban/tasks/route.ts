@@ -48,56 +48,43 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    const { id, coluna_id, ordem, titulo, descricao, prioridade, data_vencimento } = await req.json();
+    const body = await req.json();
+    const { id, coluna_id, ordem, titulo, descricao, prioridade, data_vencimento, numero } = body;
 
-    // Aceita id vazio (de automações mal configuradas), mas tem que ter na request
     if (id === undefined) {
       return NextResponse.json({ error: 'ID da tarefa obrigatório' }, { status: 400 });
     }
 
     // 1. Tentar atualizar como Tarefa
     try {
-      const task = await prisma.tarefa.findUnique({ where: { id } });
-      if (task) {
-        const updatedTask = await prisma.tarefa.update({
-          where: { id },
-          data: {
-            coluna_id,
-            ordem,
-            titulo,
-            descricao,
-            prioridade: prioridade,
-            data_vencimento: data_vencimento ? new Date(data_vencimento) : undefined
-          }
-        });
-      if (id) {
+      if (id && id.length > 10) { // Check if looks like a UUID
         const task = await prisma.tarefa.findUnique({ where: { id } });
         if (task) {
           const updatedTask = await prisma.tarefa.update({
             where: { id },
             data: {
-              coluna_id,
-              ordem,
-              titulo,
-              descricao,
-              prioridade: prioridade,
+              coluna_id: coluna_id || undefined,
+              ordem: ordem !== undefined ? ordem : undefined,
+              titulo: titulo || undefined,
+              descricao: descricao !== undefined ? descricao : undefined,
+              prioridade: prioridade || undefined,
               data_vencimento: data_vencimento ? new Date(data_vencimento) : undefined
             }
           });
           return NextResponse.json(updatedTask);
         }
       }
-    } catch { 
-      // Ignora erro se não for UUID válido para a tabela de tarefas
+    } catch (e) { 
+      console.log("Not a Tarefa or error:", e);
     }
 
     // 2. Tentar atualizar como OS
     try {
       let os = id ? await prisma.oS.findUnique({ where: { id } }) : null;
       
-      // Safety net: Se não achou por ID (ou ID vazio), tenta pelo numero se estiver vindo no body
-      if (!os && body.numero) {
-        os = await prisma.oS.findFirst({ where: { numero: body.numero } });
+      // Fallback para numero se id for vazio ou não encontrado
+      if (!os && numero) {
+        os = await prisma.oS.findFirst({ where: { numero: String(numero) } });
       }
       
       if (os) {
@@ -126,7 +113,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ error: 'Item não encontrado (PUT)' }, { status: 404 });
   } catch (error) {
-    console.error(error);
+    console.error("Critical error in PUT handler:", error);
     return NextResponse.json({ error: 'Erro ao atualizar item (PUT)' }, { status: 500 });
   }
 }
