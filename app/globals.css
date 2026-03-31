@@ -4,11 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    /* Fundo Light Mode: Off-white opaco/quente para não forçar os olhos (Pearl/Ivory) */
+    --background: 40 25% 96%; 
     --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
+    /* Cards levemente mais claros que o fundo, mas sem ser branco puro */
+    --card: 40 33% 98%;
     --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
+    --popover: 40 33% 98%;
     --popover-foreground: 222 47% 11%;
     --primary: 232 64% 57%;
     --primary-foreground: 210 40% 98%;
@@ -118,14 +120,14 @@
     @apply min-w-[800px] md:min-w-full;
 }
 
-/* Animations */
-@keyframes sphere-float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(5deg); }
+/* Animação elegante estilo Bokeh/Festa (Substituindo o tema espacial) */
+@keyframes event-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.05); }
 }
 
-.animate-sphere-float {
-  animation: sphere-float 5s infinite ease-in-out;
+.animate-event-float {
+  animation: event-float 6s infinite ease-in-out;
 }
 
 .fade-up {

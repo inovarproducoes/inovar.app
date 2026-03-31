@@ -56,9 +56,9 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       >
         {/* Logo and Sphere Motion Container */}
         <div className="h-24 flex items-center px-6 border-b border-border relative overflow-hidden">
-          {/* Sphere Motion background */}
-          <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-2xl animate-sphere-glow pointer-events-none" />
-          <div className="absolute top-2 right-2 w-4 h-4 bg-primary/40 rounded-full animate-sphere-float pointer-events-none" />
+          {/* Subtle elegant background */}
+          <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute top-2 right-2 w-4 h-4 bg-primary/30 rounded-full animate-event-float pointer-events-none" />
           
           <div className="flex items-center gap-3 relative z-10">
             {/* Inovar Logo Discreta e Circular */}
