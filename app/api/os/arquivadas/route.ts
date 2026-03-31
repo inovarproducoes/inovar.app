@@ -3,13 +3,19 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const archivedOS = await prisma.oS.findMany({
       where: { arquivado: true },
       orderBy: { updated_at: "desc" },
     });
-    return NextResponse.json(archivedOS);
+    return NextResponse.json(archivedOS, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Erro ao buscar OS arquivadas" }, { status: 500 });
