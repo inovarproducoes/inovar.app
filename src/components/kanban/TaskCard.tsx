@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 
 interface TaskCardProps {
   task: ITask;
+  id?: string; // Aceitar ID opcional do pai
+  onUpdate?: () => void; // Aceitar onUpdate opcional do pai
   onClick?: (task: ITask) => void;
 }
 
@@ -88,7 +90,6 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
             </div>
           )}
           
-          {/* TRAZENDO O NOME DO PROJETO DE VOLTA */}
           {task.projeto_nome && (
             <div className="flex items-center gap-2 text-[11px] text-indigo-500 font-bold font-dm bg-indigo-500/5 px-2 py-1 rounded-md border border-indigo-500/10">
               <Briefcase className="w-3.5 h-3.5" />
