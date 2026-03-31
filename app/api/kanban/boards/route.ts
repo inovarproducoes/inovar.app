@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -25,37 +23,43 @@ export async function GET() {
 
     // Mapear as OS para o formato de tarefas para o Kanban exibir de forma transparente
     const boardsWithOS = boards.map(board => {
+      const b = board as any;
       return {
-        ...board,
-        colunas: board.colunas.map(col => {
-          const osAsTasks = col.ordens_servico.map(os => ({
+        ...b,
+        colunas: b.colunas.map((col: any) => {
+          const osAsTasks = col.ordens_servico.map((os: any) => ({
             id: os.id,
-            titulo: `OS - ${os.nome} (${os.aluno_nome || 'Sem Aluno'})`,
+            titulo: os.nome, // O nome da OS é o título principal
             descricao: os.descricao || 'Sem descrição',
             status: os.status,
             ordem: os.ordem || 0, 
             prioridade: 'alta',
             coluna_id: col.id,
-            quadro_id: board.id,
+            quadro_id: b.id,
             etiquetas: ['OS'],
             isOS: true,
             numero_os: String(os.numero),
-            responsavel_nome: os.nome, // Definir responsável como o nome do cliente
+            responsavel_nome: os.responsavel_nome || os.aluno_nome, // Nome do responsável/cliente
             aluno_nome: os.aluno_nome,
             aluno_cpf: os.aluno_cpf,
             projeto_nome: os.projeto_nome,
-            instituicao: os.instituicao
+            instituicao: os.instituicao,
+            created_at: os.created_at
           }));
 
           return {
             ...col,
-            tarefas: [...osAsTasks, ...col.tarefas].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+            tarefas: [...osAsTasks, ...col.tarefas].sort((a: any, b: any) => (a.ordem || 0) - (b.ordem || 0))
           };
         })
       };
     });
 
-    return NextResponse.json(boardsWithOS);
+    return NextResponse.json(boardsWithOS, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erro ao buscar quadros' }, { status: 500 });

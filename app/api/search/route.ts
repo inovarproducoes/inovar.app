@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   try {
@@ -49,7 +47,11 @@ export async function GET(req: Request) {
       }),
     ]);
 
-    return NextResponse.json({ alumnos, clientes, os });
+    return NextResponse.json({ alumnos, clientes, os }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erro na busca' }, { status: 500 });

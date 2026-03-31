@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { 
   User as UserIcon, Building2, 
-  MessageSquare, Paperclip, Clock, Briefcase
+  MessageSquare, Paperclip, Clock, Briefcase, Check
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -84,9 +84,16 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
         {/* Dynamic Project/Student Info */}
         <div className="space-y-2.5">
           {task.aluno_nome && (
-            <div className="flex items-center gap-2 text-[11.5px] text-foreground/80 font-medium font-dm">
+            <div className="flex items-center gap-2 text-[11.5px] text-primary/80 font-bold font-dm">
               <UserIcon className="w-3.5 h-3.5 text-primary" />
               <span className="truncate">{task.aluno_nome}</span>
+            </div>
+          )}
+
+          {task.responsavel_nome && task.responsavel_nome !== task.aluno_nome && (
+            <div className="flex items-center gap-2 text-[10.5px] text-muted-foreground font-medium font-dm">
+              <Check size={12} className="text-emerald-500" />
+              <span className="truncate">{task.responsavel_nome}</span>
             </div>
           )}
           

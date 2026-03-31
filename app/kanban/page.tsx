@@ -233,11 +233,11 @@ export default function KanbanPage() {
     if (!over || !activeBoard) return;
     if (active.id === over.id) return;
 
-    // Encontrar a tarefa atualizada no nosso estado (que foi modificado no onDragOver)
-    const task = activeBoard.colunas.flatMap(c => c.tarefas).find(t => t.id === active.id);
+    // Use a ref-like approach to find the task in current state
+    const currentTasks = activeBoard.colunas.flatMap(c => c.tarefas);
+    const task = currentTasks.find(t => t.id === active.id);
     
     if (task) {
-       // Calcular a nova ordem (baseada na posição dentro da coluna)
        const column = activeBoard.colunas.find(c => c.id === task.coluna_id);
        const newOrder = column?.tarefas.findIndex(t => t.id === task.id) || 0;
 
@@ -252,18 +252,13 @@ export default function KanbanPage() {
          });
 
          if (res.ok) {
-            // SUCESSO: Notificar o sistema que as OS mudaram para atualizar Dashboard
-            // Invalida o cache das stats para que o Dashboard busque dados novos
-            const queryClientRes = await fetch('/api/os/stats', { method: 'GET', headers: { 'Cache-Control': 'no-cache' } });
-            if (queryClientRes.ok) {
-               // Como não tenho acesso ao hook de queryClient aqui diretamente (ele é global), 
-               // a próxima vez que o dashboard for aberto, ele fetchará.
-               // Mas podemos forçar um fetch silencioso aqui.
-            }
             toast.success("Sincronizado com sucesso!");
+            // Forçamos um fetch silencioso para garantir que o estado local está idêntico ao servidor
+            // e para disparar as invalidações de cache do Next.js
+            fetchBoards();
          } else {
             toast.error("Erro ao persistir posição.");
-            fetchBoards(); // Rollback se der erro
+            fetchBoards(); // Rollback
          }
        } catch (err) { 
          console.error(err);
