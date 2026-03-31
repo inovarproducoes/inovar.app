@@ -4,80 +4,71 @@
 
 @layer base {
   :root {
-    --background: 232 40% 98%;
-    --foreground: 232 40% 10%;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 232 40% 10%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 232 40% 10%;
+    --popover-foreground: 222 47% 11%;
     --primary: 232 64% 57%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 232 20% 94%;
-    --secondary-foreground: 232 40% 10%;
-    --muted: 232 20% 94%;
-    --muted-foreground: 232 10% 40%;
-    --accent: 232 20% 94%;
-    --accent-foreground: 232 40% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 232 20% 90%;
-    --input: 232 20% 90%;
-    --ring: 232 64% 57%;
-    --radius: 1rem;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
 
-    /* Inovar OS System Tokens (Light Mode override) */
+    /* Inovar OS System Tokens */
     --p: #4a4bd7;
-    --surf: #f8f9fc;
-    --surf2: #ffffff;
-    --surf3: #f1f3f9;
-    --glass: rgba(0,0,0,0.03);
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --glass: rgba(255,255,255,0.7);
     --border-glass: rgba(0,0,0,0.08);
-    --text-primary: #1a1a2e;
-    --text-secondary: #5a5a75;
   }
 
   .dark {
-    --background: 232 40% 5%;
-    --foreground: 0 0% 98%;
-    --card: 232 40% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 232 40% 7%;
-    --popover-foreground: 0 0% 98%;
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
     --primary: 232 64% 57%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 232 40% 12%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 232 40% 12%;
-    --muted-foreground: 232 20% 60%;
-    --accent: 232 40% 12%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 232 40% 15%;
-    --input: 232 40% 15%;
-    --ring: 232 64% 57%;
+    --primary-foreground: 222 47% 11.2%;
+    --secondary: 222 47% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 11.2%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 222 47% 11.2%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 47% 12%;
+    --input: 222 47% 12%;
+    --ring: 224.3 76.3% 48%;
 
-    /* Inovar OS System Tokens (Dark Mode) */
     --p: #4a4bd7;
-    --surf: #07080f;
-    --surf2: #0d0f1e;
-    --surf3: #111328;
-    --glass: rgba(255,255,255,0.04);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --glass: rgba(13,15,30,0.7);
     --border-glass: rgba(255,255,255,0.08);
-    --text-primary: #f0f0ff;
-    --text-secondary: #9090b0;
   }
 }
 
 @layer base {
-  * { @apply border-border; }
+  * { @apply border-border/50; }
   body { 
-    @apply bg-background text-foreground antialiased selection:bg-primary/20;
-    font-feature-settings: "cv11", "ss01";
+    @apply bg-background text-foreground antialiased selection:bg-primary/30Selection;
+    font-feature-settings: "cv11", "ss01", "ss03";
   }
 }
-
-/* ─── UI Components ─── */
 
 .glass-card {
   @apply backdrop-blur-xl border transition-all duration-300;
@@ -85,40 +76,38 @@
   border-color: var(--border-glass);
 }
 
-.dark .glass-card {
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-
 .bg-gradient-brand {
     background: linear-gradient(135deg, #4a4bd7 0%, #6e3bd8 100%);
 }
 
-.text-gradient {
-    background: linear-gradient(135deg, #f0f0ff 0%, #a0a0ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* Nav Styling */
-.nav-item-active {
-  @apply bg-primary/10 text-primary border-primary/20;
-  box-shadow: inset 0 0 12px rgba(74,75,215,0.1);
-}
-
-.kpi-card {
-  @apply glass-card p-6 overflow-hidden relative;
-}
-
 /* Animations */
 @keyframes aurora-drift {
-  0%   { transform: translate(0, 0) scale(1); }
-  50%  { transform: translate(-10%, 15%) scale(1.1); }
-  100% { transform: translate(0, 0) scale(1); }
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate(-15%, 20%) rotate(5deg) scale(1.15); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
 }
 
-.aurora-blob {
-  @apply absolute rounded-full opacity-30 blur-[100px];
-  animation: aurora-drift 20s infinite ease-in-out;
+@keyframes sphere-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(4px, -8px) rotate(2deg); }
+  66% { transform: translate(-4px, 4px) rotate(-1deg); }
+}
+
+@keyframes sphere-glow {
+  0%, 100% { opacity: 0.4; filter: blur(20px); }
+  50% { opacity: 0.8; filter: blur(40px); }
+}
+
+.animate-aurora-drift {
+  animation: aurora-drift 25s infinite ease-in-out;
+}
+
+.animate-sphere-float {
+  animation: sphere-float 6s infinite ease-in-out;
+}
+
+.animate-sphere-glow {
+  animation: sphere-glow 4s infinite ease-in-out;
 }
 
 .fade-up {
@@ -127,18 +116,17 @@
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(15px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Custom Scrollbar */
-.no-scrollbar::-webkit-scrollbar { display: none; }
+/* Scrollbar Smooth */
 .custom-scrollbar::-webkit-scrollbar { width: 5px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { 
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+  @apply bg-primary/10 rounded-full hover:bg-primary/20 transition-all;
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb { 
-  background: rgba(255,255,255,0.05);
+  @apply bg-white/5 hover:bg-white/10;
 }

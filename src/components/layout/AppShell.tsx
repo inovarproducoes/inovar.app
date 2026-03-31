@@ -8,16 +8,10 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { alunosService } from "@/services/alunosService";
-import { clientesService } from "@/services/clientesService";
 import { usePageTitle } from "@/context/PageTitleContext";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
-
-const PREFETCH_MAP: Record<string, { queryKey: unknown[]; queryFn: () => Promise<unknown> }> = {
-  "/alunos":   { queryKey: ["alunos", {}],  queryFn: () => alunosService.buscarAlunos() },
-  "/clientes": { queryKey: ["clientes", ""], queryFn: () => clientesService.buscarClientes() },
-};
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
   { name: "Dashboard",   href: "/",                icon: LayoutDashboard },
@@ -30,15 +24,8 @@ const menuItems = [
 /* ─── Sidebar ─────────────────────────────────────────────────── */
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname   = usePathname();
-  const queryClient = useQueryClient();
   const router     = useRouter();
   const { usuario, logout } = useAuth();
-
-  const handlePrefetch = useCallback((href: string) => {
-    router.prefetch(href);
-    const cfg = PREFETCH_MAP[href];
-    if (cfg) queryClient.prefetchQuery({ queryKey: cfg.queryKey, queryFn: cfg.queryFn });
-  }, [queryClient, router]);
 
   const handleLogout = async () => { await logout(); };
 
@@ -63,15 +50,23 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
           ${isOpen ? "translate-x-0 shadow-2xl " : "-translate-x-full"}
         `}
       >
-        {/* Logo */}
-        <div className="h-20 flex items-center px-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center shadow-lg shadow-primary/25">
-              <span className="font-syne font-black text-white text-lg italic">I</span>
+        {/* Logo and Sphere Motion Container */}
+        <div className="h-24 flex items-center px-6 border-b border-border relative overflow-hidden">
+          {/* Sphere Motion background */}
+          <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-2xl animate-sphere-glow pointer-events-none" />
+          <div className="absolute top-2 right-2 w-4 h-4 bg-primary/40 rounded-full animate-sphere-float pointer-events-none" />
+          
+          <div className="flex items-center gap-3 relative z-10">
+            {/* Inovar Logo Discreta e Circular */}
+            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-lg border border-border p-1 overflow-hidden shrink-0">
+               <Avatar className="h-full w-full rounded-full">
+                  <AvatarImage src="/inovar-logo.png" alt="Inovar Produções" className="object-contain" />
+                  <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-black">INV</AvatarFallback>
+               </Avatar>
             </div>
             <div>
-              <p className="font-syne font-black text-lg tracking-tight text-foreground">Inovar</p>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground -mt-1 opacity-60">System OS</p>
+              <p className="font-syne font-black text-lg tracking-tight text-foreground -mb-1">INOVAR APP</p>
+              <p className="text-[7.5px] font-bold uppercase tracking-[0.08em] text-muted-foreground leading-[1.1]">Sistema pós venda exclusivo da Inovar eventos</p>
             </div>
           </div>
           <button onClick={onClose} className="md:hidden ml-auto p-2 text-muted-foreground hover:bg-muted rounded-lg">
@@ -87,40 +82,39 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => { onClose(); handlePrefetch(item.href); }}
-                onMouseEnter={() => handlePrefetch(item.href)}
+                onClick={onClose}
                 className={`
                   flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all group font-dm text-[13.5px] font-medium
                   ${active 
-                    ? "bg-primary text-white shadow-lg shadow-primary/20 " 
+                    ? "bg-primary text-white shadow-lg shadow-primary/25 " 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }
                 `}
               >
-                <item.icon size={19} className={active ? "text-white" : "group-hover:scale-110 transition-transform"} />
+                <item.icon size={18} className={active ? "text-white" : "group-hover:scale-110 transition-transform"} />
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer User */}
+        {/* User Profile */}
         <div className="p-4 border-t border-border">
-           <div className="bg-muted/50 p-4 rounded-2xl">
+           <div className="bg-muted/40 p-4 rounded-2xl">
               <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-brand text-white font-dm font-bold flex items-center justify-center border-2 border-background shadow-inner">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-brand text-white font-dm font-bold flex items-center justify-center shadow-inner text-xs">
                       {initials}
                   </div>
                   <div className="min-w-0">
                       <p className="font-bold text-[13px] text-foreground truncate">{usuario?.nome || "Admin User"}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase font-black font-mono tracking-wider">SuperAdmin</p>
+                      <p className="text-[9px] text-muted-foreground uppercase font-black tracking-wider opacity-60">Master</p>
                   </div>
               </div>
               <button 
                 onClick={handleLogout}
-                className="w-full h-10 rounded-xl bg-red-500/10 text-red-500 font-dm font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                className="w-full h-9 rounded-xl bg-red-500/10 text-red-500 font-dm font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white transition-all shadow-sm"
               >
-                <LogOut size={14} /> Sair do Sistema
+                <LogOut size={13} /> Sair
               </button>
            </div>
         </div>
@@ -141,6 +135,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    } else {
+      document.documentElement.classList.add("dark");
     }
 
     const t = setInterval(() => {
@@ -164,8 +160,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="flex-1 flex flex-col min-w-0 h-full relative z-10">
-        {/* Header */}
-        <header className="h-20 flex items-center justify-between px-6 md:px-10 border-b border-border/50 backdrop-blur-md sticky top-0 bg-background/40">
+        {/* Header Header */}
+        <header className="h-20 flex items-center justify-between px-6 md:px-10 border-b border-border/50 backdrop-blur-md sticky top-0 bg-background/50">
            <div className="flex items-center gap-3">
               <button 
                 onClick={() => setSidebarOpen(true)}
@@ -174,8 +170,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Menu size={20} />
               </button>
               <div className="hidden sm:block">
-                 <h1 className="font-dm font-black text-xl tracking-tight text-foreground uppercase">{title || "Inovar OS"}</h1>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">{clock} • Enterprise</p>
+                 <h1 className="font-dm font-black text-xl tracking-tight text-foreground uppercase">{title || "Inovar APP"}</h1>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">{clock} • Enterprise Access</p>
               </div>
            </div>
 
@@ -184,7 +180,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                  <input 
                     placeholder="Busca global (Alt + S)" 
-                    className="h-10 pl-11 pr-4 bg-muted/40 border-none rounded-xl text-xs font-dm w-64 focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="h-10 pl-11 pr-4 bg-muted/40 border-none rounded-xl text-xs font-dm w-64 focus:ring-2 focus:ring-primary/40 transition-all text-foreground placeholder:text-muted-foreground/50"
                  />
               </div>
 
@@ -197,13 +193,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </button>
                   <button className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm relative">
                     <Bell size={18} />
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
+                    <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
                   </button>
               </div>
            </div>
         </header>
 
-        {/* Content */}
+        {/* Content Wrapper */}
         <div className="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar custom-scrollbar relative">
           {children}
         </div>
