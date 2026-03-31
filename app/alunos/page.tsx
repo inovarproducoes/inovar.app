@@ -5,20 +5,18 @@ import { useAlunos } from "@/hooks/useAlunos";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Aluno } from "@/types/alunos";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, Filter, UserPlus, FileText, Building2, Phone, CreditCard, Save } from "lucide-react";
+import { Search, Eye, UserPlus, FileText, Building2, Phone, CreditCard, Save } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
 export default function AlunosPage() {
   const [busca, setBusca] = useState("");
   const debouncedBusca = useDebounce(busca, 300);
-  const [statusFiltro, setStatusFiltro] = useState<string>("todos");
   
   const { data: alunosData, isLoading, refetch } = useAlunos({ 
     termo: debouncedBusca.length >= 3 ? debouncedBusca : undefined,
@@ -35,12 +33,8 @@ export default function AlunosPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const alunos = useMemo(() => {
-     let filtered = alunosData || [];
-     if (statusFiltro !== "todos") {
-       filtered = filtered.filter(a => a.status.toLowerCase() === statusFiltro.toLowerCase());
-     }
-     return filtered;
-  }, [alunosData, statusFiltro]);
+     return alunosData || [];
+  }, [alunosData]);
 
   const stats = {
     total: alunosData?.length || 0,
@@ -57,7 +51,6 @@ export default function AlunosPage() {
   const handleSalvarEdicao = async () => {
      if (!alunoSelecionado) return;
      toast.loading("Salvando alterações...", { id: "edit-aluno" });
-     // Simulação de delay de rede
      await new Promise(r => setTimeout(r, 800));
      toast.success("Cadastro atualizado com sucesso!", { id: "edit-aluno" });
      setIsEditMode(false);
@@ -115,7 +108,7 @@ export default function AlunosPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-5 text-foreground">
                 {[
                   { label: "WhatsApp", key: "telefone", icon: Phone },
                   { label: "CPF", key: "cpf", icon: CreditCard },
@@ -125,9 +118,9 @@ export default function AlunosPage() {
                     <div key={field.key} className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><field.icon size={10}/> {field.label}</Label>
                         {isEditMode ? (
-                            <Input value={(alunoSelecionado as any)?.[field.key] || ""} onChange={e => setAlunoSelecionado(a => a ? {...a, [field.key]: e.target.value} : null)} className="h-9 bg-muted/30 border-primary/20 text-xs" />
+                            <Input value={(alunoSelecionado as Record<string, any>)?.[field.key] || ""} onChange={e => setAlunoSelecionado(a => a ? {...a, [field.key]: e.target.value} : null)} className="h-9 bg-muted/30 border-primary/20 text-xs" />
                         ) : (
-                            <p className="text-sm font-dm pl-2 border-l-2 border-primary/10">{ (alunoSelecionado as any)?.[field.key] || '--'}</p>
+                            <p className="text-sm font-dm pl-2 border-l-2 border-primary/10">{(alunoSelecionado as Record<string, any>)?.[field.key] || '--'}</p>
                         )}
                     </div>
                 ))}
@@ -137,7 +130,7 @@ export default function AlunosPage() {
           <DialogFooter className="bg-muted/50 px-8 py-4">
               {isEditMode ? (
                    <>
-                    <Button variant="ghost" onClick={() => setIsEditMode(false)} className="font-dm-bold text-xs">CANCELAR</Button>
+                    <Button variant="outline" onClick={() => setIsEditMode(false)} className="font-dm-bold text-xs">CANCELAR</Button>
                     <Button onClick={handleSalvarEdicao} className="bg-primary text-white font-dm-bold text-xs uppercase"><Save size={14} className="mr-2"/> SALVAR DADOS</Button>
                    </>
               ) : (
@@ -153,11 +146,11 @@ export default function AlunosPage() {
       {/* Stats Table */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
         {[
-          { label: "Registros", value: stats.total, color: "text-foreground", shadow: "shadow-sm" },
-          { label: "Ativos", value: stats.ativos, color: "text-emerald-500", shadow: "shadow-emerald-500/10" },
-          { label: "Pendências", value: stats.pendentes, color: "text-red-500", shadow: "shadow-red-500/10" }
+          { label: "Registros", value: stats.total, color: "text-foreground" },
+          { label: "Ativos", value: stats.ativos, color: "text-emerald-500" },
+          { label: "Pendências", value: stats.pendentes, color: "text-red-500" }
         ].map(s => (
-            <div key={s.label} className="kpi-card">
+            <div key={s.label} className="kpi-card shadow-sm">
               <span className={`text-4xl font-dm font-black ${s.color}`}>{s.value}</span>
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-2">{s.label}</p>
             </div>
@@ -220,7 +213,7 @@ export default function AlunosPage() {
         <div className="w-full overflow-x-auto no-scrollbar">
           <table className="w-full text-left font-dm">
             <thead>
-              <tr className="border-b border-border/40 bg-muted/40">
+              <tr className="border-b border-border/40 bg-muted/40 text-foreground">
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Aluno</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Instituição</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
@@ -248,13 +241,11 @@ export default function AlunosPage() {
                                 </div>
                             </td>
                             <td className="px-6 py-5 text-sm text-muted-foreground">{aluno.instituicao || "N/A"}</td>
-                            <td className="px-6 py-5">
-                                <center>
-                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${st.bg} ${st.text}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
-                                        {aluno.status}
-                                    </div>
-                                </center>
+                            <td className="px-6 py-5 text-center">
+                                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${st.bg} ${st.text}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
+                                    {aluno.status}
+                                </div>
                             </td>
                             <td className="px-6 py-5 text-right">
                                 <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground/50 hover:text-primary transition-all">

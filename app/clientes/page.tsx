@@ -8,13 +8,12 @@ import { Cliente } from "@/types/clientes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Phone, CheckCircle2, Search, Filter, Plus, Mail, MessageSquare, ExternalLink, Hash, Calendar } from "lucide-react";
+import { User, Phone, Search, Filter, Plus, Mail, MessageSquare, ExternalLink, Hash, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,7 +22,6 @@ export default function ClientesPage() {
   const [busca, setBusca] = useState("");
   const debouncedBusca = useDebounce(busca, 300);
   const [origem, setOrigem] = useState("todas");
-  const [novoCliente, setNovoCliente] = useState({nome: "", telefone: "", email: "", origem: "whatsapp"});
   const [clienteDetalhes, setClienteDetalhes] = useState<Cliente | null>(null);
 
   const { data: clientes, isLoading } = useQuery({
@@ -106,7 +104,7 @@ export default function ClientesPage() {
         <div className="w-full overflow-x-auto no-scrollbar">
           <table className="w-full text-left font-dm">
             <thead>
-              <tr className="border-b border-border/40 bg-muted/40">
+              <tr className="border-b border-border/40 bg-muted/40 text-foreground">
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Cliente / Canal</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Contato</th>
                 <th className="px-6 py-4 text-[11px] font-bold text-muted-foreground uppercase tracking-widest text-center">Origem</th>
@@ -134,7 +132,7 @@ export default function ClientesPage() {
                           {cliente.email && <div className="flex items-center gap-2 text-[11px] text-muted-foreground/60"><Mail size={12} /> {cliente.email}</div>}
                        </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 text-center">
                         <Badge variant="outline" className="h-6 px-3 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-bold text-[9px] uppercase tracking-widest">WhatsApp</Badge>
                     </td>
                     <td className="px-6 py-5 text-right">
