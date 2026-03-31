@@ -8,8 +8,8 @@ import { ClipboardList, CheckCircle2, TrendingUp, LayoutPanelLeft } from "lucide
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { OS } from "@prisma/client";
 
-// Recharts (~130KB) carregado apenas quando necessário
 const OsPorMesChart = dynamic(
   () => import("@/components/dashboard/OsPorMesChart").then(m => ({ default: m.OsPorMesChart })),
   {
@@ -29,7 +29,7 @@ interface GoalCardProps {
 
 function GoalCard({ percentage, current, target, label, sublabel }: GoalCardProps) {
   return (
-    <div className="glass-card p-7 fade-up flex flex-col h-full overflow-hidden border-border/80">
+    <div className="glass-card p-7 fade-up flex flex-col h-full overflow-hidden border-border/80 text-foreground">
       <div className="relative z-10">
         <h3 className="font-dm font-bold text-base text-foreground mb-1">{label}</h3>
         <p className="text-[10px] uppercase font-bold text-muted-foreground/70 mb-8 tracking-widest">{sublabel}</p>
@@ -92,31 +92,31 @@ export default function DashboardPage() {
         <StatCard 
           title="Total de OS" 
           value={stats?.total || 0} 
-          icon={<ClipboardList size={22} />} 
-          trend={stats?.tendencias.total}
+          icon={ClipboardList} 
+          trend={{ value: Math.abs(stats?.tendencias.total || 0), label: "vs mês anterior", isPositive: (stats?.tendencias.total || 0) >= 0 }}
           delay={0}
         />
         <StatCard 
           title="Abertas" 
           value={stats?.abertas || 0} 
-          icon={<LayoutPanelLeft size={22} />} 
-          trend={stats?.tendencias.abertas} 
+          icon={LayoutPanelLeft} 
+          trend={{ value: Math.abs(stats?.tendencias.abertas || 0), label: "novas hoje", isPositive: true }}
           color="#4a4bd7"
           delay={100}
         />
         <StatCard 
           title="Finalizadas" 
           value={stats?.finalizadas || 0} 
-          icon={<CheckCircle2 size={22} />} 
-          trend={stats?.tendencias.finalizadas}
+          icon={CheckCircle2} 
+          trend={{ value: Math.abs(stats?.tendencias.finalizadas || 0), label: "concluídas", isPositive: true }}
           color="#10b981"
           delay={200}
         />
         <StatCard 
           title="Conversão" 
           value={`${stats?.taxaFinalizacao || 0}%`} 
-          icon={<TrendingUp size={22} />} 
-          trend={stats?.tendencias.taxa}
+          icon={TrendingUp} 
+          trend={{ value: Math.abs(stats?.tendencias.taxa || 0), label: "conversão", isPositive: (stats?.tendencias.taxa || 0) >= 0 }}
           color="#8b5cf6"
           delay={300}
         />
@@ -125,7 +125,7 @@ export default function DashboardPage() {
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
         <div className="lg:col-span-2">
-            <div className="kpi-card h-full p-8">
+            <div className="kpi-card h-full p-8 text-foreground">
                <div className="flex items-center justify-between mb-8">
                   <div>
                     <h3 className="text-base font-bold text-foreground uppercase tracking-tight">Produtividade Anual</h3>
@@ -146,13 +146,13 @@ export default function DashboardPage() {
              sublabel="Desempenho de entregas concluídas" 
              percentage={stats?.taxaFinalizacao || 0}
              current={stats?.finalizadas || 0}
-             target={Math.max(stats?.total || 0, 50)}
+             target={Math.max(stats?.total || 50, 50)}
            />
         </div>
       </div>
 
-      {/* Bottom Section - Responsive Fix */}
-      <div className="space-y-6">
+      {/* Bottom Section */}
+      <div className="space-y-6 text-foreground">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
              <div>
                 <h2 className="text-xl font-dm font-black text-foreground uppercase tracking-tight">Ordens de Serviço Recentes</h2>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="w-full overflow-hidden">
-             <RecentOsTable data={stats?.recentes || []} />
+             <RecentOsTable ordens={(stats?.recentes as unknown as OS[]) || []} />
           </div>
       </div>
       
