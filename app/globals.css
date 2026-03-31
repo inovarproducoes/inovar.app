@@ -106,7 +106,7 @@
 }
 
 .kpi-card {
-  @apply glass-card p-6 overflow-hidden relative group;
+  @apply glass-card p-6 overflow-hidden relative;
 }
 
 /* Animations */
