@@ -88,8 +88,8 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
       {...listeners}
       onClick={() => onClick?.(task)}
       className={`
-        bg-card p-5 rounded-2xl border border-border/50 transition-all duration-300 cursor-pointer select-none group
-        hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5
+        bg-card p-5 rounded-2xl border border-white/10 dark:border-white/15 transition-all duration-300 cursor-pointer select-none group
+        hover:border-primary/60 hover:shadow-xl hover:shadow-primary/5
         ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-4 ring-offset-background opacity-30 cursor-grabbing scale-[1.02]' : 'hover:-translate-y-1'}
       `}
       style={{
