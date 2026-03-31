@@ -11,7 +11,6 @@ import { usePageTitle } from "@/context/PageTitleContext";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ITask } from "@/types/kanban";
 
 interface SearchResultsState {
   alumnos: { id: string; nome: string; curso: string | null }[];
