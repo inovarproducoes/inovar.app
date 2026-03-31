@@ -177,8 +177,8 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
               />
             ) : (
               <div className="flex items-center gap-2.5 min-w-0">
-                <h3 className="font-syne font-extrabold text-[13px] tracking-[0.1em] text-white uppercase truncate">{title}</h3>
-                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[10px] font-black font-mono border border-primary/20">
+                <h3 className="font-dm font-bold text-sm text-white/90 truncate">{title}</h3>
+                <span className="bg-white/10 text-white/60 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
                   {tasks.length}
                 </span>
               </div>

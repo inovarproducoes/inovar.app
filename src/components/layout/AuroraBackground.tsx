@@ -56,8 +56,6 @@ function ParticleCanvas() {
         ctx.save();
         ctx.globalAlpha = p.alpha * (1 - p.life / p.maxLife);
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 4;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
@@ -75,10 +73,7 @@ function ParticleCanvas() {
   return (
     <canvas
       ref={ref}
-      style={{
-        position: "fixed", inset: 0, zIndex: 0,
-        pointerEvents: "none", opacity: 0.4,
-      }}
+      className="fixed inset-0 z-0 pointer-events-none opacity-[0.15] dark:opacity-40"
     />
   );
 }
@@ -86,19 +81,17 @@ function ParticleCanvas() {
 export function AuroraBackground() {
   return (
     <>
-      {/* Aurora blobs */}
-      <div className="aurora" aria-hidden>
-        <div className="aurora-blob" />
-        <div className="aurora-blob" />
-        <div className="aurora-blob" />
-        <div className="aurora-blob" />
+      {/* Aurora blobs - Adaptive Colors */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
+        <div className="absolute top-[10%] left-[10%] w-[40vw] h-[40vw] rounded-full blur-[120px] bg-primary/10 dark:bg-primary/20 animate-aurora-drift" />
+        <div className="absolute bottom-[10%] right-[10%] w-[40vw] h-[40vw] rounded-full blur-[120px] bg-indigo-500/10 dark:bg-indigo-500/20 animate-aurora-drift" style={{ animationDelay: '-5s' }} />
+        <div className="absolute top-[40%] right-[20%] w-[30vw] h-[30vw] rounded-full blur-[120px] bg-teal-500/5 dark:bg-teal-500/15 animate-aurora-drift" style={{ animationDelay: '-10s' }} />
       </div>
 
-      {/* Dot grid */}
-      <div className="dot-grid" aria-hidden />
-
-      {/* CRT scanlines */}
-      <div className="scanlines" aria-hidden />
+      {/* Dot grid - Adaptive Color */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] dark:opacity-[0.06]" 
+           style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
+      aria-hidden />
 
       {/* Particle canvas */}
       <ParticleCanvas />

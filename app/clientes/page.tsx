@@ -8,7 +8,7 @@ import { Cliente } from "@/types/clientes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Phone, CheckCircle2, Search, Filter, Plus, Mail, MessageSquare, ExternalLink, Hash } from "lucide-react";
+import { User, Phone, CheckCircle2, Search, Filter, Plus, Mail, MessageSquare, ExternalLink, Hash, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -35,59 +35,59 @@ export default function ClientesPage() {
   const total = clientes?.length || 0;
 
   return (
-    <MainLayout title="Gestão CRM" subtitle="Relacionamento e prospecção em tempo real">
+    <MainLayout title="Gestão de Clientes" subtitle="Relacionamento e prospecção em tempo real">
       
       {/* Top Stats */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-3 gap-4 mb-8">
         <div className="glass-card p-6 flex items-center gap-5 fade-up-1 group hover:border-primary/40 transition-all cursor-default">
-          <div className="bg-primary/10 p-3 rounded-2xl border border-primary/20 text-primary group-hover:scale-110 transition-transform">
+          <div className="bg-primary/10 p-3 rounded-2xl border border-primary/20 text-primary transition-transform">
             <User size={24} />
           </div>
           <div>
-            <p className="text-3xl font-syne font-black text-white">{total}</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground font-mono">Contatos no CRM</p>
+            <p className="text-3xl font-dm font-bold text-foreground">{total}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Contatos no CRM</p>
           </div>
         </div>
-        <div className="glass-card p-6 flex items-center gap-5 fade-up-2 group hover:border-[#00b4a0]/40 transition-all cursor-default">
-          <div className="bg-[#00b4a0]/10 p-3 rounded-2xl border border-[#00b4a0]/20 text-[#00b4a0] group-hover:scale-110 transition-transform">
+        <div className="glass-card p-6 flex items-center gap-5 fade-up-2">
+          <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-emerald-500">
             <MessageSquare size={24} />
           </div>
           <div>
-            <p className="text-3xl font-syne font-black text-[#00b4a0]">12</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground font-mono">Interações Hoje</p>
+            <p className="text-3xl font-dm font-bold text-emerald-500">12</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Interações Ativas</p>
           </div>
         </div>
-        <div className="glass-card p-6 flex items-center gap-5 fade-up-3 group hover:border-[#8083ff]/40 transition-all cursor-default">
-          <div className="bg-[#8083ff]/10 p-3 rounded-2xl border border-[#8083ff]/20 text-[#8083ff] group-hover:scale-110 transition-transform">
+        <div className="glass-card p-6 flex items-center gap-5 fade-up-3">
+          <div className="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-indigo-500">
             <Hash size={24} />
           </div>
           <div>
-            <p className="text-3xl font-syne font-black text-[#8083ff]">04</p>
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground font-mono">Novas Leads</p>
+            <p className="text-3xl font-dm font-bold text-indigo-500">04</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-mono">Novas Leads</p>
           </div>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col lg:flex-row items-center gap-4 mb-8 fade-up-4">
+      <div className="flex flex-col lg:flex-row items-center gap-3 mb-8 fade-up-4">
         <div className="relative w-full lg:flex-1">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Search size={16} className="text-white/20" />
+            <Search size={16} className="text-muted-foreground/30" />
           </div>
           <Input 
             placeholder="Pesquisar por nome ou canal de contato..." 
-            className="pl-12 h-12 bg-white/[0.03] border-white/10 rounded-2xl text-sm font-dm" 
+            className="pl-12 h-11 bg-card/40 border-border/50 rounded-xl text-sm font-dm" 
             value={busca} 
             onChange={e => setBusca(e.target.value)} 
           />
         </div>
         <div className="flex items-center gap-3 w-full lg:w-auto">
             <Select value={origem} onValueChange={setOrigem}>
-                <SelectTrigger className="h-12 bg-white/[0.03] border-white/10 rounded-2xl min-w-[180px] font-syne font-bold text-xs uppercase tracking-widest">
+                <SelectTrigger className="h-11 bg-card/40 border-border/50 rounded-xl min-w-[180px] font-dm font-bold text-xs uppercase tracking-widest">
                     <Filter size={14} className="mr-2 text-primary" />
                     <SelectValue placeholder="Canal" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0d0f1e] border-white/10 text-white font-dm">
+                <SelectContent>
                     <SelectItem value="todas">Todos Canais</SelectItem>
                     <SelectItem value="whatsapp">WhatsApp</SelectItem>
                 </SelectContent>
@@ -95,33 +95,33 @@ export default function ClientesPage() {
 
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button className="h-12 bg-gradient-brand text-white rounded-2xl px-6 font-syne font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 flex-1 lg:flex-none">
-                        <Plus size={16} className="mr-2" /> Novo Cadastro
+                    <Button className="h-11 bg-primary text-white rounded-xl px-6 font-dm font-bold text-xs uppercase tracking-widest shadow-lg flex-1 lg:flex-none">
+                        <Plus size={16} className="mr-2" /> NOVO CADASTRO
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="glass-card border-white/10 text-white">
+                <DialogContent className="sm:max-w-[450px]">
                     <DialogHeader>
-                    <DialogTitle className="font-syne font-extrabold text-xl">Cadastrar no CRM</DialogTitle>
-                    <DialogDescription className="text-white/40">Inicie um novo relacionamento comercial.</DialogDescription>
+                        <DialogTitle className="font-dm font-bold">Novo Cliente</DialogTitle>
+                        <DialogDescription className="font-dm">Inicie um novo relacionamento comercial.</DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-5 py-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">Nome do Cliente</Label>
-                            <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="Ex: Maria Eduarda" value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} />
+                    <div className="grid gap-4 py-4 font-dm">
+                        <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Nome Completo</Label>
+                            <Input className="bg-muted/50 border-none h-11 rounded-xl" placeholder="Nome do cliente..." value={novoCliente.nome} onChange={e => setNovoCliente({...novoCliente, nome: e.target.value})} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">WhatsApp</Label>
-                                <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="(00) 00000-0000" value={novoCliente.telefone} onChange={e => setNovoCliente({...novoCliente, telefone: e.target.value})} />
+                            <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">WhatsApp</Label>
+                                <Input className="bg-muted/50 border-none h-11 rounded-xl" placeholder="(00) 00000-0000" value={novoCliente.telefone} onChange={e => setNovoCliente({...novoCliente, telefone: e.target.value})} />
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">Email</Label>
-                                <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="email@exemplo.com" value={novoCliente.email} onChange={e => setNovoCliente({...novoCliente, email: e.target.value})} />
+                            <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">Email</Label>
+                                <Input className="bg-muted/50 border-none h-11 rounded-xl" placeholder="email@exemplo.com" value={novoCliente.email} onChange={e => setNovoCliente({...novoCliente, email: e.target.value})} />
                             </div>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button className="w-full h-12 bg-gradient-brand text-white font-syne font-black rounded-xl uppercase tracking-widest" onClick={() => toast.success("Simulação: Cliente cadastrado!")}>Finalizar Cadastro</Button>
+                        <Button className="w-full h-12 bg-primary text-white font-dm font-bold rounded-xl uppercase tracking-widest text-xs" onClick={() => toast.success("Cliente cadastrado!")}>SALVAR CLIENTE</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -129,61 +129,56 @@ export default function ClientesPage() {
       </div>
 
       {/* Main Table */}
-      <div className="glass-card overflow-hidden fade-up-5 mb-10">
+      <div className="glass-card shadow-sm rounded-2xl overflow-hidden fade-up-5 mb-10 border-border/50">
         <div className="w-full overflow-x-auto no-scrollbar">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left font-dm">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.02]">
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Canal / Cliente</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Contato Direto</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Origem</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono text-right">Perfil</th>
+              <tr className="border-b border-border/50 bg-muted/30 select-none">
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Canal / Cliente</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Contato Direto</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Status de Origem</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-right">Ver Mais</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.03]">
+            <tbody className="divide-y divide-border/30">
               {isLoading ? (
                  [1, 2, 3, 4].map(i => (
-                    <tr key={i} className="bg-transparent">
-                      <td className="px-6 py-5"><div className="flex gap-4 items-center"><Skeleton className="h-10 w-10 rounded-xl bg-white/5"/><Skeleton className="h-4 w-32 bg-white/5"/></div></td>
-                      <td className="px-6 py-5"><Skeleton className="h-3 w-44 bg-white/5"/></td>
-                      <td className="px-6 py-5"><Skeleton className="h-6 w-20 rounded-full bg-white/5"/></td>
-                      <td className="px-6 py-5 text-right"><Skeleton className="h-8 w-8 ml-auto bg-white/5 rounded-lg"/></td>
-                    </tr>
+                    <tr key={i}><td colSpan={4} className="p-6"><Skeleton className="h-10 w-full rounded-xl opacity-20" /></td></tr>
                  ))
               ) : (
                 clientes?.map(cliente => (
-                    <tr key={cliente.id} className="group hover:bg-white/[0.03] transition-all duration-300 cursor-pointer" onClick={() => setClienteDetalhes(cliente)}>
-                    <td className="px-6 py-5">
+                    <tr key={cliente.id} className="group hover:bg-muted/30 transition-all cursor-pointer" onClick={() => setClienteDetalhes(cliente)}>
+                    <td className="px-6 py-4">
                        <div className="flex items-center gap-4">
-                          <Avatar className="h-10 w-10 rounded-xl border border-white/10 group-hover:border-primary/40 transition-colors">
+                          <Avatar className="h-9 w-9 rounded-lg shadow-sm border border-border/50">
                              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${cliente.nome}`} />
-                             <AvatarFallback className="bg-primary text-white font-syne font-black text-[10px]">{cliente.nome.substring(0, 2).toUpperCase()}</AvatarFallback>
+                             <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold">{cliente.nome[0].toUpperCase()}</AvatarFallback>
                           </Avatar>
-                          <span className="font-syne font-bold text-[14px] text-white/90 truncate max-w-[200px]">{cliente.nome}</span>
+                          <span className="font-bold text-[14px] text-foreground/90 truncate max-w-[200px]">{cliente.nome}</span>
                        </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-4">
                        <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-2 text-xs font-dm text-white/80">
-                             <Phone size={12} className="text-primary/60" />
+                          <div className="flex items-center gap-2 text-xs font-dm text-foreground/80">
+                             <Phone size={11} className="text-primary/60" />
                              {cliente.telefone}
                           </div>
                           {cliente.email && (
                             <div className="flex items-center gap-2 text-[11px] font-dm text-muted-foreground/60">
-                               <Mail size={12} />
+                               <Mail size={11} />
                                {cliente.email}
                             </div>
                           )}
                        </div>
                     </td>
-                    <td className="px-6 py-5">
-                        <Badge variant="outline" className="h-6 px-3 bg-[#00b4a0]/10 text-[#00b4a0] border-[#00b4a0]/20 font-mono font-bold text-[9px] uppercase tracking-widest">
+                    <td className="px-6 py-4">
+                        <Badge variant="outline" className="h-5.5 px-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-dm font-bold text-[9px] uppercase tracking-widest">
                            WhatsApp
                         </Badge>
                     </td>
-                    <td className="px-6 py-5 text-right">
-                       <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-white/20 hover:text-white hover:bg-white/5 transition-all">
-                          <ExternalLink size={16} />
+                    <td className="px-6 py-4 text-right">
+                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all">
+                          <ExternalLink size={14} />
                        </Button>
                     </td>
                     </tr>
@@ -194,56 +189,56 @@ export default function ClientesPage() {
         </div>
       </div>
 
-      {/* Detail Dialog */}
+      {/* Detail Dialog - Centered and Clean */}
       <Dialog open={!!clienteDetalhes} onOpenChange={(open) => !open && setClienteDetalhes(null)}>
-        <DialogContent className="glass-card border-white/10 p-0 overflow-hidden sm:max-w-[500px]">
-          <div className="h-24 bg-gradient-brand opacity-10" />
-          <div className="px-8 pb-8 -mt-6">
-            <div className="flex justify-between items-end mb-8">
-               <Avatar className="h-24 w-24 border-4 border-[#07080f] rounded-2xl shadow-2xl">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${clienteDetalhes?.nome}`} />
-                  <AvatarFallback className="font-syne font-black text-2xl bg-primary text-white">
-                    {clienteDetalhes?.nome.substring(0,2).toUpperCase()}
-                  </AvatarFallback>
-               </Avatar>
-               <Badge className="mb-2 bg-primary text-white font-mono font-bold uppercase tracking-widest text-[9px]">Cliente VIP</Badge>
+        <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-gradient-brand h-24 w-full flex items-end px-8 pb-4 relative">
+             <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
+             <div className="relative z-10 flex items-center gap-4">
+                 <Avatar className="h-20 w-20 border-4 border-background -mb-10 shadow-lg">
+                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${clienteDetalhes?.nome}`} />
+                    <AvatarFallback className="font-dm font-bold text-xl bg-primary text-white">
+                      {clienteDetalhes?.nome.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                 </Avatar>
+             </div>
+          </div>
+
+          <div className="pt-12 px-8 pb-8 space-y-6">
+            <div>
+              <DialogTitle className="font-dm font-bold text-xl">{clienteDetalhes?.nome}</DialogTitle>
+              <DialogDescription className="font-dm text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
+                <Calendar size={12}/> Registrado em {clienteDetalhes?.created_at ? format(new Date(clienteDetalhes.created_at), 'dd/MM/yyyy', { locale: ptBR }) : ''}
+              </DialogDescription>
             </div>
             
-            <DialogHeader className="mb-8">
-              <DialogTitle className="font-syne font-extrabold text-3xl text-white">
-                {clienteDetalhes?.nome}
-              </DialogTitle>
-              <DialogDescription className="font-dm text-muted-foreground">
-                Cliente registrado desde {clienteDetalhes?.created_at ? format(new Date(clienteDetalhes.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : ''}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 mb-8">
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 border-l-2 border-l-primary">
-                     <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 font-mono">Telefone</p>
-                     <p className="font-syne font-bold text-sm text-foreground">{clienteDetalhes?.telefone}</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 border-l-2 border-l-primary">
-                     <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 font-mono">Email</p>
-                     <p className="font-syne font-bold text-sm text-foreground truncate">{clienteDetalhes?.email || 'N/A'}</p>
-                  </div>
+            <div className="grid grid-cols-1 gap-3 py-2 font-dm">
+               <div className="p-4 rounded-xl bg-muted/40 border border-border/30">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1 tracking-widest">WhatsApp Principal</p>
+                  <p className="font-bold text-sm text-foreground flex items-center gap-2">
+                     <Phone size={14} className="text-primary"/> {clienteDetalhes?.telefone}
+                  </p>
+                  {clienteDetalhes?.email && (
+                    <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
+                       <Mail size={12}/> {clienteDetalhes.email}
+                    </p>
+                  )}
                </div>
                
-               <div className="p-5 rounded-2xl bg-[#00b4a0]/5 border border-[#00b4a0]/10">
-                  <div className="flex items-center gap-3 mb-2">
-                     <CheckCircle2 size={16} className="text-[#00b4a0]" />
-                     <h4 className="font-syne font-bold text-sm text-white">Integridade Cadastral</h4>
+               <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="flex items-center gap-2 mb-2 text-emerald-500">
+                     <CheckCircle2 size={16} />
+                     <h4 className="font-bold text-xs uppercase tracking-widest">Origem Verificada</h4>
                   </div>
-                  <p className="text-xs font-dm text-muted-foreground/80 leading-relaxed">
-                     O cadastro deste cliente foi verificado via canal WhatsApp Inbound. O histórico de conversas e transações está disponível no módulo de monitoramento.
+                  <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                     Este contato iniciou o relacionamento via canal oficial InBound. Os registros de conversa e ordens vinculadas estão disponíveis em tempo real.
                   </p>
                </div>
             </div>
 
-            <div className="flex gap-3">
-               <Button className="flex-1 h-12 bg-gradient-brand text-white font-syne font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20">Abrir WhatsApp</Button>
-               <Button variant="ghost" className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 p-0 text-white hover:bg-white/10" onClick={() => setClienteDetalhes(null)}>X</Button>
+            <div className="flex gap-3 pt-2">
+               <Button className="flex-1 h-11 bg-emerald-500 hover:bg-emerald-600 text-white font-dm font-bold text-xs uppercase tracking-widest rounded-xl shadow-lg">ABRIR WHATSAPP</Button>
+               <Button variant="outline" className="h-11 rounded-xl font-dm font-bold text-xs" onClick={() => setClienteDetalhes(null)}>FECHAR</Button>
             </div>
           </div>
         </DialogContent>

@@ -3,8 +3,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Briefcase,
-  GraduationCap, Bell, Layout, LogOut, Archive, Settings,
-  ChevronRight,
+  GraduationCap, Bell, Layout, LogOut, Archive, 
+  Sun, Moon, Search,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -50,301 +50,164 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-60 flex flex-col
-          transform transition-transform duration-200
-          md:relative md:translate-x-0
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          fixed inset-y-0 left-0 z-50 w-64 flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          md:relative md:translate-x-0 bg-card border-r border-border
+          ${isOpen ? "translate-x-0 shadow-2xl " : "-translate-x-full"}
         `}
-        style={{
-          background: "rgba(7,8,15,0.92)",
-          borderRight: "1px solid rgba(255,255,255,0.07)",
-          backdropFilter: "blur(20px)",
-        }}
       >
         {/* Logo */}
-        <div
-          className="h-16 flex items-center px-5 shrink-0"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-              style={{
-                background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)",
-                boxShadow: "0 0 12px rgba(74,75,215,0.45)",
-              }}
-            >
-              <span style={{ fontFamily: "Syne, sans-serif", color: "white", fontSize: 14, fontWeight: 800 }}>I</span>
+        <div className="h-20 flex items-center px-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center shadow-lg shadow-primary/25">
+              <span className="font-syne font-black text-white text-lg italic">I</span>
             </div>
             <div>
-              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, letterSpacing: "-0.5px", color: "#f0f0ff" }}>
-                Inovar
-              </p>
-              <p style={{ fontSize: 9, color: "rgba(144,144,176,0.5)", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: 1 }}>
-                Enterprise OS
-              </p>
+              <p className="font-syne font-black text-lg tracking-tight text-foreground">Inovar</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground -mt-1 opacity-60">System OS</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="md:hidden p-1 rounded-lg transition-colors hover:bg-white/10"
-            style={{ color: "rgba(240,240,255,0.6)" }}
-          >
-            <X className="w-4 h-4" />
+          <button onClick={onClose} className="md:hidden ml-auto p-2 text-muted-foreground hover:bg-muted rounded-lg">
+            <X size={18} />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 no-scrollbar flex flex-col gap-0.5">
-          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(144,144,176,0.35)", padding: "0 12px", marginBottom: 8 }}>
-            Menu
-          </p>
+        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
           {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(item.href + "/"));
+            const active = pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
-                onClick={onClose}
+                onClick={() => { onClose(); handlePrefetch(item.href); }}
                 onMouseEnter={() => handlePrefetch(item.href)}
-                onFocus={() => handlePrefetch(item.href)}
                 className={`
-                  relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                  overflow-hidden transition-all duration-200
-                  ${isActive ? "nav-active" : ""}
+                  flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all group font-dm text-[13.5px] font-medium
+                  ${active 
+                    ? "bg-primary text-white shadow-lg shadow-primary/20 " 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }
                 `}
-                style={!isActive ? {
-                  color: "rgba(144,144,176,0.75)",
-                } : undefined}
-                onMouseOver={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
-                    (e.currentTarget as HTMLElement).style.color = "#f0f0ff";
-                  }
-                }}
-                onMouseOut={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = "";
-                    (e.currentTarget as HTMLElement).style.color = "rgba(144,144,176,0.75)";
-                  }
-                }}
               >
-                <Icon
-                  className="w-4 h-4 shrink-0"
-                  style={isActive ? { color: "#8083ff", filter: "drop-shadow(0 0 6px rgba(128,131,255,0.7))" } : undefined}
-                />
-                <span style={{ fontFamily: "'DM Sans', sans-serif" }}>{item.name}</span>
-                {isActive && (
-                  <span
-                    className="ml-auto w-1.5 h-1.5 rounded-full"
-                    style={{ background: "#8083ff", boxShadow: "0 0 6px rgba(128,131,255,0.8)" }}
-                  />
-                )}
+                <item.icon size={19} className={active ? "text-white" : "group-hover:scale-110 transition-transform"} />
+                {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer */}
-        <div
-          className="p-3 shrink-0 flex flex-col gap-1"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          {/* User card */}
-          <div
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg mb-1 cursor-pointer transition-colors"
-            style={{ background: "rgba(255,255,255,0.04)" }}
-          >
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-syne font-bold text-white text-xs"
-              style={{
-                background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)",
-                boxShadow: "0 0 10px rgba(74,75,215,0.35)",
-              }}
-            >
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium truncate" style={{ color: "#f0f0ff" }}>
-                {usuario?.nome ?? "Usuário"}
-              </p>
-              <p className="text-[10px] truncate flex items-center gap-1" style={{ color: "rgba(144,144,176,0.55)" }}>
-                <span className="status-dot" style={{ width: 5, height: 5, marginRight: 2 }} />
-                {usuario?.role === "admin" ? "Admin" : "Usuário"}
-              </p>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "rgba(144,144,176,0.3)" }} />
-          </div>
-
-          <Link
-            href="#"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all"
-            style={{ color: "rgba(144,144,176,0.65)" }}
-            onMouseOver={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.color = "#f0f0ff"; }}
-            onMouseOut={e  => { (e.currentTarget as HTMLElement).style.background = "";                       (e.currentTarget as HTMLElement).style.color = "rgba(144,144,176,0.65)"; }}
-          >
-            <Settings className="w-4 h-4 shrink-0" />
-            <span>Configurações</span>
-          </Link>
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium w-full text-left transition-all"
-            style={{ color: "#f76a80" }}
-            onMouseOver={e => { (e.currentTarget as HTMLElement).style.background = "rgba(172,49,73,0.12)"; }}
-            onMouseOut={e  => { (e.currentTarget as HTMLElement).style.background = ""; }}
-          >
-            <LogOut className="w-4 h-4 shrink-0" />
-            <span>Sair do Sistema</span>
-          </button>
+        {/* Footer User */}
+        <div className="p-4 border-t border-border">
+           <div className="bg-muted/50 p-4 rounded-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-brand text-white font-dm font-bold flex items-center justify-center border-2 border-background shadow-inner">
+                      {initials}
+                  </div>
+                  <div className="min-w-0">
+                      <p className="font-bold text-[13px] text-foreground truncate">{usuario?.nome || "Admin User"}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-black font-mono tracking-wider">SuperAdmin</p>
+                  </div>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="w-full h-10 rounded-xl bg-red-500/10 text-red-500 font-dm font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+              >
+                <LogOut size={14} /> Sair do Sistema
+              </button>
+           </div>
         </div>
       </aside>
     </>
   );
 }
 
-/* ─── Header / Topbar ─────────────────────────────────────────── */
-function Header({ onMenuClick }: { onMenuClick: () => void }) {
-  const { title, subtitle } = usePageTitle();
-  const { usuario } = useAuth();
-  const [liveTime, setLiveTime] = useState("");
+/* ─── Main Shell ─────────────────────────────────────────────── */
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const { title } = usePageTitle();
+  const [clock, setClock] = useState("--:--");
 
   useEffect(() => {
-    const tick = () =>
-      setLiveTime(new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
-    tick();
-    const t = setInterval(tick, 1000);
+    const savedTheme = localStorage.getItem("inovar-theme") as "light" | "dark";
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    }
+
+    const t = setInterval(() => {
+      const now = new Date();
+      setClock(now.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }));
+    }, 1000);
     return () => clearInterval(t);
   }, []);
 
-  return (
-    <header
-      className="h-16 flex items-center justify-between px-4 lg:px-6 shrink-0"
-      style={{
-        background: "rgba(7,8,15,0.8)",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-        backdropFilter: "blur(12px)",
-      }}
-    >
-      {/* Left */}
-      <div className="flex items-center gap-4">
-        <button
-          className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
-          style={{ background: "rgba(255,255,255,0.04)", color: "rgba(144,144,176,0.8)" }}
-          onClick={onMenuClick}
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        <div>
-          <h1
-            className="font-syne text-xl font-extrabold leading-tight"
-            style={{ color: "#f0f0ff", letterSpacing: "-0.5px" }}
-          >
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-xs mt-0.5 hidden sm:block" style={{ color: "rgba(144,144,176,0.7)" }}>
-              {subtitle}
-              {liveTime && (
-                <span
-                  className="font-mono ml-2"
-                  style={{ color: "#8083ff", fontSize: 11 }}
-                >
-                  {liveTime}
-                </span>
-              )}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="flex items-center gap-2">
-        {/* Search */}
-        <div
-          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4" style={{ color: "rgba(90,90,122,1)" }}>
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            type="text" placeholder="Buscar..."
-            className="bg-transparent border-none outline-none text-sm w-36"
-            style={{ color: "#f0f0ff", fontFamily: "'DM Sans', sans-serif" }}
-          />
-        </div>
-
-        {/* Bell */}
-        <button
-          className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(144,144,176,0.8)" }}
-          onMouseOver={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(74,75,215,0.3)"; }}
-          onMouseOut={e  => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}
-        >
-          <Bell className="w-4 h-4" />
-          <span className="notif-dot" />
-        </button>
-
-        {/* User pill */}
-        <div
-          className="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-          onMouseOver={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
-          onMouseOut={e  => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; }}
-        >
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold font-syne text-white shrink-0"
-            style={{ background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)" }}
-          >
-            {usuario?.nome?.charAt(0)?.toUpperCase() ?? "U"}
-          </div>
-          <div className="hidden lg:block">
-            <p className="text-xs font-medium" style={{ color: "#f0f0ff" }}>{usuario?.nome ?? "Usuário"}</p>
-            <p className="text-[10px]" style={{ color: "rgba(144,144,176,0.5)" }}>{usuario?.email ?? ""}</p>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-/* ─── AppShell ─────────────────────────────────────────────────── */
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      Object.values(PREFETCH_MAP).forEach(({ queryKey, queryFn }) =>
-        queryClient.prefetchQuery({ queryKey, queryFn })
-      );
-    }, 1000);
-    return () => clearTimeout(t);
-  }, [queryClient]);
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("inovar-theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   return (
-    <div className="flex w-full h-screen overflow-hidden" style={{ background: "#07080f" }}>
-      {/* Background apenas no app */}
+    <div className="flex h-screen overflow-hidden bg-background">
       <AuroraBackground />
-
+      
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="relative z-10 flex-1 flex flex-col h-full min-w-0 overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+      <main className="flex-1 flex flex-col min-w-0 h-full relative z-10">
+        {/* Header */}
+        <header className="h-20 flex items-center justify-between px-6 md:px-10 border-b border-border/50 backdrop-blur-md sticky top-0 bg-background/40">
+           <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setSidebarOpen(true)}
+                className="p-2.5 rounded-xl bg-card border border-border md:hidden text-foreground shadow-sm"
+              >
+                <Menu size={20} />
+              </button>
+              <div className="hidden sm:block">
+                 <h1 className="font-dm font-black text-xl tracking-tight text-foreground uppercase">{title || "Inovar OS"}</h1>
+                 <p className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">{clock} • Enterprise</p>
+              </div>
+           </div>
+
+           <div className="flex items-center gap-3 sm:gap-6">
+              <div className="hidden lg:flex relative group">
+                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                 <input 
+                    placeholder="Busca global (Alt + S)" 
+                    className="h-10 pl-11 pr-4 bg-muted/40 border-none rounded-xl text-xs font-dm w-64 focus:ring-2 focus:ring-primary/20 transition-all"
+                 />
+              </div>
+
+              <div className="flex items-center gap-2">
+                  <button 
+                    onClick={toggleTheme}
+                    className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm group"
+                  >
+                    {theme === "dark" ? <Sun size={18} className="group-hover:rotate-45 transition-transform" /> : <Moon size={18} className="group-hover:-rotate-12 transition-transform" />}
+                  </button>
+                  <button className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm relative">
+                    <Bell size={18} />
+                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
+                  </button>
+              </div>
+           </div>
+        </header>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar custom-scrollbar relative">
           {children}
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

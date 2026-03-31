@@ -11,7 +11,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, Filter, UserPlus, FileText, Building2, Phone, Hash, CreditCard } from "lucide-react";
+import { Search, Eye, Filter, UserPlus, FileText, Building2, Phone, Hash, CreditCard, Mail } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function AlunosPage() {
@@ -45,131 +45,95 @@ export default function AlunosPage() {
 
   const getStatusStyle = (status: string) => {
     const s = status.toLowerCase();
-    if (['ativo', 'sucesso', 'ok'].includes(s)) return { bg: 'rgba(0,180,160,0.15)', color: '#00b4a0' };
-    if (['inadimplente', 'trancado', 'atraso'].includes(s)) return { bg: 'rgba(172,49,73,0.15)', color: '#f76a80' };
-    if (['formado', 'concluido'].includes(s)) return { bg: 'rgba(74,75,215,0.15)', color: '#8083ff' };
-    return { bg: 'rgba(255,255,255,0.06)', color: '#9090b0' };
+    if (['ativo', 'sucesso', 'ok'].includes(s)) return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', dot: 'bg-emerald-500' };
+    if (['inadimplente', 'trancado', 'atraso'].includes(s)) return { bg: 'bg-red-500/10', text: 'text-red-500', dot: 'bg-red-500' };
+    if (['formado', 'concluido'].includes(s)) return { bg: 'bg-primary/10', text: 'text-primary', dot: 'bg-primary' };
+    return { bg: 'bg-muted', text: 'text-muted-foreground', dot: 'bg-muted-foreground' };
   };
 
   return (
-    <MainLayout title="Alunos & Contatos" subtitle="Diretório inteligente de participantes">
+    <MainLayout title="Diretório de Alunos" subtitle="Gestão centralizada de contatos e participações">
       
-      {/* Aluno Detail Dialog */}
+      {/* Aluno Detail Dialog - FIXED Centering and UX */}
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="glass-card sm:max-w-[620px] max-h-[90vh] overflow-y-auto border-white/10 p-0 overflow-hidden">
-          <div className="h-32 bg-gradient-brand opacity-20 absolute top-0 left-0 right-0" />
-          <div className="relative p-8">
-            <DialogHeader className="mb-8">
-              <div className="flex items-center gap-5">
-                 <Avatar className="h-20 w-20 border-4 border-[#07080f] shadow-2xl ring-2 ring-primary/20">
+        <DialogContent className="sm:max-w-[550px] overflow-hidden p-0 border-none shadow-2xl">
+          <div className="bg-gradient-brand h-24 w-full flex items-end px-8 pb-4 relative">
+             <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
+             <div className="relative z-10 flex items-center gap-4">
+                 <Avatar className="h-20 w-20 border-4 border-background -mb-10 shadow-lg">
                     <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${alunoSelecionado?.nome}`} />
-                    <AvatarFallback className="font-syne font-black text-xl bg-primary text-white">
+                    <AvatarFallback className="font-dm font-bold text-xl bg-primary text-white">
                       {alunoSelecionado?.nome.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                  </Avatar>
-                 <div>
-                    <DialogTitle className="font-syne font-extrabold text-2xl text-white">{alunoSelecionado?.nome}</DialogTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                       <span className="text-xs font-mono font-bold uppercase tracking-widest text-primary/80">ID: {alunoSelecionado?.id.split('-')[0]}</span>
-                       <span className="w-1 h-1 rounded-full bg-white/20" />
-                       <span className="text-xs font-dm text-muted-foreground">{alunoSelecionado?.instituicao}</span>
-                    </div>
-                 </div>
-              </div>
-            </DialogHeader>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-                <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group hover:border-primary/30 transition-all">
-                        <div className="flex items-center gap-3 mb-2">
-                            <Phone size={14} className="text-primary" />
-                            <span className="text-[10px] uppercase font-mono font-black tracking-widest text-muted-foreground">Telefone</span>
-                        </div>
-                        <p className="font-syne font-bold text-sm text-foreground">{alunoSelecionado?.telefone || '--'}</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group hover:border-primary/30 transition-all">
-                        <div className="flex items-center gap-3 mb-2">
-                            <CreditCard size={14} className="text-primary" />
-                            <span className="text-[10px] uppercase font-mono font-black tracking-widest text-muted-foreground">Documento</span>
-                        </div>
-                        <p className="font-syne font-bold text-sm text-foreground">{alunoSelecionado?.cpf || '--'}</p>
-                    </div>
+             </div>
+          </div>
+          
+          <div className="pt-12 px-8 pb-8 space-y-6">
+            <div className="flex justify-between items-start">
+                <div>
+                   <DialogTitle className="font-dm font-bold text-xl">{alunoSelecionado?.nome}</DialogTitle>
+                   <p className="text-sm text-muted-foreground font-dm">{alunoSelecionado?.instituicao}</p>
                 </div>
-                <div className="space-y-4">
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group hover:border-primary/30 transition-all">
-                        <div className="flex items-center gap-3 mb-2">
-                            <Building2 size={14} className="text-primary" />
-                            <span className="text-[10px] uppercase font-mono font-black tracking-widest text-muted-foreground">Instituição</span>
-                        </div>
-                        <p className="font-syne font-bold text-sm text-foreground truncate">{alunoSelecionado?.instituicao || '--'}</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 group hover:border-primary/30 transition-all">
-                        <div className="flex items-center gap-3 mb-2">
-                            <FileText size={14} className="text-primary" />
-                            <span className="text-[10px] uppercase font-mono font-black tracking-widest text-muted-foreground">Projeto</span>
-                        </div>
-                        <p className="font-syne font-bold text-sm text-foreground truncate">{alunoSelecionado?.projeto || '--'}</p>
-                    </div>
+                <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider h-fit ${getStatusStyle(alunoSelecionado?.status || '').bg} ${getStatusStyle(alunoSelecionado?.status || '').text}`}>
+                    {alunoSelecionado?.status}
                 </div>
             </div>
 
-            <DialogFooter className="mt-8">
-              <Button variant="ghost" onClick={() => setIsViewOpen(false)} className="rounded-xl font-syne font-bold text-xs uppercase tracking-widest text-muted-foreground hover:text-white transition-all">Fechar Perfil</Button>
-              <Button className="bg-gradient-brand text-white rounded-xl px-8 font-syne font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/20">Editar Aluno</Button>
-            </DialogFooter>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><Phone size={10}/> Telefone</span>
+                    <span className="text-sm font-dm">{alunoSelecionado?.telefone || '--'}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><CreditCard size={10}/> Documento</span>
+                    <span className="text-sm font-dm">{alunoSelecionado?.cpf || '--'}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><Building2 size={10}/> Instituição</span>
+                    <span className="text-sm font-dm truncate">{alunoSelecionado?.instituicao || '--'}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><FileText size={10}/> Projeto Ativo</span>
+                    <span className="text-sm font-dm truncate">{alunoSelecionado?.projeto || '--'}</span>
+                </div>
+            </div>
           </div>
+
+          <DialogFooter className="bg-muted px-8 py-4">
+              <Button variant="ghost" onClick={() => setIsViewOpen(false)} className="font-dm font-bold text-xs">FECHAR</Button>
+              <Button className="bg-primary text-white font-dm font-bold text-xs rounded-lg px-6">EDITAR CADASTRO</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Grid Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="glass-card p-6 fade-up-1 group hover:border-primary/40 transition-all cursor-default">
-          <div className="flex justify-between items-start mb-4">
-             <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                <Hash size={18} className="text-primary" />
-             </div>
-          </div>
-          <span className="text-3xl font-syne font-black text-white">{total}</span>
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mt-1 font-mono">Total Registros</p>
+        <div className="glass-card p-6 fade-up-1">
+          <span className="text-3xl font-dm font-bold text-foreground">{total}</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Registros</p>
         </div>
-        <div className="glass-card p-6 fade-up-2 group hover:border-[#00b4a0]/40 transition-all cursor-default">
-          <div className="flex justify-between items-start mb-4">
-             <div className="p-2 rounded-lg bg-[#00b4a0]/10 border border-[#00b4a0]/20">
-                <Check size={18} className="text-[#00b4a0]" />
-             </div>
-          </div>
-          <span className="text-3xl font-syne font-black text-[#00b4a0]">{ativos}</span>
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mt-1 font-mono">Contatos Ativos</p>
+        <div className="glass-card p-6 fade-up-2 border-emerald-500/10">
+          <span className="text-3xl font-dm font-bold text-emerald-500">{ativos}</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Ativos</p>
         </div>
-        <div className="glass-card p-6 fade-up-3 group hover:border-[#f76a80]/40 transition-all cursor-default">
-          <div className="flex justify-between items-start mb-4">
-             <div className="p-2 rounded-lg bg-[#f76a80]/10 border border-[#f76a80]/20">
-                <Filter size={18} className="text-[#f76a80]" />
-             </div>
-          </div>
-          <span className="text-3xl font-syne font-black text-[#f76a80]">{pendentes}</span>
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mt-1 font-mono">Pendências</p>
+        <div className="glass-card p-6 fade-up-3 border-red-500/10">
+          <span className="text-3xl font-dm font-bold text-red-500">{pendentes}</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Pendências</p>
         </div>
-        <div className="glass-card p-6 fade-up-4 group hover:border-[#8083ff]/40 transition-all cursor-default">
-           <div className="flex justify-between items-start mb-4">
-             <div className="p-2 rounded-lg bg-[#8083ff]/10 border border-[#8083ff]/20">
-                <FileText size={18} className="text-[#8083ff]" />
-             </div>
-          </div>
-          <span className="text-3xl font-syne font-black text-[#8083ff]">0</span>
-          <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mt-1 font-mono">Novas Mensagens</p>
+        <div className="glass-card p-6 fade-up-4 border-primary/10">
+          <span className="text-3xl font-dm font-bold text-primary">--</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Em Aberto</p>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col lg:flex-row items-center gap-4 mb-8 fade-up-5">
+      <div className="flex flex-col lg:flex-row items-center gap-3 mb-8 fade-up-5">
         <div className="relative w-full lg:flex-1">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-             <Search className="h-4 w-4 text-white/20" />
-          </div>
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
           <Input 
-            placeholder="Pesquisar por nome, CPF ou instituição..." 
-            className="pl-11 h-12 bg-white/[0.03] border-white/10 rounded-2xl focus:ring-primary/20 text-sm font-dm" 
+            placeholder="Buscar por nome ou instituição..." 
+            className="pl-11 h-11 bg-card/40 border-border/50 rounded-xl font-dm" 
             value={busca} 
             onChange={e => setBusca(e.target.value)} 
           />
@@ -177,13 +141,11 @@ export default function AlunosPage() {
 
         <div className="flex items-center gap-3 w-full lg:w-auto">
             <Select value={statusFiltro} onValueChange={setStatusFiltro}>
-                <SelectTrigger className="h-12 bg-white/[0.03] border-white/10 rounded-2xl min-w-[180px] font-syne font-bold text-xs uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                        <Filter size={14} className="text-primary" />
-                        <SelectValue placeholder="Estado" />
-                    </div>
+                <SelectTrigger className="h-11 bg-card/40 border-border/50 rounded-xl min-w-[170px] font-dm text-xs font-bold uppercase tracking-wider">
+                    <Filter size={14} className="mr-2 text-primary" />
+                    <SelectValue placeholder="Estado" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0d0f1e] border-white/10 text-white font-dm">
+                <SelectContent className="font-dm">
                     <SelectItem value="todos">Todos Status</SelectItem>
                     <SelectItem value="ativo">Ativos</SelectItem>
                     <SelectItem value="formado">Formados</SelectItem>
@@ -193,33 +155,33 @@ export default function AlunosPage() {
 
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button className="h-12 bg-gradient-brand text-white rounded-2xl px-6 font-syne font-black text-xs uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform flex-1 lg:flex-none">
-                        <UserPlus size={16} className="mr-2" /> Novo Aluno
+                    <Button className="h-11 bg-primary text-white rounded-xl px-6 font-dm font-bold text-xs uppercase tracking-wider shadow-lg hover:translate-y-[-1px] transition-all flex-1 lg:flex-none">
+                        <UserPlus size={16} className="mr-2" /> NOVO ALUNO
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="glass-card border-white/10 backdrop-blur-3xl text-white">
+                <DialogContent className="sm:max-w-[450px]">
                     <DialogHeader>
-                    <DialogTitle className="font-syne font-extrabold text-xl">Novo Cadastro</DialogTitle>
-                    <DialogDescription className="text-white/40">Preencha as informações do contato abaixo.</DialogDescription>
+                        <DialogTitle className="font-dm font-bold">Novo Cadastro</DialogTitle>
+                        <DialogDescription className="font-dm">Preencha os dados do aluno/contato.</DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-5 py-6">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">Nome Completo</Label>
-                        <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="João Silva..." />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">CPF</Label>
-                            <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="000.000.000-00" />
+                    <div className="grid gap-4 py-4 font-dm">
+                        <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Nome Completo</Label>
+                            <Input placeholder="Ex: João da Silva" className="bg-muted/50 border-none" />
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-mono">Telefone</Label>
-                            <Input className="bg-white/5 border-white/10 h-11 rounded-xl" placeholder="(00) 00000-0000" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">WhatsApp</Label>
+                                <Input placeholder="(00) 00000-0000" className="bg-muted/50 border-none" />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">CPF / RG</Label>
+                                <Input placeholder="000.000.000-00" className="bg-muted/50 border-none" />
+                            </div>
                         </div>
-                    </div>
                     </div>
                     <DialogFooter>
-                        <Button className="w-full bg-gradient-brand text-white rounded-xl h-12 font-syne font-black text-xs uppercase tracking-widest">Criar Registro</Button>
+                        <Button className="w-full bg-primary text-white font-dm font-bold text-xs uppercase tracking-widest h-12">SALVAR REGISTRO</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -227,100 +189,58 @@ export default function AlunosPage() {
       </div>
 
       {/* Main Table */}
-      <div className="glass-card overflow-hidden fade-up-5 mb-10">
-        <div className="w-full overflow-x-auto no-scrollbar">
-          <table className="w-full text-left border-collapse">
+      <div className="glass-card shadow-sm rounded-2xl overflow-hidden fade-up-5 mb-10 border-border/50">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-left font-dm">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.02] select-none">
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Aluno</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono hidden md:table-cell">CPF / Documento</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Instituição</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono">Projeto Ativo</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono text-center">Status</th>
-                <th className="px-6 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] font-mono text-right">Ação</th>
+              <tr className="border-b border-border/50 bg-muted/30">
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Aluno</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest hidden md:table-cell">CPF</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Instituição</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.03]">
+            <tbody className="divide-y divide-border/30">
               {isLoading ? (
-                [1, 2, 3, 4, 5, 6].map(i => (
-                   <tr key={i} className="bg-transparent">
-                     <td className="px-6 py-5"><div className="flex items-center gap-3"><Skeleton className="h-10 w-10 rounded-xl bg-white/5"/><div className="space-y-2"><Skeleton className="h-3 w-32 bg-white/5"/><Skeleton className="h-2 w-20 bg-white/5"/></div></div></td>
-                     <td className="px-6 py-5 hidden md:table-cell"><Skeleton className="h-3 w-28 bg-white/5"/></td>
-                     <td className="px-6 py-5"><Skeleton className="h-3 w-32 bg-white/5"/></td>
-                     <td className="px-6 py-5"><Skeleton className="h-3 w-32 bg-white/5"/></td>
-                     <td className="px-6 py-5"><center><Skeleton className="h-6 w-20 rounded-full bg-white/5"/></center></td>
-                     <td className="px-6 py-5 text-right"><Skeleton className="h-8 w-8 ml-auto rounded-lg bg-white/5"/></td>
-                   </tr>
+                [1, 2, 3, 4, 5].map(i => (
+                   <tr key={i}><td colSpan={5} className="p-6"><Skeleton className="h-10 w-full rounded-xl opacity-20" /></td></tr>
                 ))
               ) : (
                 alunos?.map(aluno => {
                     const st = getStatusStyle(aluno.status);
                     return (
-                        <tr key={aluno.id} className="group hover:bg-white/[0.03] transition-all duration-300">
-                        <td className="px-6 py-5">
-                            <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <Avatar className="h-11 w-11 rounded-xl border border-white/10 shadow-lg">
+                        <tr key={aluno.id} className="group hover:bg-muted/30 transition-all cursor-pointer" onClick={() => handleVerAluno(aluno)}>
+                        <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-9 w-9 rounded-lg shadow-sm border border-border/50 group-hover:scale-105 transition-transform">
                                     <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${aluno.nome}`} />
-                                    <AvatarFallback className="bg-gradient-brand text-white font-syne font-black text-xs">
-                                        {aluno.nome.substring(0, 2).toUpperCase()}
-                                    </AvatarFallback>
+                                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">{aluno.nome[0]}</AvatarFallback>
                                 </Avatar>
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#07080f] shadow-sm" style={{ backgroundColor: st.color }} />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="font-syne font-bold text-[14px] text-white/90 group-hover:text-primary transition-colors">{aluno.nome}</span>
-                                <span className="text-[11px] font-dm text-muted-foreground/60">{aluno.telefone || "Sem contato"}</span>
-                            </div>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-[13.5px] text-foreground/90">{aluno.nome}</span>
+                                    <span className="text-[11px] text-muted-foreground">{aluno.telefone || "Sem contato"}</span>
+                                </div>
                             </div>
                         </td>
-                        <td className="px-6 py-5 hidden md:table-cell">
-                            <span className="font-mono text-xs text-white/40 tracking-wider">
-                                {aluno.cpf || 'S/N'}
-                            </span>
-                        </td>
-                        <td className="px-6 py-5">
-                            <div className="flex items-center gap-2">
-                                <Building2 size={12} className="text-primary/40" />
-                                <span className="text-xs font-dm text-white/60 truncate max-w-[160px]">{aluno.instituicao || '-'}</span>
-                            </div>
-                        </td>
-                        <td className="px-6 py-5">
-                            <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-primary/30" />
-                                <span className="text-xs font-dm text-white/60 truncate max-w-[160px]">{aluno.projeto || '-'}</span>
-                            </div>
-                        </td>
-                        <td className="px-6 py-5">
+                        <td className="px-6 py-4 hidden md:table-cell text-xs text-muted-foreground">{aluno.cpf || '---'}</td>
+                        <td className="px-6 py-4 text-xs font-medium text-muted-foreground/80 truncate max-w-[180px]">{aluno.instituicao || '-'}</td>
+                        <td className="px-6 py-4">
                             <center>
-                                <div 
-                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest font-mono shadow-sm border"
-                                style={{ backgroundColor: st.bg, color: st.color, borderColor: `${st.color}25` }}
-                                >
-                                {aluno.status}
+                                <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${st.bg} ${st.text} border-transparent`}>
+                                    <span className={`w-1 h-1 rounded-full ${st.dot}`} />
+                                    {aluno.status}
                                 </div>
                             </center>
                         </td>
-                        <td className="px-6 py-5 text-right">
-                            <Button 
-                                variant="ghost" size="icon" 
-                                className="h-9 w-9 rounded-xl text-white/30 hover:text-white hover:bg-white/[0.05] hover:border-white/10 border border-transparent transition-all"
-                                onClick={() => handleVerAluno(aluno)}
-                            >
-                                <Eye size={16} />
+                        <td className="px-6 py-4 text-right">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all">
+                                <Eye size={14} />
                             </Button>
                         </td>
                         </tr>
                     );
                 })
-              )}
-              {!isLoading && alunos?.length === 0 && (
-                 <tr>
-                    <td colSpan={6} className="py-20 text-center">
-                        <Search size={40} className="mx-auto text-white/5 mb-4" />
-                        <p className="text-[11px] font-black uppercase tracking-widest text-white/20 font-mono italic">Busca sem resultados nesta frequência</p>
-                    </td>
-                 </tr>
               )}
             </tbody>
           </table>
@@ -329,6 +249,3 @@ export default function AlunosPage() {
     </MainLayout>
   );
 }
-
-// Para manter ícones consistentes
-import { Check } from "lucide-react";

@@ -131,8 +131,8 @@ export function StatCard({
           {title}
         </p>
         <p
-          className="font-syne font-extrabold leading-none"
-          style={{ fontSize: 26, color: "#f0f0ff", letterSpacing: "-1px" }}
+          className="font-dm font-black leading-none"
+          style={{ fontSize: 26, color: "var(--text-primary)", letterSpacing: "-1px" }}
         >
           {value}
         </p>
