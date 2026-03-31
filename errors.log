@@ -1,2 +1,0 @@
-﻿app/eventos/[id]/page.tsx(3,21): error TS2724: '"@/hooks/useEventos"' has no exported member named 'useUpdateEvento'. Did you mean 'useCreateEvento'?
-app/financeiro/page.tsx(87,103): error TS2552: Cannot find name 'Clock'. Did you mean 'Lock'?
