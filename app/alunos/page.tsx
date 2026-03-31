@@ -11,7 +11,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, Filter, UserPlus, FileText, Building2, Phone, Hash, CreditCard, Mail } from "lucide-react";
+import { Search, Eye, Filter, UserPlus, FileText, Building2, Phone, CreditCard } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function AlunosPage() {
