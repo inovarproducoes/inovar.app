@@ -24,7 +24,7 @@ const PRIORIDADE_COLORS = {
   urgente: { bg: "bg-red-500/10", text: "text-red-500", border: "border-red-500/20" },
 };
 
-export function TaskCard({ task, onClick }: TaskCardProps) {
+export function TaskCard({ task, onClick, onUpdate }: TaskCardProps) {
   const {
     setNodeRef,
     attributes,
