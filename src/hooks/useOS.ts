@@ -32,5 +32,7 @@ export function useOsStats() {
       return res.json();
     },
     initialData: STATS_INITIAL_DATA,
+    staleTime: 5000, // 5 segundos de cache apenas
+    refetchOnWindowFocus: true
   });
 }

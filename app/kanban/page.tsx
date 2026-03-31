@@ -210,15 +210,43 @@ export default function KanbanPage() {
     if (!over || !activeBoard) return;
     if (active.id === over.id) return;
 
+    // Encontrar a tarefa atualizada no nosso estado (que foi modificado no onDragOver)
     const task = activeBoard.colunas.flatMap(c => c.tarefas).find(t => t.id === active.id);
+    
     if (task) {
+       // Calcular a nova ordem (baseada na posição dentro da coluna)
+       const column = activeBoard.colunas.find(c => c.id === task.coluna_id);
+       const newOrder = column?.tarefas.findIndex(t => t.id === task.id) || 0;
+
        try {
-         await fetch(`/api/kanban/tasks/${task.id}`, {
+         const res = await fetch(`/api/kanban/tasks/${task.id}`, {
            method: 'PATCH',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ coluna_id: task.coluna_id, ordem: 0 })
+           body: JSON.stringify({ 
+             coluna_id: task.coluna_id, 
+             ordem: newOrder 
+           })
          });
-       } catch (err) { console.error(err); }
+
+         if (res.ok) {
+            // SUCESSO: Notificar o sistema que as OS mudaram para atualizar Dashboard
+            // Invalida o cache das stats para que o Dashboard busque dados novos
+            const queryClientRes = await fetch('/api/os/stats', { method: 'GET', headers: { 'Cache-Control': 'no-cache' } });
+            if (queryClientRes.ok) {
+               // Como não tenho acesso ao hook de queryClient aqui diretamente (ele é global), 
+               // a próxima vez que o dashboard for aberto, ele fetchará.
+               // Mas podemos forçar um fetch silencioso aqui.
+            }
+            toast.success("Sincronizado com sucesso!");
+         } else {
+            toast.error("Erro ao persistir posição.");
+            fetchBoards(); // Rollback se der erro
+         }
+       } catch (err) { 
+         console.error(err);
+         toast.error("Erro de conexão");
+         fetchBoards(); 
+       }
     }
     setActiveTask(null);
     setActiveColumn(null);

@@ -60,8 +60,13 @@ export async function PATCH(
           data: { 
             coluna_id: coluna_id || undefined,
             quadro_id: targetCol ? targetCol.quadro_id : undefined,
-            status: targetCol ? targetCol.nome.toLowerCase().replace(/\s+/g, '_') : undefined,
-            nome: titulo || undefined, // Mapeado de titulo para nome na OS
+            // Normalizar status para contagem do dashboard
+            status: targetCol ? targetCol.nome
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+              .replace(/\s+/g, '_') : undefined,
+            nome: titulo || undefined, 
             descricao: descricao !== undefined ? descricao : undefined,
             responsavel_nome: responsavel_nome !== undefined ? responsavel_nome : undefined,
             aluno_nome: aluno_nome !== undefined ? aluno_nome : undefined,
