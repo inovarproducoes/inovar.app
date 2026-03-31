@@ -27,6 +27,8 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { ITask, IColumn } from "@/types/kanban";
 
 interface ColumnContainerProps {
@@ -112,13 +114,21 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
     }
   };
 
-  const handleAddTask = async () => {
+  const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
+  const [newTaskData, setNewTaskData] = useState({ titulo: "", instituicao: "", projeto_nome: "" });
+
+  const confirmAddTask = async () => {
+    if (!newTaskData.titulo) {
+      toast.error("O título é obrigatório");
+      return;
+    }
+    
     try {
       const resp = await fetch('/api/kanban/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          titulo: 'Nova Tarefa',
+          ...newTaskData,
           coluna_id: id,
           quadro_id: boardId,
           prioridade: 'media'
@@ -126,11 +136,17 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       });
       if (resp.ok) {
         toast.success("Tarefa criada");
+        setIsNewTaskOpen(false);
+        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "" });
         onUpdate();
       }
     } catch {
       toast.error("Erro ao criar tarefa");
     }
+  };
+
+  const handleAddTask = () => {
+    setIsNewTaskOpen(true);
   };
 
   /* Progress based on column title */
@@ -265,7 +281,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
          </Button>
       </div>
 
-      {/* Dialogs kept standard but stylable via classNames if needed */}
+      {/* Dialogs */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="bg-[#0d0f1e]/95 border-white/10 backdrop-blur-xl text-white">
           <DialogHeader>
@@ -300,6 +316,57 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
             <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)} className="rounded-xl font-syne font-bold uppercase tracking-wider text-xs">Cancelar</Button>
             <Button variant="destructive" onClick={handleDelete} disabled={tasks.length > 0 && !targetColumnId} className="bg-[#f76a80] hover:bg-[#ac3149] rounded-xl font-syne font-bold uppercase tracking-wider text-xs">
               Confirmar Exclusão
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
+        <DialogContent className="bg-background/95 border-border/40 backdrop-blur-xl text-foreground sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="font-syne font-extrabold text-xl">Criar Nova Tarefa</DialogTitle>
+            <DialogDescription className="font-dm text-muted-foreground">
+              Preencha os detalhes fundamentais para o acompanhamento do evento.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4 font-dm">
+            <div className="grid gap-2">
+              <Label htmlFor="qc-title" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Título da Tarefa</Label>
+              <Input 
+                id="qc-title" 
+                placeholder="Ex: Entrega de becas..." 
+                value={newTaskData.titulo} 
+                onChange={(e) => setNewTaskData({ ...newTaskData, titulo: e.target.value })}
+                className="bg-muted/30 border-none rounded-xl h-12"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="qc-inst" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Instituição</Label>
+              <Input 
+                id="qc-inst" 
+                placeholder="Ex: Escola Municipal..." 
+                value={newTaskData.instituicao} 
+                onChange={(e) => setNewTaskData({ ...newTaskData, instituicao: e.target.value })}
+                className="bg-muted/30 border-none rounded-xl h-11"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="qc-proj" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Projeto / Evento</Label>
+              <Input 
+                id="qc-proj" 
+                placeholder="Ex: Formatura 2024..." 
+                value={newTaskData.projeto_nome} 
+                onChange={(e) => setNewTaskData({ ...newTaskData, projeto_nome: e.target.value })}
+                className="bg-muted/30 border-none rounded-xl h-11"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsNewTaskOpen(false)} className="rounded-xl font-syne font-bold uppercase tracking-wider text-[10px]">Cancelar</Button>
+            <Button onClick={confirmAddTask} className="bg-primary text-white rounded-xl font-syne font-bold uppercase tracking-wider text-[10px] px-8 h-12 shadow-lg shadow-primary/20">
+              Criar Tarefa
             </Button>
           </DialogFooter>
         </DialogContent>

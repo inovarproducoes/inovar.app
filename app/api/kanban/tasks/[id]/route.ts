@@ -94,13 +94,16 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Tentar deletar como Tarefa
+    // 1. Tentar arquivar como Tarefa
     try {
-      await prisma.tarefa.delete({ where: { id } });
-      return NextResponse.json({ success: true });
+      await prisma.tarefa.update({ 
+        where: { id },
+        data: { arquivado: true }
+      });
+      return NextResponse.json({ success: true, archived: true });
     } catch { }
 
-    // Tentar deletar como OS (Arquivo na verdade)
+    // 2. Tentar arquivar como OS
     try {
       await prisma.oS.update({ 
         where: { id },

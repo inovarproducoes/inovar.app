@@ -3,13 +3,22 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { titulo, descricao, coluna_id, quadro_id, prioridade, responsavel_nome, data_vencimento } = await req.json();
+    const { 
+      titulo, 
+      descricao, 
+      coluna_id, 
+      quadro_id, 
+      prioridade, 
+      responsavel_nome, 
+      data_vencimento,
+      instituicao,
+      projeto_nome
+    } = await req.json();
 
     if (!titulo || !coluna_id || !quadro_id) {
       return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 });
     }
 
-    // Get number of tasks in the target column to set the new task's order
     const taskCount = await prisma.tarefa.count({
       where: { coluna_id }
     });
@@ -22,6 +31,9 @@ export async function POST(req: Request) {
         quadro_id,
         prioridade: prioridade || 'media',
         responsavel_nome,
+        instituicao,
+        projeto_nome,
+        arquivado: false,
         data_vencimento: data_vencimento ? new Date(data_vencimento) : null,
         ordem: taskCount
       }
@@ -58,7 +70,22 @@ export async function PUT(req: Request) {
             data_vencimento: data_vencimento ? new Date(data_vencimento) : undefined
           }
         });
-        return NextResponse.json(updatedTask);
+      if (id) {
+        const task = await prisma.tarefa.findUnique({ where: { id } });
+        if (task) {
+          const updatedTask = await prisma.tarefa.update({
+            where: { id },
+            data: {
+              coluna_id,
+              ordem,
+              titulo,
+              descricao,
+              prioridade: prioridade,
+              data_vencimento: data_vencimento ? new Date(data_vencimento) : undefined
+            }
+          });
+          return NextResponse.json(updatedTask);
+        }
       }
     } catch { 
       // Ignora erro se não for UUID válido para a tabela de tarefas
@@ -66,16 +93,18 @@ export async function PUT(req: Request) {
 
     // 2. Tentar atualizar como OS
     try {
-      const os = await prisma.oS.findUnique({ 
-        where: { id },
-        include: { coluna: true }
-      });
+      let os = id ? await prisma.oS.findUnique({ where: { id } }) : null;
+      
+      // Safety net: Se não achou por ID (ou ID vazio), tenta pelo numero se estiver vindo no body
+      if (!os && body.numero) {
+        os = await prisma.oS.findFirst({ where: { numero: body.numero } });
+      }
       
       if (os) {
          const targetCol = coluna_id ? await prisma.coluna.findUnique({ where: { id: coluna_id } }) : null;
          
          const updatedOS = await prisma.oS.update({
-           where: { id },
+           where: { id: os.id },
            data: { 
              coluna_id: coluna_id || undefined,
              ordem: ordem !== undefined ? ordem : undefined,

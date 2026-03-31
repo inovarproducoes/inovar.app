@@ -117,11 +117,15 @@ model Tarefa {
   created_at       DateTime  @default(now())
   updated_at       DateTime  @default(now()) @updatedAt
   prioridade       String    @default("media")
+  instituicao      String?
+  projeto_nome     String?
+  arquivado        Boolean   @default(false)
   coluna           Coluna    @relation(fields: [coluna_id], references: [id], onDelete: Cascade)
   quadro           Quadro    @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
 
   @@index([coluna_id])
   @@index([quadro_id])
+  @@index([arquivado])
   @@map("tarefas")
 }
 

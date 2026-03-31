@@ -154,55 +154,53 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
             </div>
           </div>
 
-          {task?.isOS && (
-            <div className="space-y-6 pt-4 border-t border-border/30">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome do Aluno</Label>
-                  <Input 
-                    id="aluno_nome" 
-                    value={formData.aluno_nome || ""} 
-                    onChange={e => setFormData({...formData, aluno_nome: e.target.value})}
-                    className="bg-muted/30 border-none"
-                    placeholder="Nome do aluno..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="aluno_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF do Aluno</Label>
-                  <Input 
-                    id="aluno_cpf" 
-                    value={formData.aluno_cpf || ""} 
-                    onChange={e => setFormData({...formData, aluno_cpf: e.target.value})}
-                    className="bg-muted/30 border-none"
-                    placeholder="000.000.000-00"
-                  />
-                </div>
+          <div className="space-y-6 pt-4 border-t border-border/30">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome do Aluno</Label>
+                <Input 
+                  id="aluno_nome" 
+                  value={formData.aluno_nome || ""} 
+                  onChange={e => setFormData({...formData, aluno_nome: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="Nome do aluno..."
+                />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="instituicao" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Instituição</Label>
-                  <Input 
-                    id="instituicao" 
-                    value={formData.instituicao || ""} 
-                    onChange={e => setFormData({...formData, instituicao: e.target.value})}
-                    className="bg-muted/30 border-none"
-                    placeholder="Ex: Escola X..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="projeto_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Projeto</Label>
-                  <Input 
-                    id="projeto_nome" 
-                    value={formData.projeto_nome || ""} 
-                    onChange={e => setFormData({...formData, projeto_nome: e.target.value})}
-                    className="bg-muted/30 border-none"
-                    placeholder="Ex: Projeto Y..."
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="aluno_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF do Aluno</Label>
+                <Input 
+                  id="aluno_cpf" 
+                  value={formData.aluno_cpf || ""} 
+                  onChange={e => setFormData({...formData, aluno_cpf: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="000.000.000-00"
+                />
               </div>
             </div>
-          )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="instituicao" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Instituição</Label>
+                <Input 
+                  id="instituicao" 
+                  value={formData.instituicao || ""} 
+                  onChange={e => setFormData({...formData, instituicao: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="Ex: Escola X..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="projeto_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Projeto</Label>
+                <Input 
+                  id="projeto_nome" 
+                  value={formData.projeto_nome || ""} 
+                  onChange={e => setFormData({...formData, projeto_nome: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="Ex: Projeto Y..."
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         <SheetFooter className="mt-8 gap-3 sm:gap-0 border-t border-border/30 pt-6">

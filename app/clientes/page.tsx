@@ -69,20 +69,20 @@ export default function ClientesPage() {
         </div>
         <div className="kpi-card flex items-center gap-5">
           <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 text-emerald-500">
-            <MessageSquare size={24} />
+            <TrendingUp size={24} />
           </div>
           <div>
-            <p className="text-3xl font-dm font-black text-emerald-500">12</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-dm">Novas Leads</p>
+            <p className="text-3xl font-dm font-black text-emerald-500">{hotLeads}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-dm">Leads Quentes</p>
           </div>
         </div>
         <div className="kpi-card hidden md:flex items-center gap-5">
           <div className="bg-indigo-500/10 p-3 rounded-2xl border border-indigo-500/20 text-indigo-500">
-            <Hash size={24} />
+            <Search size={24} />
           </div>
           <div>
-            <p className="text-3xl font-dm font-black text-indigo-500">04</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-dm">Prospeção</p>
+            <p className="text-3xl font-dm font-black text-indigo-500">{prospeccao}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground font-dm">Em Prospecção</p>
           </div>
         </div>
       </div>
