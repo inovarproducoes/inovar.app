@@ -6,9 +6,6 @@ import { Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
 
 type Modo = "login" | "registro";
 
-/* ─── Logo Elegante do App (Substituindo Orb sci-fi) ─── */
-import { Sparkles } from "lucide-react";
-
 /* ─── Logo Elegante do App (Branding Roxo) ─── */
 import { Sparkles } from "lucide-react";
 
