@@ -65,7 +65,7 @@
 @layer base {
   * { @apply border-border/50; }
   body { 
-    @apply bg-background text-foreground antialiased selection:bg-primary/30Selection;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30;
     font-feature-settings: "cv11", "ss01", "ss03";
   }
 }
