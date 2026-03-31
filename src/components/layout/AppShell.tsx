@@ -11,6 +11,13 @@ import { usePageTitle } from "@/context/PageTitleContext";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ITask } from "@/types/kanban";
+
+interface SearchResultsState {
+  alumnos: { id: string; nome: string; curso: string | null }[];
+  clientes: { id: string; nome: string; empresa: string | null; telefone: string | null }[];
+  os: { id: string; numero: string | null; nome: string; status: string }[];
+}
 
 const menuItems = [
   { name: "Dashboard",   href: "/",                icon: LayoutDashboard },
@@ -127,7 +134,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { title } = usePageTitle();
   const [clock, setClock] = useState("--:--");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<{ alumnos: any[], clientes: any[], os: any[] }>({ alumnos: [], clientes: [], os: [] });
+  const [searchResults, setSearchResults] = useState<SearchResultsState>({ alumnos: [], clientes: [], os: [] });
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
@@ -241,7 +248,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                     <span className="text-[10px] font-bold uppercase text-primary">Ordens de Serviço</span>
                                  </div>
                                  <div className="space-y-1">
-                                    {searchResults.os.map((os: any) => (
+                                    {searchResults.os.map((os) => (
                                        <Link key={os.id} href="/kanban" onClick={() => setShowResults(false)} className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors group">
                                           <div className="flex flex-col">
                                              <span className="text-xs font-bold text-foreground group-hover:text-primary">OS #{os.numero || os.id.split('-')[0]}</span>
@@ -261,7 +268,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                     <span className="text-[10px] font-bold uppercase text-indigo-500">Alunos</span>
                                  </div>
                                  <div className="space-y-1">
-                                    {searchResults.alumnos.map((aluno: any) => (
+                                    {searchResults.alumnos.map((aluno) => (
                                        <Link key={aluno.id} href="/alunos" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
                                           <Avatar className="h-7 w-7 rounded-lg">
                                              <AvatarFallback className="bg-indigo-500/10 text-indigo-500 text-[8px] font-black">{aluno.nome.charAt(0)}</AvatarFallback>
@@ -283,7 +290,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                     <span className="text-[10px] font-bold uppercase text-emerald-500">Clientes</span>
                                  </div>
                                  <div className="space-y-1">
-                                    {searchResults.clientes.map((cli: any) => (
+                                    {searchResults.clientes.map((cli) => (
                                        <Link key={cli.id} href="/clientes" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
                                           <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-[8px] font-black">
                                              {cli.nome.charAt(0)}
