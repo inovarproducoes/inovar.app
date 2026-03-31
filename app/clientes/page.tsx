@@ -8,7 +8,7 @@ import { Cliente } from "@/types/clientes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Phone, Search, Filter, Plus, Mail, MessageSquare, ExternalLink, Hash, Calendar } from "lucide-react";
+import { User, Phone, Search, Filter, Plus, Mail, ExternalLink, Calendar, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -34,6 +34,8 @@ export default function ClientesPage() {
   });
 
   const total = clientes?.length || 0;
+  const hotLeads = clientes?.filter(c => (c.lead_score || 0) >= 80).length || 0;
+  const prospeccao = clientes?.filter(c => (c.lead_score || 0) > 0 && (c.lead_score || 0) < 80).length || 0;
 
   const handleOpenWhatsApp = (telefone: string) => {
     const cleaned = telefone.replace(/\D/g, '');
