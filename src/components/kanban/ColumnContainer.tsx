@@ -42,11 +42,10 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { clientesService } from "@/services/clientesService";
 import type { ITask, IColumn } from "@/types/kanban";
-import { Search, Popover as PopoverIcon, UserPlus } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 
 interface ColumnContainerProps {
   id: string;
