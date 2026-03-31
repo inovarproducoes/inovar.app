@@ -118,9 +118,9 @@ export default function AlunosPage() {
                     <div key={field.key} className="space-y-1.5">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5"><field.icon size={10}/> {field.label}</Label>
                         {isEditMode ? (
-                            <Input value={(alunoSelecionado as Record<string, any>)?.[field.key] || ""} onChange={e => setAlunoSelecionado(a => a ? {...a, [field.key]: e.target.value} : null)} className="h-9 bg-muted/30 border-primary/20 text-xs" />
+                            <Input value={(alunoSelecionado as Record<string, string | null | undefined>)?.[field.key] || ""} onChange={e => setAlunoSelecionado(a => a ? {...a, [field.key]: e.target.value} : null)} className="h-9 bg-muted/30 border-primary/20 text-xs" />
                         ) : (
-                            <p className="text-sm font-dm pl-2 border-l-2 border-primary/10">{(alunoSelecionado as Record<string, any>)?.[field.key] || '--'}</p>
+                            <p className="text-sm font-dm pl-2 border-l-2 border-primary/10">{(alunoSelecionado as Record<string, string | null | undefined>)?.[field.key] || '--'}</p>
                         )}
                     </div>
                 ))}
