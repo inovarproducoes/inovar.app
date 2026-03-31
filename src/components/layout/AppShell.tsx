@@ -1,13 +1,12 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Briefcase,
   GraduationCap, Bell, Layout, LogOut, Archive, 
   Sun, Moon, Search,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import { usePageTitle } from "@/context/PageTitleContext";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
@@ -24,7 +23,6 @@ const menuItems = [
 /* ─── Sidebar ─────────────────────────────────────────────────── */
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname   = usePathname();
-  const router     = useRouter();
   const { usuario, logout } = useAuth();
 
   const handleLogout = async () => { await logout(); };
