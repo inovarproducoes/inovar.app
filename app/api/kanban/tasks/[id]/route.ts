@@ -59,6 +59,7 @@ export async function PATCH(
           where: { id },
           data: { 
             coluna_id: coluna_id || undefined,
+            ordem: ordem !== undefined ? ordem : undefined,
             quadro_id: targetCol ? targetCol.quadro_id : undefined,
             // Normalizar status para contagem do dashboard
             status: targetCol ? targetCol.nome

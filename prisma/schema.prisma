@@ -138,6 +138,7 @@ model OS {
   projeto_nome     String?
   instituicao      String?
   arquivado        Boolean  @default(false)
+  ordem            Int      @default(0)
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now()) @updatedAt
   coluna_id        String?

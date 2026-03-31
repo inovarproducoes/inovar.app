@@ -16,6 +16,7 @@ import {
 import { 
   SortableContext, 
   horizontalListSortingStrategy,
+  arrayMove,
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -156,18 +157,22 @@ export default function KanbanPage() {
     if (isActiveATask && isOverATask) {
       setActiveBoard((board: IBoard | null) => {
         if (!board) return board;
+        
         const activeCol = board.colunas.find((c: IColumn) => c.tarefas.some(t => t.id === activeId));
         const overCol = board.colunas.find((c: IColumn) => c.tarefas.some(t => t.id === overId));
+        
         if (!activeCol || !overCol) return board;
 
         if (activeCol.id !== overCol.id) {
           const activeIndex = activeCol.tarefas.findIndex(t => t.id === activeId);
           const overIndex = overCol.tarefas.findIndex(t => t.id === overId);
+          
           const taskToMove = { ...activeCol.tarefas[activeIndex], coluna_id: overCol.id };
-          const newActiveTasks = [...activeCol.tarefas];
-          newActiveTasks.splice(activeIndex, 1);
+          
+          const newActiveTasks = activeCol.tarefas.filter(t => t.id !== activeId);
           const newOverTasks = [...overCol.tarefas];
           newOverTasks.splice(overIndex, 0, taskToMove);
+          
           return {
             ...board,
             colunas: board.colunas.map(c => {
@@ -176,8 +181,23 @@ export default function KanbanPage() {
                    return c;
             })
           };
+        } else {
+          // Mesmo coluna - Reordenar verticalmente
+          const activeIndex = activeCol.tarefas.findIndex(t => t.id === activeId);
+          const overIndex = activeCol.tarefas.findIndex(t => t.id === overId);
+          
+          if (activeIndex === overIndex) return board;
+          
+          const newTasks = arrayMove(activeCol.tarefas, activeIndex, overIndex);
+          
+          return {
+            ...board,
+            colunas: board.colunas.map(c => {
+               if (c.id === activeCol.id) return { ...c, tarefas: newTasks };
+               return c;
+            })
+          };
         }
-        return board;
       });
     }
 
@@ -187,12 +207,15 @@ export default function KanbanPage() {
         if (!board) return board;
         const activeCol = board.colunas.find(c => c.tarefas.some(t => t.id === activeId));
         const overCol = board.colunas.find(c => c.id === overId);
+        
         if (!activeCol || !overCol || activeCol.id === overCol.id) return board;
+        
         const activeIndex = activeCol.tarefas.findIndex(t => t.id === activeId);
         const taskToMove = { ...activeCol.tarefas[activeIndex], coluna_id: overCol.id };
-        const newActiveTasks = [...activeCol.tarefas];
-        newActiveTasks.splice(activeIndex, 1);
+        
+        const newActiveTasks = activeCol.tarefas.filter(t => t.id !== activeId);
         const newOverTasks = [...overCol.tarefas, taskToMove];
+        
         return {
            ...board,
            colunas: board.colunas.map(c => {

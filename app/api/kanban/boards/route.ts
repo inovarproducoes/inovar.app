@@ -15,7 +15,7 @@ export async function GET() {
             },
             ordens_servico: {
               where: { arquivado: false },
-              orderBy: { created_at: 'desc' }
+              orderBy: { ordem: 'asc' }
             }
           }
         }
@@ -33,7 +33,7 @@ export async function GET() {
             titulo: `OS - ${os.nome} (${os.aluno_nome || 'Sem Aluno'})`,
             descricao: os.descricao || 'Sem descrição',
             status: os.status,
-            ordem: -1, 
+            ordem: os.ordem || 0, 
             prioridade: 'alta',
             coluna_id: col.id,
             quadro_id: board.id,

@@ -150,15 +150,14 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       style={style}
       className={`
         w-[320px] md:w-[360px] flex flex-col h-full 
-        glass-card border-white/5 
-        ${isDragging ? 'shadow-2xl scale-[1.02] rotate-1 z-30 ring-2 ring-primary bg-white/[0.08]' : 'bg-white/[0.03]'} 
-        flex-shrink-0 transition-all duration-300
+        glass-card border-border/10
+        ${isDragging ? 'shadow-2xl scale-[1.02] rotate-1 z-30 ring-2 ring-primary bg-muted/40' : 'bg-muted/10'} 
+        flex-shrink-0 transition-all duration-300 rounded-2xl overflow-hidden
       `}
     >
       {/* Column Header */}
       <div
-        className="p-5 flex flex-col gap-4 group/header"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        className="p-5 flex flex-col gap-4 group/header border-b border-border/10"
       >
         <div className="flex justify-between items-center">
           <div 
@@ -177,8 +176,8 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
               />
             ) : (
               <div className="flex items-center gap-2.5 min-w-0">
-                <h3 className="font-dm font-bold text-sm text-white/90 truncate">{title}</h3>
-                <span className="bg-white/10 text-white/60 px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
+                <h3 className="font-dm font-bold text-sm text-foreground/90 truncate">{title}</h3>
+                <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-md text-[10px] font-bold font-mono">
                   {tasks.length}
                 </span>
               </div>
@@ -193,7 +192,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
               {copied ? <Check size={14} /> : <Copy size={14}/>}
             </button>
             <button 
-                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-white/40 hover:text-white" 
+                className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" 
                 onClick={(e) => { e.stopPropagation(); handleAddTask(); }}
                 title="Nova Tarefa"
             >
@@ -202,17 +201,17 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-white/40 hover:text-white" onClick={e => e.stopPropagation()}>
+                <button className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
                   <MoreVertical size={14}/>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-[#0d0f1e]/95 border-white/10 backdrop-blur-xl">
-                <DropdownMenuItem onClick={() => setIsRenaming(true)} className="font-syne font-bold text-xs uppercase tracking-wider text-white/70">
+              <DropdownMenuContent align="end" className="bg-card border-border backdrop-blur-xl">
+                <DropdownMenuItem onClick={() => setIsRenaming(true)} className="font-syne font-bold text-xs uppercase tracking-wider text-foreground/70">
                   <Edit2 className="w-3.5 h-3.5 mr-2" /> Renomear
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/5" />
+                <DropdownMenuSeparator className="bg-border/50" />
                 <DropdownMenuItem 
-                  className="text-[#f76a80] focus:text-[#f76a80] focus:bg-[#f76a80]/10 font-syne font-bold text-xs uppercase tracking-wider" 
+                  className="text-red-500 focus:text-red-500 focus:bg-red-500/10 font-syne font-bold text-xs uppercase tracking-wider" 
                   onClick={() => setIsDeleteDialogOpen(true)}
                 >
                   <Trash2 className="w-3.5 h-3.5 mr-2" /> Deletar Coluna
@@ -225,10 +224,10 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         {/* Custom Progress Bar Style */}
         <div className="space-y-2">
             <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 font-mono">Workflow Status</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 font-mono">Workflow Status</span>
                 <span className="text-[10px] font-black text-primary font-mono">{progress}%</span>
             </div>
-            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+            <div className="h-1 bg-muted rounded-full overflow-hidden">
                 <div 
                     className="h-full bg-gradient-brand transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(74,75,215,0.6)]" 
                     style={{ width: `${progress}%` }} 
@@ -247,19 +246,19 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         
         {tasks.length === 0 && (
           <div className="py-24 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-white/[0.02] flex items-center justify-center mb-4 border border-white/5 group-hover:border-primary/20 transition-all">
-                <Layout className="w-6 h-6 text-white/10" />
+            <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mb-4 border border-border group-hover:border-primary/20 transition-all">
+                <Layout className="w-6 h-6 text-muted-foreground/20" />
             </div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/20 font-mono italic">Esperando tarefas</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40 font-mono italic">Esperando tarefas</p>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="p-4 border-t border-border/10">
          <Button 
            variant="ghost" 
-           className="w-full justify-center text-white/40 hover:text-white hover:bg-white/5 h-11 font-syne font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:scale-[0.98] active:scale-95"
+           className="w-full justify-center text-muted-foreground/60 hover:text-foreground hover:bg-muted h-11 font-syne font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:scale-[0.98] active:scale-95"
            onClick={handleAddTask}
          >
            <Plus size={16} className="mr-2 text-primary"/> Nova Tarefa

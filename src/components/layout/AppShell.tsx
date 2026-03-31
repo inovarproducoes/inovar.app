@@ -62,9 +62,8 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
                   <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-black">INV</AvatarFallback>
                </Avatar>
             </div>
-            <div>
-              <p className="font-syne font-black text-lg tracking-tight text-foreground -mb-1">INOVAR APP</p>
-              <p className="text-[7.5px] font-bold uppercase tracking-[0.08em] text-muted-foreground leading-[1.1]">Sistema pós venda exclusivo da Inovar eventos</p>
+            <div className="flex flex-col">
+              <p className="font-syne font-black text-xl tracking-tighter text-foreground">INOVAR APP</p>
             </div>
           </div>
           <button onClick={onClose} className="md:hidden ml-auto p-2 text-muted-foreground hover:bg-muted rounded-lg">
@@ -127,6 +126,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const { title } = usePageTitle();
   const [clock, setClock] = useState("--:--");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<{ alumnos: any[], clientes: any[], os: any[] }>({ alumnos: [], clientes: [], os: [] });
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("inovar-theme") as "light" | "dark";
@@ -141,8 +144,46 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const now = new Date();
       setClock(now.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }));
     }, 1000);
-    return () => clearInterval(t);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+       if (e.altKey && e.key === 's') {
+          e.preventDefault();
+          document.getElementById('global-search-input')?.focus();
+       }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+       clearInterval(t);
+       window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
+
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults({ alumnos: [], clientes: [], os: [] });
+      setShowResults(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+        if (res.ok) {
+           const data = await res.json();
+           setSearchResults(data);
+           setShowResults(true);
+        }
+      } catch (err) {
+        console.error("Search error", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
@@ -175,11 +216,97 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
            <div className="flex items-center gap-3 sm:gap-6">
               <div className="hidden lg:flex relative group">
-                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                 <Search size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${isSearching ? 'text-primary animate-pulse' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                  <input 
+                    id="global-search-input"
                     placeholder="Busca global (Alt + S)" 
                     className="h-10 pl-11 pr-4 bg-muted/40 border-none rounded-xl text-xs font-dm w-64 focus:ring-2 focus:ring-primary/40 transition-all text-foreground placeholder:text-muted-foreground/50"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
                  />
+
+                 {showResults && (
+                    <div className="absolute top-12 left-0 w-[400px] bg-card border border-border shadow-2xl rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-1">
+                        <div className="flex justify-between items-center mb-4">
+                           <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Resultados da Busca</h4>
+                           <button onClick={() => setShowResults(false)} className="text-muted-foreground hover:text-foreground"><X size={14}/></button>
+                        </div>
+                        
+                        <div className="space-y-6 max-h-[400px] overflow-y-auto no-scrollbar">
+                           {searchResults.os.length > 0 && (
+                              <div>
+                                 <div className="flex items-center gap-2 mb-2">
+                                    <Layout size={12} className="text-primary"/>
+                                    <span className="text-[10px] font-bold uppercase text-primary">Ordens de Serviço</span>
+                                 </div>
+                                 <div className="space-y-1">
+                                    {searchResults.os.map((os: any) => (
+                                       <Link key={os.id} href="/kanban" onClick={() => setShowResults(false)} className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors group">
+                                          <div className="flex flex-col">
+                                             <span className="text-xs font-bold text-foreground group-hover:text-primary">OS #{os.numero || os.id.split('-')[0]}</span>
+                                             <span className="text-[10px] text-muted-foreground truncate w-48">{os.nome}</span>
+                                          </div>
+                                          <span className="text-[9px] px-1.5 py-0.5 bg-primary/10 text-primary rounded font-bold uppercase">{os.status}</span>
+                                       </Link>
+                                    ))}
+                                 </div>
+                              </div>
+                           )}
+
+                           {searchResults.alumnos.length > 0 && (
+                              <div>
+                                 <div className="flex items-center gap-2 mb-2">
+                                    <GraduationCap size={12} className="text-indigo-500"/>
+                                    <span className="text-[10px] font-bold uppercase text-indigo-500">Alunos</span>
+                                 </div>
+                                 <div className="space-y-1">
+                                    {searchResults.alumnos.map((aluno: any) => (
+                                       <Link key={aluno.id} href="/alunos" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
+                                          <Avatar className="h-7 w-7 rounded-lg">
+                                             <AvatarFallback className="bg-indigo-500/10 text-indigo-500 text-[8px] font-black">{aluno.nome.charAt(0)}</AvatarFallback>
+                                          </Avatar>
+                                          <div className="flex flex-col">
+                                             <span className="text-xs font-bold text-foreground group-hover:text-indigo-500">{aluno.nome}</span>
+                                             <span className="text-[10px] text-muted-foreground">{aluno.curso}</span>
+                                          </div>
+                                       </Link>
+                                    ))}
+                                 </div>
+                              </div>
+                           )}
+
+                           {searchResults.clientes.length > 0 && (
+                              <div>
+                                 <div className="flex items-center gap-2 mb-2">
+                                    <Briefcase size={12} className="text-emerald-500"/>
+                                    <span className="text-[10px] font-bold uppercase text-emerald-500">Clientes</span>
+                                 </div>
+                                 <div className="space-y-1">
+                                    {searchResults.clientes.map((cli: any) => (
+                                       <Link key={cli.id} href="/clientes" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
+                                          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-[8px] font-black">
+                                             {cli.nome.charAt(0)}
+                                          </div>
+                                          <div className="flex flex-col">
+                                             <span className="text-xs font-bold text-foreground group-hover:text-emerald-500">{cli.nome}</span>
+                                             <span className="text-[10px] text-muted-foreground">{cli.empresa || cli.telefone}</span>
+                                          </div>
+                                       </Link>
+                                    ))}
+                                 </div>
+                              </div>
+                           )}
+
+                           {searchResults.os.length === 0 && searchResults.alumnos.length === 0 && searchResults.clientes.length === 0 && !isSearching && (
+                              <div className="py-8 text-center">
+                                 <Search className="w-8 h-8 text-muted-foreground/20 mx-auto mb-2" />
+                                 <p className="text-[10px] font-bold text-muted-foreground/40 font-mono tracking-widest uppercase">Nenhum resultado encontrado</p>
+                              </div>
+                           )}
+                        </div>
+                    </div>
+                 )}
               </div>
 
               <div className="flex items-center gap-2">
