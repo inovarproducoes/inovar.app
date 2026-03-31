@@ -1,21 +1,29 @@
 import { Providers } from "@/components/providers/Providers";
-import { Inter } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const syne = Syne({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-syne",
   display: "swap",
-  variable: "--font-inter",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-dm",
+  display: "swap",
 });
 
 export const metadata = {
-  title: "Inovar App",
-  description: "Plataforma de Gestão Educacional e de Eventos com IA"
+  title: "Inovar OS",
+  description: "Next Generation Enterprise Platform — Gestão Educacional",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={inter.variable}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${syne.variable} ${dmSans.variable} dark`}>
       <body>
         <Providers>
           {children}

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TaskCard } from "./TaskCard";
-import { Plus, MoreVertical } from "lucide-react";
+import { Plus, MoreVertical, Copy, Trash2, Edit2, Check, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -13,7 +12,6 @@ import {
   SortableContext,
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import { Progress } from "@/components/ui/progress";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -30,7 +28,6 @@ import {
   DialogFooter
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Copy, Trash2, Edit2, Check } from "lucide-react";
 import type { ITask, IColumn } from "@/types/kanban";
 
 interface ColumnContainerProps {
@@ -117,7 +114,6 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
   };
 
   const handleAddTask = async () => {
-    // ... mantendo o original
     try {
       const resp = await fetch('/api/kanban/tasks', {
         method: 'POST',
@@ -138,83 +134,112 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
     }
   };
 
+  /* Progress based on column title */
+  const getProgress = () => {
+    const t = title.toLowerCase();
+    if (t.includes('concluido') || t.includes('finalizado') || t.includes('pronto')) return 100;
+    if (t.includes('andamento') || t.includes('execução') || t.includes('fazendo')) return 50;
+    if (t.includes('pausado') || t.includes('revisão')) return 80;
+    return 10;
+  };
+
+  const progress = getProgress();
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-[320px] md:w-[350px] flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/20 backdrop-blur-sm rounded-2xl border ${isDragging ? 'border-primary shadow-2xl scale-[1.02] rotate-1 z-30' : 'border-border/40'} flex-shrink-0 transition-all duration-200`}
+      className={`
+        w-[320px] md:w-[360px] flex flex-col h-full 
+        glass-card border-white/5 
+        ${isDragging ? 'shadow-2xl scale-[1.02] rotate-1 z-30 ring-2 ring-primary bg-white/[0.08]' : 'bg-white/[0.03]'} 
+        flex-shrink-0 transition-all duration-300
+      `}
     >
       {/* Column Header */}
       <div
-        {...attributes}
-        {...listeners}
-        className="p-4 flex flex-col gap-3 group/header cursor-grab active:cursor-grabbing"
+        className="p-5 flex flex-col gap-4 group/header"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
       >
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2 flex-1">
+          <div 
+             {...attributes}
+             {...listeners}
+             className="flex items-center gap-3 flex-1 cursor-grab active:cursor-grabbing hover:translate-x-1 transition-transform"
+          >
             {isRenaming ? (
-              <div className="flex items-center gap-1 w-full">
-                <input 
-                  autoFocus
-                  className="bg-background border rounded px-2 py-0.5 text-xs w-full focus:outline-primary"
-                  value={newTitle}
-                  onChange={e => setNewTitle(e.target.value)}
-                  onBlur={handleRename}
-                  onKeyDown={e => e.key === 'Enter' && handleRename()}
-                />
-              </div>
+              <input 
+                autoFocus
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-sm w-full focus:outline-primary font-syne font-bold text-white shadow-inner"
+                value={newTitle}
+                onChange={e => setNewTitle(e.target.value)}
+                onBlur={handleRename}
+                onKeyDown={e => e.key === 'Enter' && handleRename()}
+              />
             ) : (
-              <>
-                <h3 className="font-bold text-sm tracking-tight text-foreground/90 uppercase truncate">{title}</h3>
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-none text-[10px] py-0 h-4 min-w-[18px] flex items-center justify-center font-bold">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <h3 className="font-syne font-extrabold text-[13px] tracking-[0.1em] text-white uppercase truncate">{title}</h3>
+                <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[10px] font-black font-mono border border-primary/20">
                   {tasks.length}
-                </Badge>
-              </>
+                </span>
+              </div>
             )}
           </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover/header:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover/header:opacity-100 transition-all duration-200">
             <button 
-              className="p-1 hover:bg-muted rounded-md transition-colors text-muted-foreground hover:text-primary" 
+              className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-white/40 hover:text-primary" 
               onClick={(e) => { e.stopPropagation(); handleCopyId(); }}
-              title="Copiar ID para n8n"
+              title="Copiar ID da Coluna"
             >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5"/>}
+              {copied ? <Check size={14} /> : <Copy size={14}/>}
             </button>
-            <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={(e) => { e.stopPropagation(); handleAddTask(); }}><Plus className="w-3.5 h-3.5"/></button>
+            <button 
+                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-white/40 hover:text-white" 
+                onClick={(e) => { e.stopPropagation(); handleAddTask(); }}
+                title="Nova Tarefa"
+            >
+                <Plus size={16}/>
+            </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1 hover:bg-muted rounded-md transition-colors" onClick={e => e.stopPropagation()}>
-                  <MoreVertical className="w-3.5 h-3.5"/>
+                <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-white/40 hover:text-white" onClick={e => e.stopPropagation()}>
+                  <MoreVertical size={14}/>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsRenaming(true)}>
-                  <Edit2 className="w-4 h-4 mr-2" /> Renomear
+              <DropdownMenuContent align="end" className="bg-[#0d0f1e]/95 border-white/10 backdrop-blur-xl">
+                <DropdownMenuItem onClick={() => setIsRenaming(true)} className="font-syne font-bold text-xs uppercase tracking-wider text-white/70">
+                  <Edit2 className="w-3.5 h-3.5 mr-2" /> Renomear
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-white/5" />
                 <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive" 
+                  className="text-[#f76a80] focus:text-[#f76a80] focus:bg-[#f76a80]/10 font-syne font-bold text-xs uppercase tracking-wider" 
                   onClick={() => setIsDeleteDialogOpen(true)}
                 >
-                  <Trash2 className="w-4 h-4 mr-2" /> Deletar Coluna
+                  <Trash2 className="w-3.5 h-3.5 mr-2" /> Deletar Coluna
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
 
-        {/* Column Stats & Progress */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            <span>Progresso</span>
-            <span>{tasks.length > 0 ? (title === "Concluído" ? "100%" : "30%") : "0%"}</span>
-          </div>
-          <Progress value={tasks.length > 0 ? (title === "Concluído" ? 100 : 30) : 0} className="h-1 bg-muted/40" />
+        {/* Custom Progress Bar Style */}
+        <div className="space-y-2">
+            <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 font-mono">Workflow Status</span>
+                <span className="text-[10px] font-black text-primary font-mono">{progress}%</span>
+            </div>
+            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                <div 
+                    className="h-full bg-gradient-brand transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(74,75,215,0.6)]" 
+                    style={{ width: `${progress}%` }} 
+                />
+            </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-4 no-scrollbar">
+      {/* Tasks Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar custom-scrollbar">
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <TaskCard key={task.id} id={task.id} task={task} onClick={onEditTask} onUpdate={onUpdate} />
@@ -222,44 +247,48 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         </SortableContext>
         
         {tasks.length === 0 && (
-          <div className="py-20 text-center text-muted-foreground/30 flex flex-col items-center">
-            <Plus className="w-8 h-8 opacity-20 mb-2"/>
-            <p className="text-xs italic">Nenhuma tarefa</p>
+          <div className="py-24 text-center flex flex-col items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-white/[0.02] flex items-center justify-center mb-4 border border-white/5 group-hover:border-primary/20 transition-all">
+                <Layout className="w-6 h-6 text-white/10" />
+            </div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/20 font-mono italic">Esperando tarefas</p>
           </div>
         )}
       </div>
 
-      <div className="p-3">
+      {/* Footer */}
+      <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
          <Button 
            variant="ghost" 
-           className="w-full justify-start text-muted-foreground hover:text-primary hover:bg-primary/5 h-9"
+           className="w-full justify-center text-white/40 hover:text-white hover:bg-white/5 h-11 font-syne font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:scale-[0.98] active:scale-95"
            onClick={handleAddTask}
          >
-           <Plus className="w-4 h-4 mr-2"/> Nova Tarefa
+           <Plus size={16} className="mr-2 text-primary"/> Nova Tarefa
          </Button>
       </div>
 
+      {/* Dialogs kept standard but stylable via classNames if needed */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#0d0f1e]/95 border-white/10 backdrop-blur-xl text-white">
           <DialogHeader>
-            <DialogTitle>Deletar Coluna: {title}</DialogTitle>
-            <DialogDescription>
-              Esta coluna possui {tasks.length} tarefas/OS. Para onde deseja movê-las?
+            <DialogTitle className="font-syne font-extrabold text-xl">Deletar Coluna: {title}</DialogTitle>
+            <DialogDescription className="text-white/50 font-dm">
+              Esta coluna possui {tasks.length} tarefas. Para onde deseja movê-las?
             </DialogDescription>
           </DialogHeader>
 
           {tasks.length > 0 && (
-            <div className="py-4">
-              <label className="text-sm font-medium mb-2 block">Coluna Destino</label>
+            <div className="py-6">
+              <label className="text-[11px] font-black uppercase tracking-wider text-muted-foreground font-mono mb-2 block">Coluna Destino</label>
               <Select value={targetColumnId} onValueChange={setTargetColumnId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma coluna..." />
+                <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-xl h-12">
+                  <SelectValue placeholder="Selecione o destino..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[#0d0f1e] border-white/10 text-white">
                   {allColumns
                     .filter(c => c.id !== id)
                     .map(c => (
-                      <SelectItem key={c.id} value={c.id}>
+                      <SelectItem key={c.id} value={c.id} className="font-dm">
                         {c.nome}
                       </SelectItem>
                     ))
@@ -269,9 +298,9 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
             </div>
           )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={tasks.length > 0 && !targetColumnId}>
+          <DialogFooter className="gap-2">
+            <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)} className="rounded-xl font-syne font-bold uppercase tracking-wider text-xs">Cancelar</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={tasks.length > 0 && !targetColumnId} className="bg-[#f76a80] hover:bg-[#ac3149] rounded-xl font-syne font-bold uppercase tracking-wider text-xs">
               Confirmar Exclusão
             </Button>
           </DialogFooter>

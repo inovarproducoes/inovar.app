@@ -49,7 +49,7 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
     transition,
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleArchive = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("Tem certeza que deseja arquivar esta OS?")) return;
 
@@ -69,17 +69,17 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
     }
   };
 
-  const getPriorityColor = (p: PrioridadeTarefa) => {
+  const getPriorityStyle = (p: PrioridadeTarefa) => {
     switch (p) {
-      case "urgente": return { bg: "bg-red-500/15", text: "text-red-600", dot: "bg-red-500" };
-      case "alta": return { bg: "bg-orange-500/15", text: "text-orange-600", dot: "bg-orange-500" };
-      case "media": return { bg: "bg-blue-500/15", text: "text-blue-600", dot: "bg-blue-500" };
-      case "baixa": return { bg: "bg-emerald-500/15", text: "text-emerald-600", dot: "bg-emerald-500" };
-      default: return { bg: "bg-slate-500/15", text: "text-slate-600", dot: "bg-slate-500" };
+      case "urgente": return { bg: "rgba(172,49,73,0.15)", text: "text-[#f76a80]", dot: "bg-[#f76a80]", border: "rgba(172,49,73,0.25)" };
+      case "alta":    return { bg: "rgba(247,158,0,0.12)", text: "text-[#f79e00]", dot: "bg-[#f79e00]", border: "rgba(247,158,0,0.25)" };
+      case "media":   return { bg: "rgba(74,75,215,0.15)", text: "text-[#8083ff]", dot: "bg-[#8083ff]", border: "rgba(74,75,215,0.25)" };
+      case "baixa":   return { bg: "rgba(0,180,160,0.15)", text: "text-[#00b4a0]", dot: "bg-[#00b4a0]", border: "rgba(0,180,160,0.25)" };
+      default:        return { bg: "rgba(255,255,255,0.06)", text: "text-muted-foreground", dot: "bg-muted-foreground", border: "rgba(255,255,255,0.1)" };
     }
   };
 
-  const priority = getPriorityColor(task.prioridade);
+  const pStyle = getPriorityStyle(task.prioridade);
 
   return (
     <div
@@ -88,42 +88,54 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
       {...attributes}
       {...listeners}
       onClick={() => onClick?.(task)}
-      className={`bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-border/50 group hover:border-primary/40 hover:shadow-md transition-all cursor-pointer select-none ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-2 opacity-30 cursor-grabbing' : ''}`}
+      className={`
+        glass-card p-4 transition-all duration-300 cursor-pointer select-none group
+        hover:border-primary/40 hover:shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_20px_rgba(74,75,215,0.15)]
+        ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-4 ring-offset-[#07080f] opacity-30 cursor-grabbing scale-[1.02]' : 'hover:-translate-y-1'}
+      `}
+      style={{
+          ...style,
+          background: "rgba(13,15,30,0.7)",
+          border: isDragging ? '1px solid #4a4bd7' : '1px solid rgba(255,255,255,0.06)'
+      }}
     >
       <div className="flex justify-between items-start mb-3">
-        <Badge variant="outline" className={`text-[10px] px-2 py-0 border-none font-bold uppercase ${priority.text} ${priority.bg}`}>
-           <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${priority.dot}`} />
+        <div 
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-wider font-mono shadow-sm"
+          style={{ backgroundColor: pStyle.bg, color: pStyle.text, borderColor: pStyle.border }}
+        >
+           <span className={`w-1 h-1 rounded-full animate-pulse ${pStyle.dot}`} />
            {task.prioridade}
-        </Badge>
+        </div>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-muted-foreground/30 hover:text-foreground transition-colors p-1" onClick={e => e.stopPropagation()}>
-              <MoreHorizontal className="w-4 h-4"/>
+            <button className="text-white/20 hover:text-white transition-colors p-1" onClick={e => e.stopPropagation()}>
+              <MoreHorizontal size={14}/>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleDelete} className="text-amber-600 focus:text-amber-700">
-              <Archive className="w-4 h-4 mr-2"/> Arquivar OS
+          <DropdownMenuContent align="end" className="bg-[#0d0f1e]/95 border-white/10 backdrop-blur-xl">
+            <DropdownMenuItem onClick={handleArchive} className="text-[#f76a80] focus:text-[#f76a80] focus:bg-[#f76a80]/10 font-syne font-bold text-xs uppercase tracking-wider">
+              <Archive className="w-3.5 h-3.5 mr-2"/> Arquivar OS
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <h3 className="font-bold text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
-      {task.descricao && <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{task.descricao}</p>}
+      <h3 className="font-syne font-bold text-[14px] leading-snug mb-2 group-hover:text-primary-foreground transition-colors group-hover:translate-x-0.5">{task.titulo}</h3>
+      {task.descricao && <p className="text-[11px] text-muted-foreground/80 line-clamp-2 mb-4 leading-relaxed font-dm">{task.descricao}</p>}
 
       {/* Institution and Project Info (OS Only) */}
       {task.isOS && (
-        <div className="flex flex-col gap-1.5 mb-4 border-l-2 border-primary/20 pl-3">
+        <div className="flex flex-col gap-2 mb-4 p-2 rounded-lg bg-white/[0.02] border-l-2 border-primary/40">
           {task.instituicao && (
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium font-dm">
               <Building2 className="w-3 h-3 text-primary/60"/>
               <span className="truncate">{task.instituicao}</span>
             </div>
           )}
           {task.projeto_nome && (
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium font-dm">
               <FolderKanban className="w-3 h-3 text-primary/60"/>
               <span className="truncate">{task.projeto_nome}</span>
             </div>
@@ -137,8 +149,8 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
           {(task.etiquetas || []).map((tag: string, idx: number) => (
             <Badge 
                 key={idx} 
-                variant="secondary" 
-                className="text-[9px] px-2 py-0 h-4 border-none bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 transition-colors font-bold uppercase tracking-tight"
+                variant="outline" 
+                className="text-[8px] px-1.5 py-0 h-4 border-white/10 bg-white/5 text-white/50 hover:bg-primary/20 hover:text-white transition-all font-bold uppercase tracking-widest font-mono"
             >
               {tag.trim()}
             </Badge>
@@ -146,22 +158,22 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-4 border-t border-border/30">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
-            <MessageSquare className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />
-            <span className="text-[10px] font-medium">0</span>
+      <div className="flex items-center justify-between pt-3.5 border-t border-white/5">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-muted-foreground/50 group/icon cursor-default">
+            <MessageSquare size={12} className="group-hover/icon:text-primary transition-colors" />
+            <span className="text-[9px] font-bold font-mono">2</span>
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground/60 group/icon">
-            <Paperclip className="w-3.5 h-3.5 group-hover/icon:text-primary transition-colors" />
-            <span className="text-[10px] font-medium">{task.anexos || 0}</span>
+          <div className="flex items-center gap-1.5 text-muted-foreground/50 group/icon cursor-default">
+            <Paperclip size={12} className="group-hover/icon:text-primary transition-colors" />
+            <span className="text-[9px] font-bold font-mono">{task.anexos || 0}</span>
           </div>
         </div>
 
         <div className="flex items-center -space-x-2">
-            <Avatar className="w-6 h-6 border-2 border-background ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+            <Avatar className="w-6 h-6 border uppercase font-syne border-white/10 bg-gradient-brand shadow-lg">
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${task.responsavel_nome || 'admin'}`} />
-                <AvatarFallback className="text-[8px]">{task.responsavel_nome?.substring(0,2) || "AD"}</AvatarFallback>
+                <AvatarFallback className="text-[8px] font-black">{task.responsavel_nome?.substring(0,2) || "AD"}</AvatarFallback>
             </Avatar>
         </div>
       </div>
