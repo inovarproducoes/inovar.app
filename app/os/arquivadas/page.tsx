@@ -82,8 +82,9 @@ export default function ArchivedOSPage() {
         </div>
 
         <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
-          <Table>
-            <TableHeader className="bg-muted/50">
+          <div className="w-full overflow-x-auto custom-scrollbar">
+            <Table className="min-w-[900px] md:min-w-full">
+              <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-[100px]">Número</TableHead>
                 <TableHead>Cliente / Responsável</TableHead>
@@ -159,6 +160,7 @@ export default function ArchivedOSPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </div>
       </div>
     </MainLayout>

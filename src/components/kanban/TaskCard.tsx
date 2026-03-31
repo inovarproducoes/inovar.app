@@ -1,177 +1,124 @@
 "use client";
-
+import React from "react";
+import { ITask } from "@/types/kanban";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Badge } from "@/components/ui/badge";
 import { 
-    MessageSquare, 
-    Paperclip, 
-    MoreHorizontal,
-    Archive,
-    Building2,
-    Calendar,
+  Calendar, User as UserIcon, Building2, 
+  MessageSquare, Paperclip, Clock, Briefcase
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
-import type { ITask, PrioridadeTarefa } from "@/types/kanban";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskCardProps {
-  id: string;
   task: ITask;
   onClick?: (task: ITask) => void;
-  onUpdate?: () => void;
 }
 
-export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
+const PRIORIDADE_COLORS = {
+  baixa: { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20" },
+  media: { bg: "bg-yellow-500/10", text: "text-yellow-500", border: "border-yellow-500/20" },
+  alta: { bg: "bg-orange-500/10", text: "text-orange-500", border: "border-orange-500/20" },
+  urgente: { bg: "bg-red-500/10", text: "text-red-500", border: "border-red-500/20" },
+};
+
+export function TaskCard({ task, onClick }: TaskCardProps) {
   const {
+    setNodeRef,
     attributes,
     listeners,
-    setNodeRef,
     transform,
     transition,
     isDragging,
   } = useSortable({
-    id,
+    id: task.id,
     data: {
       type: "Task",
-      task
-    }
+      task,
+    },
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
     transition,
+    transform: CSS.Translate.toString(transform),
   };
 
-  const handleArchive = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm("Tem certeza que deseja arquivar esta OS?")) return;
-
-    try {
-      const res = await fetch(`/api/kanban/tasks/${task.id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        toast.success("OS arquivada com sucesso");
-        onUpdate?.();
-      } else {
-        toast.error("Erro ao arquivar OS");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao arquivar OS");
-    }
-  };
-
-  const getPriorityStyle = (p: PrioridadeTarefa) => {
-    switch (p) {
-      case "urgente": return { bg: "bg-red-500/10", text: "text-red-500", dot: "bg-red-500" };
-      case "alta":    return { bg: "bg-orange-500/10", text: "text-orange-500", dot: "bg-orange-500" };
-      case "media":   return { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary" };
-      case "baixa":   return { bg: "bg-emerald-500/10", text: "text-emerald-500", dot: "bg-emerald-500" };
-      default:        return { bg: "bg-muted", text: "text-muted-foreground", dot: "bg-muted-foreground" };
-    }
-  };
-
-  const pStyle = getPriorityStyle(task.prioridade);
+  const priorityStyle = PRIORIDADE_COLORS[task.prioridade] || PRIORIDADE_COLORS.baixa;
 
   return (
     <div
       ref={setNodeRef}
+      style={style}
       {...attributes}
       {...listeners}
       onClick={() => onClick?.(task)}
       className={`
-        bg-card p-5 rounded-2xl border border-white/10 dark:border-white/15 transition-all duration-300 cursor-pointer select-none group
-        hover:border-primary/60 hover:shadow-xl hover:shadow-primary/5
+        bg-card p-5 rounded-2xl border-2 border-border/40 transition-all duration-300 cursor-pointer select-none group
+        hover:border-primary hover:shadow-xl hover:shadow-primary/5
         ${isDragging ? 'z-50 ring-2 ring-primary ring-offset-4 ring-offset-background opacity-30 cursor-grabbing scale-[1.02]' : 'hover:-translate-y-1'}
       `}
-      style={{
-          ...style,
-          background: "var(--card)"
-      }}
     >
-      <div className="flex justify-between items-start mb-4">
-        <div 
-          className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${pStyle.bg} ${pStyle.text}`}
-        >
-           <span className={`w-1 h-1 rounded-full ${pStyle.dot}`} />
-           {task.prioridade}
+      <div className="space-y-4">
+        {/* Header: OS ID & Priority */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-[10px] font-black font-dm uppercase tracking-widest text-muted-foreground">
+              OS #{task.numero_os || task.id.split('-')[0]}
+            </span>
+          </div>
+          <Badge 
+            variant="outline" 
+            className={`text-[9px] px-2 h-5 font-bold uppercase tracking-tighter ${priorityStyle.bg} ${priorityStyle.text} ${priorityStyle.border} border`}
+          >
+            {task.prioridade}
+          </Badge>
         </div>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="text-muted-foreground/30 hover:text-foreground transition-colors p-1" onClick={e => e.stopPropagation()}>
-              <MoreHorizontal size={14}/>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleArchive} className="text-red-500 focus:text-red-500 font-dm font-bold text-xs uppercase tracking-wider">
-              <Archive className="w-3.5 h-3.5 mr-2"/> Arquivar OS
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
 
-      <h3 className="font-dm font-bold text-[15px] leading-tight mb-2 group-hover:text-primary transition-colors">{task.titulo}</h3>
-      {task.descricao && <p className="text-[11.5px] text-muted-foreground/80 line-clamp-2 mb-5 font-dm leading-relaxed">{task.descricao}</p>}
+        {/* Title */}
+        <h4 className="font-dm font-bold text-[14.5px] leading-tight text-foreground group-hover:text-primary transition-colors">
+          {task.titulo}
+        </h4>
 
-      {/* Institution Info */}
-      {task.isOS && (
-        <div className="flex flex-col gap-2.5 mb-5 p-3 rounded-xl bg-muted/30 border border-border/20">
+        {/* Dynamic Project/Student Info */}
+        <div className="space-y-2.5">
+          {task.aluno_nome && (
+            <div className="flex items-center gap-2 text-[11.5px] text-foreground/80 font-medium font-dm">
+              <UserIcon className="w-3.5 h-3.5 text-primary" />
+              <span className="truncate">{task.aluno_nome}</span>
+            </div>
+          )}
+          
+          {/* TRAZENDO O NOME DO PROJETO DE VOLTA */}
+          {task.projeto_nome && (
+            <div className="flex items-center gap-2 text-[11px] text-indigo-500 font-bold font-dm bg-indigo-500/5 px-2 py-1 rounded-md border border-indigo-500/10">
+              <Briefcase className="w-3.5 h-3.5" />
+              <span className="truncate uppercase tracking-tight">{task.projeto_nome}</span>
+            </div>
+          )}
+
           {task.instituicao && (
             <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium font-dm">
-              <Building2 className="w-3.5 h-3.5 text-primary/60"/>
+              <Building2 className="w-3.5 h-3.5 text-muted-foreground/60" />
               <span className="truncate">{task.instituicao}</span>
             </div>
           )}
-          {task.created_at && (
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium font-dm">
-              <Calendar className="w-3.5 h-3.5 text-primary/60"/>
-              <span className="truncate">Criado em {new Date(task.created_at).toLocaleDateString()}</span>
-            </div>
-          )}
         </div>
-      )}
 
-      {/* Tags */}
-      {task.etiquetas && task.etiquetas.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {(task.etiquetas || []).map((tag: string, idx: number) => (
-            <Badge 
-                key={idx} 
-                variant="outline" 
-                className="text-[9px] px-2 py-0 h-4.5 border-border bg-transparent text-muted-foreground font-bold uppercase tracking-widest font-dm"
-            >
-              {tag.trim()}
-            </Badge>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center justify-between pt-4 border-t border-border/40">
-        <div className="flex items-center gap-4 text-muted-foreground/60">
-          <div className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-default">
-            <MessageSquare size={13} />
-            <span className="text-[10px] font-bold font-dm">0</span>
+        {/* Footer Meta */}
+        <div className="pt-3 border-t border-border/30 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             {task.created_at && (
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
+                   <Clock size={12} className="text-primary/50" />
+                   {new Date(task.created_at).toLocaleDateString()}
+                </div>
+             )}
           </div>
-          <div className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-default">
-            <Paperclip size={13} />
-            <span className="text-[10px] font-bold font-dm">{task.anexos || 0}</span>
+          
+          <div className="flex items-center gap-2 text-muted-foreground/30">
+             <MessageSquare size={13} />
+             <Paperclip size={13} />
           </div>
-        </div>
-
-        <div className="flex items-center -space-x-2">
-            <Avatar className="w-7 h-7 border-2 border-background shadow-md">
-                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${task.responsavel_nome || 'admin'}`} />
-                <AvatarFallback className="text-[9px] font-bold bg-primary/20 text-primary">{task.responsavel_nome?.substring(0,2) || "AD"}</AvatarFallback>
-            </Avatar>
         </div>
       </div>
     </div>
