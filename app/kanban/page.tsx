@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Layout, Search, ChevronDown, Check } from "lucide-react";
+import { Plus, Layout, Search, ChevronDown, Check, Star, Archive } from "lucide-react";
 import { ColumnContainer } from "@/components/kanban/ColumnContainer";
 import { TaskCard } from "@/components/kanban/TaskCard";
 import { toast } from "sonner";
@@ -72,11 +72,20 @@ export default function KanbanPage() {
           }));
           setBoards(sanitizedBoards);
           
-          if (!activeBoard || !sanitizedBoards.find((b: IBoard) => b.id === activeBoard.id)) {
-            setActiveBoard(sanitizedBoards[0]);
-          } else {
+          // Prioridade: 1. Board já selecionado em estado | 2. Board marcado como 'ativo' no banco | 3. Primeiro da lista
+          if (activeBoard) {
             const found = sanitizedBoards.find((b: IBoard) => b.id === activeBoard.id);
-            if (found) setActiveBoard(found);
+            if (found) {
+              setActiveBoard(found);
+              return;
+            }
+          }
+
+          const dbActive = sanitizedBoards.find((b: IBoard) => b.ativo);
+          if (dbActive) {
+            setActiveBoard(dbActive);
+          } else {
+            setActiveBoard(sanitizedBoards[0]);
           }
         }
       }
@@ -84,6 +93,40 @@ export default function KanbanPage() {
       toast.error("Erro ao carregar quadros");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSetActive = async (id: string) => {
+    try {
+      const res = await fetch('/api/kanban/boards', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ativo: true })
+      });
+      if (res.ok) {
+        toast.success("Definido como padrão!");
+        fetchBoards();
+      }
+    } catch {
+      toast.error("Erro ao definir padrão");
+    }
+  };
+
+  const handleArchiveBoard = async (id: string) => {
+    if (!confirm("Arquivar este pipeline irá arquivar todas as tarefas dentro dele. Continuar?")) return;
+    try {
+      const res = await fetch('/api/kanban/boards', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, arquivado: true })
+      });
+      if (res.ok) {
+        toast.success("Pipeline arquivado!");
+        setActiveBoard(null);
+        fetchBoards();
+      }
+    } catch {
+      toast.error("Erro ao arquivar pipeline");
     }
   };
 
@@ -304,23 +347,46 @@ export default function KanbanPage() {
                    <Command>
                       <CommandInput placeholder="Pesquisar quadros..." className="font-dm" />
                       <CommandList className="max-h-[300px]">
-                         <CommandEmpty>Nenhum quadro encontrado.</CommandEmpty>
-                         <CommandGroup heading="Quadros Ativos">
-                            {boards.map((b) => (
-                               <CommandItem 
-                                 key={b.id} 
-                                 onSelect={() => { setActiveBoard(b); setIsBoardSelectorOpen(false); }}
-                                 className="flex items-center justify-between p-3 cursor-pointer"
-                               >
-                                  <div className="flex items-center gap-3">
-                                      <div className={cn("w-2 h-2 rounded-full", activeBoard?.id === b.id ? "bg-primary" : "bg-muted")} />
-                                      <span className="font-dm text-sm font-medium">{b.nome}</span>
-                                  </div>
-                                  {activeBoard?.id === b.id && <Check className="w-4 h-4 text-primary" />}
-                               </CommandItem>
-                            ))}
-                         </CommandGroup>
-                      </CommandList>
+                          <CommandEmpty>Nenhum quadro encontrado.</CommandEmpty>
+                          <CommandGroup heading="Ações de Quadros">
+                             {boards.map((b) => (
+                                <CommandItem 
+                                  key={b.id} 
+                                  onSelect={() => { setActiveBoard(b); setIsBoardSelectorOpen(false); }}
+                                  className="flex items-center justify-between p-3 cursor-pointer group"
+                                >
+                                   <div className="flex items-center gap-3">
+                                       <div className={cn("w-2 h-2 rounded-full", activeBoard?.id === b.id ? "bg-primary" : "bg-muted")} />
+                                       <span className="font-dm text-sm font-medium">{b.nome}</span>
+                                       {b.ativo && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
+                                   </div>
+                                   <div className="flex items-center gap-1">
+                                      {!b.ativo && (
+                                        <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-amber-400" 
+                                          onClick={(e) => { e.stopPropagation(); handleSetActive(b.id); }}
+                                          title="Definir como padrão"
+                                        >
+                                          <Star className="w-3.5 h-3.5" />
+                                        </Button>
+                                      )}
+                                      <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-destructive" 
+                                        onClick={(e) => { e.stopPropagation(); handleArchiveBoard(b.id); }}
+                                        title="Arquivar pipeline"
+                                      >
+                                        <Archive className="w-3.5 h-3.5" />
+                                      </Button>
+                                      {activeBoard?.id === b.id && <Check className="w-4 h-4 text-primary ml-2" />}
+                                   </div>
+                                </CommandItem>
+                             ))}
+                          </CommandGroup>
+                       </CommandList>
                    </Command>
                 </PopoverContent>
              </Popover>

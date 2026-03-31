@@ -6,11 +6,13 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const boards = await prisma.quadro.findMany({
+      where: { arquivado: false },
       include: {
         colunas: {
           orderBy: { ordem: 'asc' },
           include: {
             tarefas: {
+              where: { arquivado: false },
               orderBy: { ordem: 'asc' }
             },
             ordens_servico: {
@@ -20,17 +22,19 @@ export async function GET() {
           }
         }
       },
-      orderBy: { created_at: 'desc' }
+      orderBy: [
+        { ativo: 'desc' },
+        { created_at: 'desc' }
+      ]
     });
 
-    // Mapear as OS para o formato de tarefas para o Kanban exibir de forma transparente
     const boardsWithOS = boards.map(board => {
       return {
         ...board,
         colunas: board.colunas.map(col => {
           const osAsTasks = col.ordens_servico.map(os => ({
             id: os.id,
-            titulo: os.nome, // O nome da OS é o título principal
+            titulo: os.nome,
             descricao: os.descricao || 'Sem descrição',
             status: os.status,
             ordem: os.ordem || 0, 
@@ -40,11 +44,12 @@ export async function GET() {
             etiquetas: ['OS'],
             isOS: true,
             numero_os: String(os.numero),
-            responsavel_nome: os.responsavel_nome || os.aluno_nome, // Nome do responsável/cliente
+            responsavel_nome: os.responsavel_nome || os.aluno_nome,
             aluno_nome: os.aluno_nome,
             aluno_cpf: os.aluno_cpf,
             projeto_nome: os.projeto_nome,
             instituicao: os.instituicao,
+            arquivado: os.arquivado,
             created_at: os.created_at
           }));
 
@@ -59,9 +64,7 @@ export async function GET() {
     });
 
     return NextResponse.json(boardsWithOS, {
-      headers: {
-        "Cache-Control": "no-store, max-age=0",
-      },
+      headers: { "Cache-Control": "no-store, max-age=0" },
     });
   } catch (error) {
     console.error(error);
@@ -95,18 +98,66 @@ export async function POST(req: Request) {
       data: {
         nome,
         descricao,
-        colunas: {
-          create: defaultColumns
-        }
+        colunas: { create: defaultColumns }
       },
-      include: {
-        colunas: true
-      }
+      include: { colunas: true }
     });
 
     return NextResponse.json(board);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erro ao criar quadro' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { id, ativo, arquivado, nome, descricao } = await req.json();
+
+    if (!id) return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 });
+
+    if (ativo === true) {
+      // Garantir que apenas um quadro seja ativo por vez
+      await prisma.quadro.updateMany({
+        where: { id: { not: id } },
+        data: { ativo: false }
+      });
+    }
+
+    if (arquivado === true) {
+      // Arquivamento em cascata: quadro + todas as tarefas e OS dele
+      return await prisma.$transaction(async (tx) => {
+        const board = await tx.quadro.update({
+          where: { id },
+          data: { arquivado: true, ativo: false }
+        });
+
+        await tx.tarefa.updateMany({
+          where: { quadro_id: id },
+          data: { arquivado: true }
+        });
+
+        await tx.oS.updateMany({
+          where: { quadro_id: id },
+          data: { arquivado: true }
+        });
+
+        return NextResponse.json(board);
+      });
+    }
+
+    const board = await prisma.quadro.update({
+      where: { id },
+      data: {
+        nome: nome || undefined,
+        descricao: descricao !== undefined ? descricao : undefined,
+        ativo: ativo !== undefined ? ativo : undefined,
+      }
+    });
+
+    return NextResponse.json(board);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Erro ao atualizar quadro' }, { status: 500 });
   }
 }

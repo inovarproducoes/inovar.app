@@ -80,6 +80,8 @@ model Quadro {
   id             String   @id @default(uuid())
   nome           String
   descricao      String?
+  ativo          Boolean  @default(false)
+  arquivado      Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now()) @updatedAt
   colunas        Coluna[]

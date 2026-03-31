@@ -29,7 +29,24 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { 
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { clientesService } from "@/services/clientesService";
 import type { ITask, IColumn } from "@/types/kanban";
+import { Search, Popover as PopoverIcon, UserPlus } from "lucide-react";
 
 interface ColumnContainerProps {
   id: string;
@@ -115,7 +132,21 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
   };
 
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
-  const [newTaskData, setNewTaskData] = useState({ titulo: "", instituicao: "", projeto_nome: "" });
+  const [isClientSelectorOpen, setIsClientSelectorOpen] = useState(false);
+  const [newTaskData, setNewTaskData] = useState({ 
+    titulo: "", 
+    instituicao: "", 
+    projeto_nome: "",
+    cliente_nome: "",
+    cliente_id: ""
+  });
+
+  const { data: globalClients = [] } = useQuery({
+    queryKey: ['global-clients'],
+    queryFn: () => clientesService.buscarClientes(),
+    staleTime: 1000 * 60 * 5,
+    enabled: isNewTaskOpen
+  });
 
   const confirmAddTask = async () => {
     if (!newTaskData.titulo) {
@@ -137,7 +168,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       if (resp.ok) {
         toast.success("Tarefa criada");
         setIsNewTaskOpen(false);
-        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "" });
+        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "", cliente_nome: "", cliente_id: "" });
         onUpdate();
       }
     } catch {
@@ -332,34 +363,88 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
 
           <div className="grid gap-4 py-4 font-dm">
             <div className="grid gap-2">
-              <Label htmlFor="qc-title" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Título da Tarefa</Label>
+              <Label htmlFor="qc-title" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Título da Tarefa / Atividade</Label>
               <Input 
                 id="qc-title" 
                 placeholder="Ex: Entrega de becas..." 
                 value={newTaskData.titulo} 
                 onChange={(e) => setNewTaskData({ ...newTaskData, titulo: e.target.value })}
-                className="bg-muted/30 border-none rounded-xl h-12"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="qc-inst" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Instituição</Label>
-              <Input 
-                id="qc-inst" 
-                placeholder="Ex: Escola Municipal..." 
-                value={newTaskData.instituicao} 
-                onChange={(e) => setNewTaskData({ ...newTaskData, instituicao: e.target.value })}
                 className="bg-muted/30 border-none rounded-xl h-11"
               />
             </div>
+            
             <div className="grid gap-2">
-              <Label htmlFor="qc-proj" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Projeto / Evento</Label>
-              <Input 
-                id="qc-proj" 
-                placeholder="Ex: Formatura 2024..." 
-                value={newTaskData.projeto_nome} 
-                onChange={(e) => setNewTaskData({ ...newTaskData, projeto_nome: e.target.value })}
-                className="bg-muted/30 border-none rounded-xl h-11"
-              />
+              <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Cliente / Aluno (Database)</Label>
+              <Popover open={isClientSelectorOpen} onOpenChange={setIsClientSelectorOpen}>
+                <PopoverTrigger asChild>
+                   <Button variant="outline" className="w-full h-11 justify-start font-dm text-xs bg-muted/30 border-none rounded-xl hover:bg-muted/50">
+                      <Search className="w-3.5 h-3.5 mr-2 opacity-50" />
+                      {newTaskData.cliente_nome || "Pesquisar ou selecionar cliente..."}
+                   </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[375px] p-0 rounded-2xl shadow-2xl border-primary/10">
+                   <Command className="bg-background">
+                      <CommandInput placeholder="Digite o nome do cliente..." className="h-10 text-xs" />
+                      <CommandList>
+                         <CommandEmpty className="p-4 flex flex-col items-center gap-2">
+                            <p className="text-[11px] text-muted-foreground">Cliente não encontrado.</p>
+                            <Button 
+                              variant="secondary" 
+                              size="sm" 
+                              className="h-8 rounded-lg text-[10px] gap-2"
+                              onClick={() => {
+                                setIsClientSelectorOpen(false);
+                                toast.info("Funcionalidade de criação rápida vindo em breve!");
+                              }}
+                            >
+                               <UserPlus className="w-3 h-3" /> CADASTRAR NO CRM
+                            </Button>
+                         </CommandEmpty>
+                         <CommandGroup heading="Contatos Recentes">
+                            {globalClients.map((client) => (
+                               <CommandItem
+                                 key={client.id}
+                                 onSelect={() => {
+                                   setNewTaskData(prev => ({ ...prev, cliente_nome: client.nome, cliente_id: client.id }));
+                                   setIsClientSelectorOpen(false);
+                                 }}
+                                 className="flex items-center justify-between p-3 cursor-pointer"
+                               >
+                                  <div className="flex flex-col">
+                                     <span className="font-dm font-bold text-xs">{client.nome}</span>
+                                     <span className="text-[10px] text-muted-foreground font-mono opacity-60">{client.telefone}</span>
+                                  </div>
+                                  {newTaskData.cliente_id === client.id && <Check className="w-4 h-4 text-primary" />}
+                               </CommandItem>
+                            ))}
+                         </CommandGroup>
+                      </CommandList>
+                   </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="qc-inst" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Instituição</Label>
+                <Input 
+                  id="qc-inst" 
+                  placeholder="Escola..." 
+                  value={newTaskData.instituicao} 
+                  onChange={(e) => setNewTaskData({ ...newTaskData, instituicao: e.target.value })}
+                  className="bg-muted/30 border-none rounded-xl h-11"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="qc-proj" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Projeto</Label>
+                <Input 
+                  id="qc-proj" 
+                  placeholder="Formatura..." 
+                  value={newTaskData.projeto_nome} 
+                  onChange={(e) => setNewTaskData({ ...newTaskData, projeto_nome: e.target.value })}
+                  className="bg-muted/30 border-none rounded-xl h-11"
+                />
+              </div>
             </div>
           </div>
 
