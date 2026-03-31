@@ -84,7 +84,6 @@ export function TaskCard({ id, task, onClick, onUpdate }: TaskCardProps) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...attributes}
       {...listeners}
       onClick={() => onClick?.(task)}

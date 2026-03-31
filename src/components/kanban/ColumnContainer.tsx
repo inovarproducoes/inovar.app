@@ -6,7 +6,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { TaskCard } from "./TaskCard";
 import { Plus, MoreVertical, Copy, Trash2, Edit2, Check, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   SortableContext,

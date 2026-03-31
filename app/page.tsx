@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RecentOsTable } from "@/components/dashboard/RecentOsTable";
 import { useOsStats } from "@/hooks/useOS";
-import { FileText, ClipboardList, CheckCircle2, TrendingUp, PlusCircle, ArrowUpRight } from "lucide-react";
+import { FileText, ClipboardList, CheckCircle2, TrendingUp, ArrowUpRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -19,7 +19,15 @@ const OsPorMesChart = dynamic(
 );
 
 /* ─── Goal Card Component ───────────────────────────────────────── */
-function GoalCard({ percentage, current, target, label, sublabel }: any) {
+interface GoalCardProps {
+  percentage: number;
+  current: number;
+  target: number;
+  label: string;
+  sublabel: string;
+}
+
+function GoalCard({ percentage, current, target, label, sublabel }: GoalCardProps) {
   return (
     <div className="glass-card p-7 fade-up-5 flex flex-col h-full overflow-hidden" 
          style={{ background: 'linear-gradient(145deg, rgba(74,75,215,0.12), rgba(110,59,216,0.08))', borderColor: 'rgba(74,75,215,0.2)' }}>
