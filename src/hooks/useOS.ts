@@ -12,17 +12,6 @@ export interface OsStats {
   recentes: OS[];
 }
 
-const STATS_INITIAL_DATA: OsStats = {
-  total: 0,
-  abertas: 0,
-  emAndamento: 0,
-  finalizadas: 0,
-  taxaFinalizacao: 0,
-  tendencias: { total: 0, abertas: 0, finalizadas: 0, taxa: 0 },
-  osPorMes: [],
-  recentes: [],
-};
-
 export function useOsStats() {
   return useQuery<OsStats>({
     queryKey: ['os-stats'],

@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { 
   User as UserIcon, Building2, 
-  MessageSquare, Paperclip, Clock, Briefcase, Check, Archive
+  Clock, Briefcase, Check, Archive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -136,7 +136,7 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
                    } else {
                      toast.error("Erro ao arquivar");
                    }
-                 } catch (err) {
+                 } catch {
                    toast.error("Erro de conexão");
                  }
                }
