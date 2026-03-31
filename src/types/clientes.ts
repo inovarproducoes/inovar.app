@@ -1,6 +1,7 @@
 export interface Cliente {
   id: string; nome: string; telefone: string;
   email?: string | null; agente_ativo: boolean; created_at: string; updated_at?: string;
+  lead_score?: number | null;
 }
 export interface ClienteFormData { nome: string; telefone: string; agente_ativo?: boolean; }
 export interface MensagemConversa {
