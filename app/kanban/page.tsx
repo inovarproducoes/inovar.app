@@ -230,42 +230,48 @@ export default function KanbanPage() {
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over || !activeBoard) return;
+    if (!over) return;
     if (active.id === over.id) return;
 
-    // Use a ref-like approach to find the task in current state
-    const currentTasks = activeBoard.colunas.flatMap(c => c.tarefas);
-    const task = currentTasks.find(t => t.id === active.id);
-    
-    if (task) {
-       const column = activeBoard.colunas.find(c => c.id === task.coluna_id);
-       const newOrder = column?.tarefas.findIndex(t => t.id === task.id) || 0;
+    // Acessar o estado mais recente através do setActiveBoard callback
+    // Isso previne o bug de stale closure onde o Kanban enviava a coluna_id antiga para a API
+    setActiveBoard((currentBoard) => {
+      if (!currentBoard) return currentBoard;
 
-       try {
-         const res = await fetch(`/api/kanban/tasks/${task.id}`, {
-           method: 'PATCH',
+      const currentTasks = currentBoard.colunas.flatMap(c => c.tarefas);
+      const task = currentTasks.find(t => t.id === active.id);
+      
+      if (task) {
+         const column = currentBoard.colunas.find(c => c.id === task.coluna_id);
+         const newOrder = column?.tarefas.findIndex(t => t.id === task.id) || 0;
+
+         fetch(`/api/kanban/tasks`, {
+           method: 'PUT',
            headers: { 'Content-Type': 'application/json' },
            body: JSON.stringify({ 
+             id: task.id,
              coluna_id: task.coluna_id, 
              ordem: newOrder 
            })
+         })
+         .then(async (res) => {
+           if (res.ok) {
+              toast.success("Sincronizado com sucesso!");
+              fetchBoards();
+           } else {
+              toast.error("Erro ao persistir posição.");
+              fetchBoards(); // Rollback
+           }
+         })
+         .catch((err) => { 
+           console.error(err);
+           toast.error("Erro de conexão");
+           fetchBoards(); 
          });
+      }
+      return currentBoard; // Não mutamos o estado aqui, apenas lemos
+    });
 
-         if (res.ok) {
-            toast.success("Sincronizado com sucesso!");
-            // Forçamos um fetch silencioso para garantir que o estado local está idêntico ao servidor
-            // e para disparar as invalidações de cache do Next.js
-            fetchBoards();
-         } else {
-            toast.error("Erro ao persistir posição.");
-            fetchBoards(); // Rollback
-         }
-       } catch (err) { 
-         console.error(err);
-         toast.error("Erro de conexão");
-         fetchBoards(); 
-       }
-    }
     setActiveTask(null);
     setActiveColumn(null);
   };

@@ -6,62 +6,16 @@ import { Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
 
 type Modo = "login" | "registro";
 
-/* ─── Orb orbital animado ─────────────────────────────────────── */
-function OrbCore() {
+/* ─── Logo Elegante do App (Substituindo Orb sci-fi) ─── */
+import { Sparkles } from "lucide-react";
+
+function EventLogo() {
   return (
-    <div className="flex justify-center mb-10 relative">
-      <div className="relative" style={{ width: 80, height: 80 }}>
-        {/* Órbita externa */}
-        <div
-          className="orbit-spin-reverse absolute rounded-full border"
-          style={{
-            inset: -44,
-            borderColor: "rgba(110,59,216,0.2)",
-          }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              width: 8, height: 8,
-              borderRadius: "50%",
-              background: "#6e3bd8",
-              boxShadow: "0 0 10px #6e3bd8",
-              top: -4, left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        {/* Órbita interna */}
-        <div
-          className="orbit-spin absolute rounded-full border"
-          style={{ inset: -24, borderColor: "rgba(74,75,215,0.3)" }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              width: 8, height: 8,
-              borderRadius: "50%",
-              background: "#4a4bd7",
-              boxShadow: "0 0 10px #4a4bd7",
-              top: -4, left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          />
-        </div>
-
-        {/* Núcleo */}
-        <div
-          className="orb-pulse relative z-10 w-20 h-20 rounded-full flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)",
-          }}
-        >
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2.5l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17.4l-6.2 4.5 2.4-7.4L2 9.9h7.6z"/>
-          </svg>
-        </div>
-      </div>
+    <div className="flex justify-center mb-8 relative">
+       <div className="relative w-24 h-24 rounded-full flex items-center justify-center border-4 border-white/5 bg-gradient-to-tr from-rose-500/80 to-amber-500/80 shadow-[0_0_40px_rgba(244,63,94,0.3)] backdrop-blur-md">
+          {/* O brilho sofisticado simulando um evento luxuoso */}
+          <Sparkles className="text-white w-10 h-10 animate-pulse" />
+       </div>
     </div>
   );
 }
@@ -178,8 +132,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <AuroraBackground />
 
       <div className="relative z-10 w-full" style={{ maxWidth: 440 }}>
-        {/* Orb */}
-        <OrbCore />
+        {/* Event Logo */}
+        <EventLogo />
 
         {/* Brand */}
         <div className="text-center mb-9">
@@ -187,7 +141,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
             className="glitch-text font-syne"
             style={{
               fontSize: 38, fontWeight: 800,
-              background: "linear-gradient(135deg, #fff 0%, #a0a0ff 50%, #6e3bd8 100%)",
+              // Cores mais quentes, ricas e relacionadas a eventos (Champagne, Gold, Rose)
+              background: "linear-gradient(135deg, #FFFBEB 0%, #FDE68A 50%, #F43F5E 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               letterSpacing: "-1px", lineHeight: 1,
             }}
@@ -195,7 +150,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
             Inovar OS
           </h1>
           <p style={{ color: "#9090b0", fontSize: 13, marginTop: 6, letterSpacing: "0.05em" }}>
-            Next Generation Enterprise Platform
+            Event Management Premium
           </p>
         </div>
 
@@ -215,9 +170,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
               onClick={() => trocarModo(m)}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300"
               style={modo === m ? {
-                background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)",
+                background: "linear-gradient(135deg, #F43F5E, #FDE68A)",
                 color: "white",
-                boxShadow: "0 4px 20px rgba(74,75,215,0.4)",
+                boxShadow: "0 4px 20px rgba(244,63,94,0.4)",
                 fontFamily: "'Syne', sans-serif",
               } : { color: "#9090b0", fontFamily: "'Syne', sans-serif" }}
             >
@@ -242,7 +197,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                     type="text" value={nome} onChange={e => setNome(e.target.value)}
                     placeholder="Seu nome" required autoComplete="name"
                     className={inputCls} style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = "rgba(74,75,215,0.6)"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(74,75,215,0.1), 0 0 20px rgba(74,75,215,0.12)"; }}
+                    onFocus={e => { e.currentTarget.style.borderColor = "rgba(244,63,94,0.6)"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(244,63,94,0.1), 0 0 20px rgba(244,63,94,0.12)"; }}
                     onBlur={e  => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   />
                 </div>
@@ -307,7 +262,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                     value={confirmar} onChange={e => setConfirmar(e.target.value)}
                     placeholder="Repita a senha" required autoComplete="new-password"
                     className={inputCls} style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = "rgba(74,75,215,0.6)"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(74,75,215,0.1), 0 0 20px rgba(74,75,215,0.12)"; }}
+                    onFocus={e => { e.currentTarget.style.borderColor = "rgba(244,63,94,0.6)"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(244,63,94,0.1), 0 0 20px rgba(244,63,94,0.12)"; }}
                     onBlur={e  => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; }}
                   />
                 </div>
@@ -327,14 +282,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
               disabled={enviando}
               className="w-full flex items-center justify-center gap-2 font-syne font-bold rounded-xl py-4 transition-all duration-300 mt-1"
               style={{
-                background: "linear-gradient(135deg, #4a4bd7, #6e3bd8)",
+                background: "linear-gradient(135deg, #F43F5E, #FDE68A)",
                 color: "white", fontSize: 15, letterSpacing: "0.05em",
-                boxShadow: "0 8px 32px rgba(74,75,215,0.45)",
+                boxShadow: "0 8px 32px rgba(244,63,94,0.45)",
                 cursor: enviando ? "not-allowed" : "pointer",
                 opacity: enviando ? 0.7 : 1,
               }}
-              onMouseEnter={e => { if (!enviando) { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 48px rgba(74,75,215,0.65)"; } }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(74,75,215,0.45)"; }}
+              onMouseEnter={e => { if (!enviando) { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 48px rgba(244,63,94,0.65)"; } }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(244,63,94,0.45)"; }}
             >
               {enviando ? (
                 <><Loader2 size={16} className="animate-spin" />{modo === "login" ? "Autenticando..." : "Criando conta..."}</>
