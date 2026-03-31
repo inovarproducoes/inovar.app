@@ -14,14 +14,12 @@ import {
   DragStartEvent,
 } from "@dnd-kit/core";
 import { 
-  arrayMove, 
   SortableContext, 
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Layout, Settings, Search, Filter, ChevronDown, Check } from "lucide-react";
+import { Plus, Layout, Search, ChevronDown, Check } from "lucide-react";
 import { ColumnContainer } from "@/components/kanban/ColumnContainer";
 import { TaskCard } from "@/components/kanban/TaskCard";
 import { toast } from "sonner";
@@ -61,22 +59,23 @@ export default function KanbanPage() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          const sanitizedBoards = data.map((b: any) => ({
+          const sanitizedBoards = data.map((b: IBoard) => ({
             ...b,
             colunas: b.colunas.map((col: IColumn) => ({
               ...col,
-              tarefas: col.tarefas.map((t: any) => ({
+              tarefas: col.tarefas.map((t: ITask) => ({
                 ...t,
                 etiquetas: Array.isArray(t.etiquetas) ? t.etiquetas : []
               }))
             }))
           }));
           setBoards(sanitizedBoards);
-          // Manter o board atual se ele ainda existir, senão pegar o primeiro
+          
           if (!activeBoard || !sanitizedBoards.find((b: IBoard) => b.id === activeBoard.id)) {
             setActiveBoard(sanitizedBoards[0]);
           } else {
-            setActiveBoard(sanitizedBoards.find((b: IBoard) => b.id === activeBoard.id));
+            const found = sanitizedBoards.find((b: IBoard) => b.id === activeBoard.id);
+            if (found) setActiveBoard(found);
           }
         }
       }
@@ -211,7 +210,6 @@ export default function KanbanPage() {
     if (!over || !activeBoard) return;
     if (active.id === over.id) return;
 
-    // Persistência simples da posição
     const task = activeBoard.colunas.flatMap(c => c.tarefas).find(t => t.id === active.id);
     if (task) {
        try {
@@ -240,19 +238,17 @@ export default function KanbanPage() {
   return (
     <MainLayout title="Gestão de Fluxo" subtitle="Acompanhamento em tempo real das Ordens de Serviço">
       <div className="flex flex-col h-[calc(100vh-170px)] -mx-6 -my-6">
-        
-        {/* Header Responsivo */}
         <div className="bg-background/80 backdrop-blur-xl border-b px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 z-30 gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
              <Popover open={isBoardSelectorOpen} onOpenChange={setIsBoardSelectorOpen}>
                 <PopoverTrigger asChild>
-                   <Button variant="ghost" className="h-10 hover:bg-muted/50 gap-2 px-3 border border-border/40 rounded-xl max-w-full overflow-hidden">
+                   <Button variant="ghost" className="h-10 hover:bg-muted/50 gap-2 px-3 border border-border/40 rounded-xl max-w-full overflow-hidden text-foreground">
                       <Layout className="w-4 h-4 text-primary shrink-0"/>
                       <span className="font-dm font-bold text-base truncate">{activeBoard?.nome || "Selecione um Quadro"}</span>
                       <ChevronDown className="w-4 h-4 opacity-50 shrink-0" />
                    </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-0 rounded-2xl shadow-2xl border-primary/10 overflow-hidden" align="start">
+                <PopoverContent className="w-[280px] p-0 rounded-2xl shadow-2xl border-primary/10 overflow-hidden text-foreground" align="start">
                    <Command>
                       <CommandInput placeholder="Pesquisar quadros..." className="font-dm" />
                       <CommandList className="max-h-[300px]">
@@ -281,7 +277,7 @@ export default function KanbanPage() {
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50"/>
-              <Input placeholder="Filtrar tarefas..." className="pl-9 h-10 w-full bg-muted/40 border-none rounded-xl text-xs font-dm" value={busca} onChange={e => setBusca(e.target.value)}/>
+              <Input placeholder="Filtrar tarefas..." className="pl-9 h-10 w-full bg-muted/40 border-none rounded-xl text-xs font-dm text-foreground" value={busca} onChange={e => setBusca(e.target.value)}/>
             </div>
             <Button className="gap-2 h-10 bg-primary text-white rounded-xl px-4 font-dm-bold text-[10px] uppercase tracking-wider shadow-lg shadow-primary/20" onClick={() => handleCreateBoard(true)}>
               <Plus className="w-4 h-4"/> <span className="hidden sm:inline">NOVO PIPELINE</span>
@@ -289,8 +285,7 @@ export default function KanbanPage() {
           </div>
         </div>
 
-        {/* Kanban Board Container */}
-        <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar text-foreground">
           <DndContext 
             sensors={sensors} 
             collisionDetection={closestCenter} 
@@ -321,7 +316,7 @@ export default function KanbanPage() {
                 <div className="p-3 bg-primary/5 rounded-full mb-2 group-hover:scale-110 transition-transform">
                   <Plus className="w-5 h-5"/>
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest">Adicionar Etapa</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-foreground">Adicionar Etapa</span>
               </button>
             </div>
 

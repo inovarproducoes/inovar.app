@@ -4,7 +4,7 @@ import { ITask } from "@/types/kanban";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { 
-  Calendar, User as UserIcon, Building2, 
+  User as UserIcon, Building2, 
   MessageSquare, Paperclip, Clock, Briefcase
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
