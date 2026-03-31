@@ -5,9 +5,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { 
   User as UserIcon, Building2, 
-  MessageSquare, Paperclip, Clock, Briefcase, Check
+  MessageSquare, Paperclip, Clock, Briefcase, Check, Archive
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface TaskCardProps {
   task: ITask;
@@ -123,10 +124,28 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
              )}
           </div>
           
-          <div className="flex items-center gap-2 text-muted-foreground/30">
-             <MessageSquare size={13} />
-             <Paperclip size={13} />
-          </div>
+          <button 
+             onClick={async (e) => {
+               e.stopPropagation();
+               if (window.confirm('Tem certeza que deseja arquivar? O item não será mais exibido no Kanban.')) {
+                 try {
+                   const res = await fetch(`/api/kanban/tasks/${task.id}`, { method: 'DELETE' });
+                   if (res.ok) {
+                     toast.success("Arquivado com sucesso!");
+                     onUpdate?.();
+                   } else {
+                     toast.error("Erro ao arquivar");
+                   }
+                 } catch (err) {
+                   toast.error("Erro de conexão");
+                 }
+               }
+             }}
+             className="text-muted-foreground/40 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-all flex items-center gap-1.5 group/archive"
+             title="Arquivar Ordem de Serviço / Tarefa"
+          >
+             <Archive size={14} className="group-hover/archive:scale-110 transition-transform" />
+          </button>
         </div>
       </div>
     </div>

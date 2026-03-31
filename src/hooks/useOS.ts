@@ -31,7 +31,6 @@ export function useOsStats() {
       if (!res.ok) throw new Error("Erro ao buscar estatísticas de OS");
       return res.json();
     },
-    initialData: STATS_INITIAL_DATA,
     staleTime: 5000, // 5 segundos de cache apenas
     refetchOnWindowFocus: true
   });
