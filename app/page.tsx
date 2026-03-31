@@ -94,31 +94,28 @@ export default function DashboardPage() {
           value={stats?.total || 0} 
           icon={ClipboardList} 
           trend={{ value: Math.abs(stats?.tendencias.total || 0), label: "vs mês anterior", isPositive: (stats?.tendencias.total || 0) >= 0 }}
-          delay={0}
+          accent="blue"
         />
         <StatCard 
           title="Abertas" 
           value={stats?.abertas || 0} 
           icon={LayoutPanelLeft} 
           trend={{ value: Math.abs(stats?.tendencias.abertas || 0), label: "novas hoje", isPositive: true }}
-          color="#4a4bd7"
-          delay={100}
+          accent="purple"
         />
         <StatCard 
           title="Finalizadas" 
           value={stats?.finalizadas || 0} 
           icon={CheckCircle2} 
           trend={{ value: Math.abs(stats?.tendencias.finalizadas || 0), label: "concluídas", isPositive: true }}
-          color="#10b981"
-          delay={200}
+          accent="teal"
         />
         <StatCard 
           title="Conversão" 
           value={`${stats?.taxaFinalizacao || 0}%`} 
           icon={TrendingUp} 
           trend={{ value: Math.abs(stats?.tendencias.taxa || 0), label: "conversão", isPositive: (stats?.tendencias.taxa || 0) >= 0 }}
-          color="#8b5cf6"
-          delay={300}
+          accent="blue"
         />
       </div>
 
