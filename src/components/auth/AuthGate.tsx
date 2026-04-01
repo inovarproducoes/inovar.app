@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
-import { Sparkles, ArrowRight, Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
+import { Sparkles, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Modo = "login" | "registro";
@@ -26,7 +27,6 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [confirmar, setConfirmar] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
@@ -69,10 +69,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
          {/* Background Decor */}
          <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80 z-10" />
-            <img 
+            <Image 
               src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80" 
               className="w-full h-full object-cover grayscale opacity-40 hover:scale-105 transition-transform duration-10000"
               alt="High-end Event"
+              fill
+              unoptimized
             />
          </div>
 

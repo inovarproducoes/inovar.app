@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { usePageTitle } from "@/context/PageTitleContext";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface SearchResultsState {
   alumnos: { id: string; nome: string; curso: string | null }[];
@@ -25,6 +25,18 @@ const menuItems = [
   { name: "Alunos",      href: "/alunos",           icon: GraduationCap },
   { name: "Clientes",    href: "/clientes",         icon: Briefcase },
 ];
+
+/* ─── Logo ────────────────────────────────────────────────────── */
+function InovarLogo() {
+  return (
+    <div className="flex items-center gap-3 group">
+      <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-3 transition-transform">
+        <span className="font-syne font-black text-white text-lg leading-none">I</span>
+      </div>
+      <span className="font-syne font-black text-xl tracking-tighter text-foreground">INOVAR<span className="text-primary">.</span></span>
+    </div>
+  );
+}
 
 /* ─── Sidebar ─────────────────────────────────────────────────── */
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
