@@ -278,7 +278,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar custom-scrollbar">
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} id={task.id} task={task} onClick={onEditTask} onUpdate={onUpdate} />
+            <TaskCard key={task.id} id={task.id} task={task} onClick={onEditTask} onUpdate={onUpdate} allColumns={allColumns} />
           ))}
         </SortableContext>
         

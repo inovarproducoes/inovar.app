@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ITask } from "@/types/kanban";
+import { ITask, IColumn } from "@/types/kanban";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { 
@@ -9,10 +9,12 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface TaskCardProps {
   task: ITask;
   id?: string; // Aceitar ID opcional do pai
+  allColumns?: IColumn[]; // Receber todas as colunas para o seletor
   onUpdate?: () => void; // Aceitar onUpdate opcional do pai
   onClick?: (task: ITask) => void;
 }
@@ -24,7 +26,7 @@ const PRIORIDADE_COLORS = {
   urgente: { bg: "bg-red-500/10", text: "text-red-500", border: "border-red-500/20" },
 };
 
-export function TaskCard({ task, onClick, onUpdate }: TaskCardProps) {
+export function TaskCard({ task, onClick, onUpdate, allColumns }: TaskCardProps) {
   const {
     setNodeRef,
     attributes,
@@ -46,6 +48,29 @@ export function TaskCard({ task, onClick, onUpdate }: TaskCardProps) {
   };
 
   const priorityStyle = PRIORIDADE_COLORS[task.prioridade] || PRIORIDADE_COLORS.baixa;
+
+  const handleMoveColumn = async (newColumnId: string) => {
+    if (newColumnId === task.coluna_id) return;
+    try {
+      const res = await fetch(`/api/kanban/tasks`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id: task.id,
+          coluna_id: newColumnId, 
+          ordem: 0 
+        })
+      });
+      if (res.ok) {
+        toast.success("Movido com sucesso!");
+        onUpdate?.();
+      } else {
+        toast.error("Erro ao mover a tarefa.");
+      }
+    } catch {
+      toast.error("Erro de conexão");
+    }
+  };
 
   return (
     <div
@@ -114,15 +139,33 @@ export function TaskCard({ task, onClick, onUpdate }: TaskCardProps) {
         </div>
 
         {/* Footer Meta */}
-        <div className="pt-3 border-t border-border/30 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             {task.created_at && (
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
+        <div className="pt-3 border-t border-border/30 space-y-3">
+          {allColumns && allColumns.length > 0 && (
+             <div onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+               <Select value={task.coluna_id} onValueChange={handleMoveColumn}>
+                 <SelectTrigger className="h-7 text-[10px] w-full bg-muted/30 border-none font-dm font-bold text-muted-foreground hover:bg-muted/50 transition-colors">
+                   <SelectValue placeholder="Mover..." />
+                 </SelectTrigger>
+                 <SelectContent className="text-[10px] font-dm bg-card border-border">
+                   {allColumns.map(c => (
+                     <SelectItem key={c.id} value={c.id} className="text-[10px]">
+                       {c.nome}
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
+             </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
+               {task.created_at && (
+                 <>
                    <Clock size={12} className="text-primary/50" />
                    {new Date(task.created_at).toLocaleDateString()}
-                </div>
-             )}
-          </div>
+                 </>
+               )}
+            </div>
           
           <button 
              onClick={async (e) => {
