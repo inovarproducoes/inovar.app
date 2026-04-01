@@ -32,11 +32,19 @@ export async function GET() {
       return {
         ...board,
         colunas: board.colunas.map(col => {
+          // Normalize column name to status key format
+          const colStatus = col.nome
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, '_');
+
           const osAsTasks = col.ordens_servico.map(os => ({
             id: os.id,
             titulo: os.nome,
             descricao: os.descricao || 'Sem descrição',
-            status: os.status,
+            // Always use the column-derived status for Kanban display accuracy
+            status: colStatus,
             ordem: os.ordem || 0, 
             prioridade: 'alta' as const,
             coluna_id: col.id,

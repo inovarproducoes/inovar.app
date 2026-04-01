@@ -5,14 +5,30 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    // Fetch all non-archived OS with their column info for accurate counting
     const todasOS = await prisma.oS.findMany({
       where: { arquivado: false },
+      include: { coluna: { select: { nome: true } } },
       orderBy: { created_at: "desc" },
     });
 
-    const abertas = todasOS.filter(os => ["pendente", "aberto", "aberta", "abertas", "nova", "novo", "na_fila", "nova_os"].includes(os.status.toLowerCase())).length;
-    const emAndamento = todasOS.filter(os => ["em_andamento", "em andamento", "em atendimento", "atendimento", "execucao", "analise", "desenvolvimento", "em_atendimento", "em_impedimento"].includes(os.status.toLowerCase())).length;
-    const finalizadas = todasOS.filter(os => ["concluido", "concluída", "concluida", "finalizado", "finalizada", "finalizadas", "resolvido", "fechado"].includes(os.status.toLowerCase())).length;
+    // Normalize column name to key for comparison
+    const normalize = (s: string) =>
+      s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_");
+
+    // Count by physical column name (reliable regardless of status string)
+    const ABERTAS_COLS   = ["nova_os", "nova", "novo", "em_atendimento", "em_impedimento", "impedimento", "atendimento"];
+    const FINALIZADAS_COLS = ["concluida", "concluido", "finalizado", "finalizada", "concluida_os"];
+
+    const abertas = todasOS.filter(os => {
+      const colNome = os.coluna ? normalize(os.coluna.nome) : normalize(os.status);
+      return ABERTAS_COLS.some(c => colNome.includes(c));
+    }).length;
+
+    const finalizadas = todasOS.filter(os => {
+      const colNome = os.coluna ? normalize(os.coluna.nome) : normalize(os.status);
+      return FINALIZADAS_COLS.some(c => colNome.includes(c));
+    }).length;
 
     const total = todasOS.length;
     const taxaFinalizacao = total > 0 ? Math.round((finalizadas / total) * 100) : 0;
@@ -43,7 +59,7 @@ export async function GET() {
       {
         total,
         abertas,
-        emAndamento,
+        emAndamento: abertas, // alias kept for compatibility  
         finalizadas,
         taxaFinalizacao,
         tendencias: { 
@@ -55,11 +71,7 @@ export async function GET() {
         osPorMes: osPorMesFormatado,
         recentes,
       },
-      {
-        headers: {
-          "Cache-Control": "no-store, max-age=0",
-        },
-      }
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
     );
   } catch (error) {
     console.error("Erro em /api/os/stats:", error);

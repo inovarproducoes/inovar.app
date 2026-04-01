@@ -138,7 +138,11 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
     instituicao: "", 
     projeto_nome: "",
     cliente_nome: "",
-    cliente_id: ""
+    cliente_id: "",
+    cliente_telefone: "",
+    responsavel_nome: "",
+    aluno_nome: "",
+    aluno_cpf: ""
   });
 
   const { data: globalClients = [] } = useQuery({
@@ -159,7 +163,13 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...newTaskData,
+          titulo: newTaskData.titulo,
+          descricao: newTaskData.cliente_telefone ? `Contato: ${newTaskData.cliente_telefone}` : undefined,
+          instituicao: newTaskData.instituicao,
+          projeto_nome: newTaskData.projeto_nome,
+          responsavel_nome: newTaskData.responsavel_nome || newTaskData.cliente_nome,
+          aluno_nome: newTaskData.aluno_nome,
+          aluno_cpf: newTaskData.aluno_cpf,
           coluna_id: id,
           quadro_id: boardId,
           prioridade: 'media',
@@ -167,9 +177,9 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         })
       });
       if (resp.ok) {
-        toast.success("Tarefa criada");
+        toast.success(isOSBoard ? "OS criada com sucesso!" : "Tarefa criada");
         setIsNewTaskOpen(false);
-        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "", cliente_nome: "", cliente_id: "" });
+        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "", cliente_nome: "", cliente_id: "", cliente_telefone: "", responsavel_nome: "", aluno_nome: "", aluno_cpf: "" });
         onUpdate();
       }
     } catch {
@@ -242,7 +252,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
             <button 
                 className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground" 
                 onClick={(e) => { e.stopPropagation(); handleAddTask(); }}
-                title="Nova Tarefa"
+                title="Nova OS"
             >
                 <Plus size={16}/>
             </button>
@@ -309,7 +319,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
            className="w-full justify-center text-muted-foreground/60 hover:text-foreground hover:bg-muted h-11 font-syne font-bold text-xs uppercase tracking-widest rounded-xl transition-all hover:scale-[0.98] active:scale-95"
            onClick={handleAddTask}
          >
-           <Plus size={16} className="mr-2 text-primary"/> Nova Tarefa
+           <Plus size={16} className="mr-2 text-primary"/> Nova OS
          </Button>
       </div>
 
@@ -356,15 +366,15 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
         <DialogContent className="bg-background/95 border-border/40 backdrop-blur-xl text-foreground sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="font-syne font-extrabold text-xl">Criar Nova Tarefa</DialogTitle>
+            <DialogTitle className="font-syne font-extrabold text-xl">Criar Nova OS</DialogTitle>
             <DialogDescription className="font-dm text-muted-foreground">
-              Preencha os detalhes fundamentais para o acompanhamento do evento.
+              Preencha os dados da Ordem de Serviço para acompanhar no pipeline.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4 font-dm">
             <div className="grid gap-2">
-              <Label htmlFor="qc-title" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Título da Tarefa / Atividade</Label>
+              <Label htmlFor="qc-title" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Título / Descrição da OS</Label>
               <Input 
                 id="qc-title" 
                 placeholder="Ex: Entrega de becas..." 
@@ -375,28 +385,30 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
             </div>
             
             <div className="grid gap-2">
-              <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Cliente / Aluno (Database)</Label>
+              <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Responsável (Contato/Cliente)</Label>
               <Popover open={isClientSelectorOpen} onOpenChange={setIsClientSelectorOpen}>
                 <PopoverTrigger asChild>
                    <Button variant="outline" className="w-full h-11 justify-start font-dm text-xs bg-muted/30 border-none rounded-xl hover:bg-muted/50">
                       <Search className="w-3.5 h-3.5 mr-2 opacity-50" />
-                      {newTaskData.cliente_nome || "Pesquisar ou selecionar cliente..."}
+                      {newTaskData.cliente_nome ? (
+                        <span className="flex items-center gap-2">
+                          <span className="font-bold">{newTaskData.cliente_nome}</span>
+                          {newTaskData.cliente_telefone && <span className="text-muted-foreground font-mono text-[10px]">{newTaskData.cliente_telefone}</span>}
+                        </span>
+                      ) : "Pesquisar ou selecionar contato..."}
                    </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[375px] p-0 rounded-2xl shadow-2xl border-primary/10">
                    <Command className="bg-background">
-                      <CommandInput placeholder="Digite o nome do cliente..." className="h-10 text-xs" />
+                      <CommandInput placeholder="Digite o nome do contato..." className="h-10 text-xs" />
                       <CommandList>
                          <CommandEmpty className="p-4 flex flex-col items-center gap-2">
-                            <p className="text-[11px] text-muted-foreground">Cliente não encontrado.</p>
+                            <p className="text-[11px] text-muted-foreground">Contato não encontrado.</p>
                             <Button 
                               variant="secondary" 
                               size="sm" 
                               className="h-8 rounded-lg text-[10px] gap-2"
-                              onClick={() => {
-                                setIsClientSelectorOpen(false);
-                                toast.info("Funcionalidade de criação rápida vindo em breve!");
-                              }}
+                              onClick={() => { setIsClientSelectorOpen(false); toast.info("Cadastre o cliente no módulo de Clientes!"); }}
                             >
                                <UserPlus className="w-3 h-3" /> CADASTRAR NO CRM
                             </Button>
@@ -406,7 +418,13 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
                                <CommandItem
                                  key={client.id}
                                  onSelect={() => {
-                                   setNewTaskData(prev => ({ ...prev, cliente_nome: client.nome, cliente_id: client.id }));
+                                   setNewTaskData(prev => ({
+                                     ...prev, 
+                                     cliente_nome: client.nome, 
+                                     cliente_id: client.id,
+                                     cliente_telefone: client.telefone || "",
+                                     responsavel_nome: client.nome
+                                   }));
                                    setIsClientSelectorOpen(false);
                                  }}
                                  className="flex items-center justify-between p-3 cursor-pointer"
@@ -423,6 +441,29 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
                    </Command>
                 </PopoverContent>
               </Popover>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="qc-aluno" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Nome do Aluno</Label>
+                <Input 
+                  id="qc-aluno" 
+                  placeholder="Ex: Maria Clara..." 
+                  value={newTaskData.aluno_nome} 
+                  onChange={(e) => setNewTaskData({ ...newTaskData, aluno_nome: e.target.value })}
+                  className="bg-muted/30 border-none rounded-xl h-11"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="qc-cpf" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">CPF do Aluno</Label>
+                <Input 
+                  id="qc-cpf" 
+                  placeholder="000.000.000-00" 
+                  value={newTaskData.aluno_cpf} 
+                  onChange={(e) => setNewTaskData({ ...newTaskData, aluno_cpf: e.target.value })}
+                  className="bg-muted/30 border-none rounded-xl h-11"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -452,7 +493,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
           <DialogFooter>
             <Button variant="ghost" onClick={() => setIsNewTaskOpen(false)} className="rounded-xl font-syne font-bold uppercase tracking-wider text-[10px]">Cancelar</Button>
             <Button onClick={confirmAddTask} className="bg-primary text-white rounded-xl font-syne font-bold uppercase tracking-wider text-[10px] px-8 h-12 shadow-lg shadow-primary/20">
-              Criar Tarefa
+              Criar OS
             </Button>
           </DialogFooter>
         </DialogContent>
