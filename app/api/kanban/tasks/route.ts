@@ -3,17 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { 
-      titulo, 
-      descricao, 
-      coluna_id, 
-      quadro_id, 
-      prioridade, 
-      responsavel_nome, 
+    const {
+      titulo,
+      descricao,
+      coluna_id,
+      quadro_id,
+      prioridade,
+      responsavel_nome,
       data_vencimento,
       instituicao,
       projeto_nome,
-      isOS
+      isOS,
+      numero,
+      aluno_nome,
+      aluno_cpf,
     } = await req.json();
 
     if (!titulo || !coluna_id || !quadro_id) {
@@ -22,18 +25,55 @@ export async function POST(req: Request) {
 
     if (isOS === true) {
       const targetCol = await prisma.coluna.findUnique({ where: { id: coluna_id } });
+      const colStatus = targetCol
+        ? targetCol.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_')
+        : 'pendente';
+
+      // Se vier com número (N8N), fazer upsert para evitar duplicatas
+      if (numero) {
+        const numeroStr = String(numero).replace(/[\n\r\t]/g, '').trim();
+        const existing = await prisma.oS.findFirst({ where: { numero: numeroStr } });
+
+        if (existing) {
+          // Atualiza dados da OS, mas preserva coluna_id se já foi posicionada manualmente
+          const updated = await prisma.oS.update({
+            where: { id: existing.id },
+            data: {
+              nome: titulo,
+              descricao: descricao ?? existing.descricao,
+              responsavel_nome: responsavel_nome ?? existing.responsavel_nome,
+              aluno_nome: aluno_nome ?? existing.aluno_nome,
+              aluno_cpf: aluno_cpf ?? existing.aluno_cpf,
+              instituicao: instituicao ?? existing.instituicao,
+              projeto_nome: projeto_nome ?? existing.projeto_nome,
+              arquivado: false,
+              // Só atualiza coluna/quadro/status se a OS ainda não tem coluna definida
+              ...(existing.coluna_id ? {} : {
+                coluna_id,
+                quadro_id,
+                status: colStatus,
+              }),
+            }
+          });
+          return NextResponse.json(updated);
+        }
+      }
+
       const osCount = await prisma.oS.count({ where: { coluna_id } });
 
       const newOS = await prisma.oS.create({
         data: {
           nome: titulo,
+          numero: numero ? String(numero).replace(/[\n\r\t]/g, '').trim() : undefined,
           descricao,
           coluna_id,
           quadro_id,
           responsavel_nome,
+          aluno_nome,
+          aluno_cpf,
           instituicao,
           projeto_nome,
-          status: targetCol ? targetCol.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_') : 'pendente',
+          status: colStatus,
           arquivado: false,
           ordem: osCount
         }
