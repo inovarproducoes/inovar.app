@@ -71,7 +71,8 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, coluna_id, ordem, titulo, descricao, prioridade, data_vencimento, numero } = body;
+    const { id: rawId, coluna_id, ordem, titulo, descricao, prioridade, data_vencimento, numero } = body;
+    const id = rawId?.toString().replace(/[\n\r\t]/g, "").trim();
 
     if (id === undefined) {
       return NextResponse.json({ error: 'ID da tarefa obrigatório' }, { status: 400 });

@@ -5,7 +5,16 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const { ...alunoData } = data;
+    // Sanitizar campos de texto que podem ter caracteres indesejados da automação
+    const alunoData = Object.fromEntries(
+      Object.entries(data).map(([k, v]) => [k, typeof v === 'string' ? v.replace(/[\n\r\t]/g, ' ').trim() : v])
+    );
+
+    // Validar se um id externo é um UUID válido; caso contrário, deixar o Prisma gerar um
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (alunoData.id && !UUID_REGEX.test(alunoData.id)) {
+      delete alunoData.id; // Deixar @default(uuid()) gerar o ID
+    }
 
     // 1. Upsert Aluno (pelo CPF como chave de identificação principal para o n8n)
     let aluno;

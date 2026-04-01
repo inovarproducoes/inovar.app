@@ -6,13 +6,14 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-    const { 
-      coluna_id, 
-      ordem, 
-      titulo, 
-      descricao, 
-      prioridade, 
+    const { id: rawId } = await params;
+    const id = rawId?.replace(/[\n\r\t]/g, "").trim();
+    const {
+      coluna_id,
+      ordem,
+      titulo,
+      descricao,
+      prioridade,
       responsavel_nome,
       aluno_nome,
       aluno_cpf,
@@ -92,7 +93,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id: rawId } = await params;
+    const id = rawId?.replace(/[\n\r\t]/g, "").trim();
 
     // 1. Tentar arquivar como Tarefa
     try {
