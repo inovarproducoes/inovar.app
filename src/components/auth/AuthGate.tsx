@@ -2,14 +2,10 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { AuroraBackground } from "@/components/layout/AuroraBackground";
-import { Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
+import { Sparkles, ArrowRight, Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Modo = "login" | "registro";
-
-/* ─── Logo Elegante do App (Branding Roxo) ─── */
-import { Sparkles } from "lucide-react";
-
-import { Sparkles, ArrowRight } from "lucide-react";
 
 function InovarLogo({ className }: { className?: string }) {
   return (
