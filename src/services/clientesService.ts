@@ -19,5 +19,10 @@ export const clientesService = {
     });
     if (!res.ok) throw new Error("Erro ao alternar agente");
     return res.json();
+  },
+  deletarCliente: async (id: string) => {
+    const res = await fetch(`/api/clientes?id=${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Erro ao excluir cliente");
+    return true;
   }
 }

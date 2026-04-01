@@ -8,7 +8,7 @@ import { Cliente } from "@/types/clientes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Phone, Search, Filter, Plus, Mail, ExternalLink, Calendar, TrendingUp } from "lucide-react";
+import { User, Phone, Search, Filter, Plus, Mail, ExternalLink, Calendar, TrendingUp, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -53,6 +53,21 @@ export default function ClientesPage() {
     setIsNovoClienteOpen(false);
     setNovoCliente({ nome: "", telefone: "", email: "", origem: "whatsapp" });
     refetch();
+  };
+
+  const handeExcluirCliente = async (id: string) => {
+    if (!confirm("Isso excluirá permanentemente o cliente do CRM. Continuar?")) return;
+    try {
+      toast.loading("Excluindo cliente...");
+      await clientesService.deletarCliente(id);
+      toast.success("Cliente removido!");
+      setClienteDetalhes(null);
+      refetch();
+    } catch {
+      toast.error("Erro ao excluir cliente");
+    } finally {
+        toast.dismiss();
+    }
   };
 
   return (
@@ -191,8 +206,16 @@ export default function ClientesPage() {
                     <td className="px-6 py-5 text-center">
                         <Badge variant="outline" className="h-6 px-3 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-bold text-[9px] uppercase tracking-widest">WhatsApp</Badge>
                     </td>
-                    <td className="px-6 py-5 text-right">
-                       <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground/50 hover:text-primary transition-all"><ExternalLink size={16} /></Button>
+                    <td className="px-6 py-5 text-right flex items-center justify-end gap-2">
+                       <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground/40 hover:text-primary transition-all"><ExternalLink size={16} /></Button>
+                       <Button 
+                         variant="ghost" 
+                         size="icon" 
+                         className="h-9 w-9 text-muted-foreground/30 hover:text-destructive transition-all"
+                         onClick={(e) => { e.stopPropagation(); handeExcluirCliente(cliente.id); }}
+                        >
+                            <Trash2 size={16} />
+                        </Button>
                     </td>
                     </tr>
                 ))
@@ -232,6 +255,9 @@ export default function ClientesPage() {
 
             <div className="flex gap-3 pt-2">
                <Button className="flex-1 h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-dm-bold text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20" onClick={() => handleOpenWhatsApp(clienteDetalhes?.telefone || '')}>ABRIR WHATSAPP</Button>
+               <Button variant="ghost" className="h-12 border-border/20 text-muted-foreground/30 hover:text-destructive transition-all rounded-xl" onClick={() => { if (clienteDetalhes) handeExcluirCliente(clienteDetalhes.id); }}>
+                  <Trash2 size={16} />
+               </Button>
                <Button variant="outline" className="h-12 rounded-xl font-dm-bold text-[10px] uppercase tracking-wider" onClick={() => setClienteDetalhes(null)}>FECHAR</Button>
             </div>
           </div>

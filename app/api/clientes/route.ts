@@ -83,3 +83,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Erro ao criar cliente" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "ID de cliente obrigatório" }, { status: 400 });
+  }
+
+  try {
+    await prisma.cliente.delete({ where: { id } });
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    console.error("Erro ao excluir cliente:", error);
+    return NextResponse.json({ error: "Erro ao excluir cliente" }, { status: 500 });
+  }
+}
