@@ -167,28 +167,29 @@ export function TaskCard({ task, onClick, onUpdate, allColumns }: TaskCardProps)
                )}
             </div>
           
-          <button 
-             onClick={async (e) => {
-               e.stopPropagation();
-               if (window.confirm('Tem certeza que deseja arquivar? O item não será mais exibido no Kanban.')) {
-                 try {
-                   const res = await fetch(`/api/kanban/tasks/${task.id}`, { method: 'DELETE' });
-                   if (res.ok) {
-                     toast.success("Arquivado com sucesso!");
-                     onUpdate?.();
-                   } else {
-                     toast.error("Erro ao arquivar");
+            <button 
+               onClick={async (e) => {
+                 e.stopPropagation();
+                 if (window.confirm('Tem certeza que deseja arquivar? O item não será mais exibido no Kanban.')) {
+                   try {
+                     const res = await fetch(`/api/kanban/tasks/${task.id}`, { method: 'DELETE' });
+                     if (res.ok) {
+                       toast.success("Arquivado com sucesso!");
+                       onUpdate?.();
+                     } else {
+                       toast.error("Erro ao arquivar");
+                     }
+                   } catch {
+                     toast.error("Erro de conexão");
                    }
-                 } catch {
-                   toast.error("Erro de conexão");
                  }
-               }
-             }}
-             className="text-muted-foreground/40 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-all flex items-center gap-1.5 group/archive"
-             title="Arquivar Ordem de Serviço / Tarefa"
-          >
-             <Archive size={14} className="group-hover/archive:scale-110 transition-transform" />
-          </button>
+               }}
+               className="text-muted-foreground/40 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-all flex items-center gap-1.5 group/archive"
+               title="Arquivar Ordem de Serviço / Tarefa"
+            >
+               <Archive size={14} className="group-hover/archive:scale-110 transition-transform" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
