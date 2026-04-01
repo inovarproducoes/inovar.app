@@ -423,6 +423,7 @@ export default function KanbanPage() {
                     allColumns={activeBoard.colunas}
                     onUpdate={fetchBoards}
                     onEditTask={handleEditTask}
+                    isOSBoard={activeBoard?.nome?.toLowerCase().includes("os") || false}
                   />
                 ))}
               </SortableContext>
@@ -449,6 +450,7 @@ export default function KanbanPage() {
                          allColumns={activeBoard?.colunas || []}
                          onUpdate={() => {}}
                          onEditTask={() => {}}
+                         isOSBoard={activeBoard?.nome?.toLowerCase().includes("os") || false}
                       />
                   </div>
                 )}

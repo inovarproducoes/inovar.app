@@ -139,7 +139,7 @@ export async function PATCH(req: Request) {
 
         await tx.oS.updateMany({
           where: { quadro_id: id },
-          data: { arquivado: true }
+          data: { arquivado: true, status: 'arquivada' }
         });
 
         return NextResponse.json(board);

@@ -12,34 +12,56 @@ export async function POST(req: Request) {
       responsavel_nome, 
       data_vencimento,
       instituicao,
-      projeto_nome
+      projeto_nome,
+      isOS
     } = await req.json();
 
     if (!titulo || !coluna_id || !quadro_id) {
       return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 });
     }
 
-    const taskCount = await prisma.tarefa.count({
-      where: { coluna_id }
-    });
+    if (isOS === true) {
+      const targetCol = await prisma.coluna.findUnique({ where: { id: coluna_id } });
+      const osCount = await prisma.oS.count({ where: { coluna_id } });
 
-    const task = await prisma.tarefa.create({
-      data: {
-        titulo,
-        descricao,
-        coluna_id,
-        quadro_id,
-        prioridade: prioridade || 'media',
-        responsavel_nome,
-        instituicao,
-        projeto_nome,
-        arquivado: false,
-        data_vencimento: data_vencimento ? new Date(data_vencimento) : null,
-        ordem: taskCount
-      }
-    });
+      const newOS = await prisma.oS.create({
+        data: {
+          nome: titulo,
+          descricao,
+          coluna_id,
+          quadro_id,
+          responsavel_nome,
+          instituicao,
+          projeto_nome,
+          status: targetCol ? targetCol.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_') : 'pendente',
+          arquivado: false,
+          ordem: osCount
+        }
+      });
+      return NextResponse.json(newOS);
+    } else {
+      const taskCount = await prisma.tarefa.count({
+        where: { coluna_id }
+      });
 
-    return NextResponse.json(task);
+      const task = await prisma.tarefa.create({
+        data: {
+          titulo,
+          descricao,
+          coluna_id,
+          quadro_id,
+          prioridade: prioridade || 'media',
+          responsavel_nome,
+          instituicao,
+          projeto_nome,
+          arquivado: false,
+          data_vencimento: data_vencimento ? new Date(data_vencimento) : null,
+          ordem: taskCount
+        }
+      });
+
+      return NextResponse.json(task);
+    }
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Erro ao criar tarefa' }, { status: 500 });

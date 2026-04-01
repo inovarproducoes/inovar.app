@@ -107,7 +107,7 @@ export async function DELETE(
     try {
       await prisma.oS.update({ 
         where: { id },
-        data: { arquivado: true }
+        data: { arquivado: true, status: "arquivada" }
       });
       return NextResponse.json({ success: true, archived: true });
     } catch { }

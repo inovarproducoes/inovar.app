@@ -55,9 +55,10 @@ interface ColumnContainerProps {
   allColumns: IColumn[]; 
   onUpdate: () => void;
   onEditTask: (task: ITask) => void;
+  isOSBoard?: boolean;
 }
 
-export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdate, onEditTask }: ColumnContainerProps) {
+export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdate, onEditTask, isOSBoard = false }: ColumnContainerProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [targetColumnId, setTargetColumnId] = useState<string>("");
   const [isRenaming, setIsRenaming] = useState(false);
@@ -161,7 +162,8 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
           ...newTaskData,
           coluna_id: id,
           quadro_id: boardId,
-          prioridade: 'media'
+          prioridade: 'media',
+          isOS: isOSBoard
         })
       });
       if (resp.ok) {
