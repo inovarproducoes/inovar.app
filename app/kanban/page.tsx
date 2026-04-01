@@ -219,43 +219,54 @@ export default function KanbanPage() {
     if (!over) return;
     if (active.id === over.id) return;
 
-    // Acessar o estado mais recente através do setActiveBoard callback
-    // Isso previne o bug de stale closure onde o Kanban enviava a coluna_id antiga para a API
     setActiveBoard((currentBoard) => {
       if (!currentBoard) return currentBoard;
 
-      const currentTasks = currentBoard.colunas.flatMap(c => c.tarefas);
-      const task = currentTasks.find(t => t.id === active.id);
-      
-      if (task) {
-         const column = currentBoard.colunas.find(c => c.id === task.coluna_id);
-         const newOrder = column?.tarefas.findIndex(t => t.id === task.id) || 0;
+      const allTasks = currentBoard.colunas.flatMap(c => c.tarefas);
+      const task = allTasks.find(t => t.id === active.id);
+      if (!task) return currentBoard;
 
-         fetch(`/api/kanban/tasks`, {
-           method: 'PUT',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ 
-             id: task.id,
-             coluna_id: task.coluna_id, 
-             ordem: newOrder 
-           })
-         })
-         .then(async (res) => {
-           if (res.ok) {
-              toast.success("Sincronizado com sucesso!");
-              fetchBoards();
-           } else {
-              toast.error("Erro ao persistir posição.");
-              fetchBoards(); // Rollback
-           }
-         })
-         .catch((err) => { 
-           console.error(err);
-           toast.error("Erro de conexão");
-           fetchBoards(); 
-         });
+      // Determina a coluna de destino diretamente do evento de drag,
+      // sem depender apenas do estado atualizado pelo onDragOver
+      let targetColumnId: string | undefined;
+      if (over.data.current?.type === "Column") {
+        targetColumnId = over.id as string;
+      } else if (over.data.current?.type === "Task") {
+        const overTask = allTasks.find(t => t.id === over.id);
+        targetColumnId = overTask?.coluna_id;
       }
-      return currentBoard; // Não mutamos o estado aqui, apenas lemos
+
+      // Fallback: usa coluna_id do estado (atualizado pelo onDragOver)
+      if (!targetColumnId) targetColumnId = task.coluna_id;
+
+      const targetColumn = currentBoard.colunas.find(c => c.id === targetColumnId);
+      const newOrder = targetColumn ? Math.max(0, targetColumn.tarefas.findIndex(t => t.id === task.id)) : 0;
+
+      fetch(`/api/kanban/tasks`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: task.id,
+          coluna_id: targetColumnId,
+          ordem: newOrder
+        })
+      })
+      .then(async (res) => {
+        if (res.ok) {
+           toast.success("Sincronizado com sucesso!");
+           fetchBoards();
+        } else {
+           toast.error("Erro ao persistir posição.");
+           fetchBoards();
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Erro de conexão");
+        fetchBoards();
+      });
+
+      return currentBoard;
     });
 
     setActiveTask(null);

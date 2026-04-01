@@ -104,19 +104,27 @@ export async function PUT(req: Request) {
     // 2. Tentar atualizar como OS
     try {
       let os = id ? await prisma.oS.findUnique({ where: { id } }) : null;
-      
-      // Fallback para numero se id for vazio ou não encontrado
+      const foundById = !!os;
+
+      // Fallback para numero se id for vazio ou não encontrado (fluxo N8N)
       if (!os && numero) {
         os = await prisma.oS.findFirst({ where: { numero: String(numero) } });
       }
-      
+
       if (os) {
          const targetCol = coluna_id ? await prisma.coluna.findUnique({ where: { id: coluna_id } }) : null;
-         
+
+         // Se encontrado por número (N8N), preserva coluna_id existente para não desfazer
+         // movimentações manuais feitas pelo usuário no Kanban.
+         // Se encontrado por ID (drag-and-drop), sempre atualiza coluna_id.
+         const novaColuna = foundById
+           ? (coluna_id || undefined)
+           : (os.coluna_id ? undefined : (coluna_id || undefined));
+
          const updatedOS = await prisma.oS.update({
            where: { id: os.id },
-           data: { 
-             coluna_id: coluna_id || undefined,
+           data: {
+             coluna_id: novaColuna,
              ordem: ordem !== undefined ? ordem : undefined,
              quadro_id: targetCol ? targetCol.quadro_id : undefined,
              status: targetCol ? targetCol.nome
@@ -124,7 +132,7 @@ export async function PUT(req: Request) {
                .normalize("NFD")
                .replace(/[\u0300-\u036f]/g, "")
                .replace(/\s+/g, '_') : undefined,
-             nome: titulo || undefined, 
+             nome: titulo || undefined,
              descricao: descricao !== undefined ? descricao : undefined,
            }
          });
