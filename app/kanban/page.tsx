@@ -19,29 +19,24 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Layout, Search, ChevronDown, Check, Star, Archive } from "lucide-react";
+import { Plus, Layout } from "lucide-react";
 import { ColumnContainer } from "@/components/kanban/ColumnContainer";
 import { TaskCard } from "@/components/kanban/TaskCard";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TaskEditSheet } from "@/components/kanban/TaskEditSheet";
 import type { IBoard, IColumn, ITask } from "@/types/kanban";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
 export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
   const [boards, setBoards] = useState<IBoard[]>([]);
   const [activeBoard, setActiveBoard] = useState<IBoard | null>(null);
-  const [busca, setBusca] = useState("");
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<ITask | null>(null);
   const [activeColumn, setActiveColumn] = useState<IColumn | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isBoardSelectorOpen, setIsBoardSelectorOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -300,7 +295,7 @@ export default function KanbanPage() {
   };
 
   if (!mounted || loading) return (
-    <MainLayout title="Carregando Kanban..." subtitle="Sincronizando fluxo operacional">
+    <MainLayout title="Carregando Kanban..." subtitle="Sincronizando Ordens de Serviço">
       <div className="p-8 space-y-6">
         <Skeleton className="h-14 w-full rounded-2xl opacity-10"/>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-[600px]">
@@ -313,72 +308,7 @@ export default function KanbanPage() {
   return (
     <MainLayout title="Gestão de Fluxo" subtitle="Acompanhamento em tempo real das Ordens de Serviço">
       <div className="flex flex-col h-[calc(100vh-170px)] -mx-6 -my-6">
-        <div className="bg-background/80 backdrop-blur-xl border-b px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center sticky top-0 z-30 gap-4">
-          <div className="flex items-center gap-3 w-full md:w-auto">
-             <Popover open={isBoardSelectorOpen} onOpenChange={setIsBoardSelectorOpen}>
-                <PopoverTrigger asChild>
-                   <Button variant="ghost" className="h-10 hover:bg-muted/50 gap-2 px-3 border border-border/40 rounded-xl max-w-full overflow-hidden text-foreground">
-                      <Layout className="w-4 h-4 text-primary shrink-0"/>
-                      <span className="font-dm font-bold text-base truncate">{activeBoard?.nome || "Selecione um Quadro"}</span>
-                      <ChevronDown className="w-4 h-4 opacity-50 shrink-0" />
-                   </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-0 rounded-2xl shadow-2xl border-primary/10 overflow-hidden text-foreground" align="start">
-                   <Command>
-                      <CommandInput placeholder="Pesquisar quadros..." className="font-dm" />
-                      <CommandList className="max-h-[300px]">
-                          <CommandEmpty>Nenhum quadro encontrado.</CommandEmpty>
-                          <CommandGroup heading="Ações de Quadros">
-                             {boards.map((b) => (
-                                <CommandItem 
-                                  key={b.id} 
-                                  onSelect={() => { setActiveBoard(b); setIsBoardSelectorOpen(false); }}
-                                  className="flex items-center justify-between p-3 cursor-pointer group"
-                                >
-                                   <div className="flex items-center gap-3">
-                                       <div className={cn("w-2 h-2 rounded-full", activeBoard?.id === b.id ? "bg-primary" : "bg-muted")} />
-                                       <span className="font-dm text-sm font-medium">{b.nome}</span>
-                                       {b.ativo && <Star className="w-3 h-3 text-primary fill-primary" />}
-                                   </div>
-                                   <div className="flex items-center gap-1">
-                                      {!b.ativo && (
-                                        <Button 
-                                          variant="ghost" 
-                                          size="icon" 
-                                          className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-primary" 
-                                          onClick={(e) => { e.stopPropagation(); handleSetActive(b.id); }}
-                                          title="Definir como padrão"
-                                        >
-                                          <Star className="w-3.5 h-3.5" />
-                                        </Button>
-                                      )}
-                                      <Button 
-                                        variant="ghost" 
-                                        size="icon" 
-                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-destructive" 
-                                        onClick={(e) => { e.stopPropagation(); handleArchiveBoard(b.id); }}
-                                        title="Arquivar pipeline"
-                                      >
-                                        <Archive className="w-3.5 h-3.5" />
-                                      </Button>
-                                      {activeBoard?.id === b.id && <Check className="w-4 h-4 text-primary ml-2" />}
-                                   </div>
-                                </CommandItem>
-                             ))}
-                          </CommandGroup>
-                       </CommandList>
-                   </Command>
-                </PopoverContent>
-             </Popover>
-          </div>
-          
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50"/>
-              <Input placeholder="Filtrar OS..." className="pl-9 h-10 w-full bg-muted/40 border-none rounded-xl text-xs font-dm text-foreground" value={busca} onChange={e => setBusca(e.target.value)}/>
-            </div>
-          </div>
-        </div>
+
 
         <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar text-foreground">
           <DndContext 
@@ -395,7 +325,7 @@ export default function KanbanPage() {
                     key={col.id} 
                     id={col.id}
                     title={col.nome} 
-                    tasks={col.tarefas.filter(t => t.titulo.toLowerCase().includes(busca.toLowerCase()))}
+                    tasks={col.tarefas}
                     boardId={activeBoard?.id || ""}
                     allColumns={activeBoard.colunas}
                     onUpdate={fetchBoards}

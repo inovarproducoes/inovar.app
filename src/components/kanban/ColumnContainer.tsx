@@ -191,16 +191,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
     setIsNewTaskOpen(true);
   };
 
-  /* Progress based on column title */
-  const getProgress = () => {
-    const t = title.toLowerCase();
-    if (t.includes('concluido') || t.includes('finalizado') || t.includes('pronto')) return 100;
-    if (t.includes('andamento') || t.includes('execução') || t.includes('fazendo')) return 50;
-    if (t.includes('pausado') || t.includes('revisão')) return 80;
-    return 10;
-  };
 
-  const progress = getProgress();
 
   return (
     <div
@@ -280,18 +271,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
         </div>
 
         {/* Custom Progress Bar Style */}
-        <div className="space-y-2">
-            <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 font-mono">Workflow Status</span>
-                <span className="text-[10px] font-black text-primary font-mono">{progress}%</span>
-            </div>
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
-                <div 
-                    className="h-full bg-gradient-brand transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(74,75,215,0.6)]" 
-                    style={{ width: `${progress}%` }} 
-                />
-            </div>
-        </div>
+
       </div>
 
       {/* Tasks Area */}
