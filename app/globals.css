@@ -79,24 +79,24 @@
 }
 
 .dark .glass-card {
-  border-color: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.08);
 }
 .dark .glass-card:hover {
-  border-color: rgba(74,75,215,0.4);
+  border-color: rgba(125,83,159,0.4);
 }
 
 .bg-gradient-brand {
-    background: linear-gradient(135deg, #4a4bd7 0%, #6e3bd8 100%);
+    background: linear-gradient(135deg, #7D539F 0%, #5b3d75 100%);
 }
 
 /* Dashboard Indicators */
 .kpi-card {
-  @apply glass-card p-6 md:p-8 shadow-sm transition-all;
+  @apply glass-card p-6 md:p-8 shadow-sm transition-all rounded-[1.5rem] border-white/40;
 }
 
 .kpi-card:hover {
-  @apply shadow-lg shadow-black/5 dark:shadow-black/20 -translate-y-1;
-  border-color: #4a4bd7;
+  @apply shadow-xl shadow-black/5 dark:shadow-black/20 -translate-y-1.5;
+  border-color: #7D539F;
 }
 
 /* Custom Scrollbar */

@@ -41,12 +41,12 @@ function GoalCard({ percentage, current, target, label, sublabel }: GoalCardProp
                 cx="64" cy="64" r="54" fill="none" stroke="url(#goalRingGradDashboard)" strokeWidth="8" strokeLinecap="round"
                 strokeDasharray="339" strokeDashoffset={339 - (339 * percentage / 100)}
                 className="transition-all duration-1000 ease-out"
-                style={{ filter: 'drop-shadow(0 0 8px rgba(74,75,215,0.4))' }}
+                style={{ filter: 'drop-shadow(0 0 8px rgba(125,83,159,0.4))' }}
             />
             <defs>
               <linearGradient id="goalRingGradDashboard" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#4a4bd7" />
-                <stop offset="100%" stopColor="#8083ff" />
+                <stop offset="0%" stopColor="#7D539F" />
+                <stop offset="100%" stopColor="#a886c5" />
               </linearGradient>
             </defs>
           </svg>

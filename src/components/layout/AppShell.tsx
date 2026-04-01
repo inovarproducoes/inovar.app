@@ -48,37 +48,22 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 flex flex-col
-          transform transition-transform duration-300 ease-in-out
-          md:relative md:translate-x-0 bg-card border-r border-border
+          fixed inset-y-0 left-0 z-50 w-72 flex flex-col
+          transform transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+          md:relative md:translate-x-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl border-r border-border/40
           ${isOpen ? "translate-x-0 shadow-2xl " : "-translate-x-full"}
         `}
       >
-        {/* Logo and Sphere Motion Container */}
-        <div className="h-24 flex items-center px-6 border-b border-border relative overflow-hidden">
-          {/* Subtle elegant background */}
-          <div className="absolute -top-4 -right-4 w-20 h-20 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute top-2 right-2 w-4 h-4 bg-primary/30 rounded-full animate-event-float pointer-events-none" />
-          
-          <div className="flex items-center gap-3 relative z-10">
-            {/* Inovar Logo Discreta e Circular */}
-            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-lg border border-border p-1 overflow-hidden shrink-0">
-               <Avatar className="h-full w-full rounded-full">
-                  <AvatarImage src="/inovar-logo.png" alt="Inovar Produções" className="object-contain" />
-                  <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-black">INV</AvatarFallback>
-               </Avatar>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-syne font-black text-xl tracking-tighter text-foreground">INOVAR APP</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="md:hidden ml-auto p-2 text-muted-foreground hover:bg-muted rounded-lg">
-            <X size={18} />
+        <div className="h-28 flex items-center px-8 relative overflow-hidden">
+          <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          <InovarLogo />
+          <button onClick={onClose} className="md:hidden ml-auto p-2 text-muted-foreground hover:bg-muted rounded-xl">
+            <X size={20} />
           </button>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto py-6 px-6 space-y-2 custom-scrollbar">
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 px-4 mb-4">Menu de Produção</p>
           {menuItems.map((item) => {
             const active = pathname === item.href;
             return (
@@ -87,37 +72,37 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
                 href={item.href}
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all group font-dm text-[13.5px] font-medium
+                  flex items-center gap-4 px-5 py-4 rounded-2xl transition-all group font-dm text-sm font-medium
                   ${active 
-                    ? "bg-primary text-white shadow-lg shadow-primary/25 " 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-xl shadow-black/10 " 
+                    : "text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-foreground"
                   }
                 `}
               >
-                <item.icon size={18} className={active ? "text-white" : "group-hover:scale-110 transition-transform"} />
+                <item.icon size={20} className={active ? "" : "group-hover:scale-110 group-hover:text-primary transition-all duration-300"} />
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        {/* User Profile */}
-        <div className="p-4 border-t border-border">
-           <div className="bg-muted/40 p-4 rounded-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-brand text-white font-dm font-bold flex items-center justify-center shadow-inner text-xs">
+        <div className="p-6">
+           <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-white/5 p-5 rounded-[2rem] relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-primary/10 transition-colors" />
+              <div className="flex items-center gap-4 mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-brand text-white font-syne font-black flex items-center justify-center shadow-lg text-sm rotate-3">
                       {initials}
                   </div>
                   <div className="min-w-0">
-                      <p className="font-bold text-[13px] text-foreground truncate">{usuario?.nome || "Admin User"}</p>
-                      <p className="text-[9px] text-muted-foreground uppercase font-black tracking-wider opacity-60">Master</p>
+                      <p className="font-syne font-bold text-sm text-foreground truncate">{usuario?.nome || "Admin User"}</p>
+                      <p className="text-[9px] text-primary uppercase font-black tracking-widest">Acesso VIP Platinum</p>
                   </div>
               </div>
               <button 
                 onClick={handleLogout}
-                className="w-full h-9 rounded-xl bg-red-500/10 text-red-500 font-dm font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                className="w-full h-11 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-white/5 text-zinc-400 font-dm font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-sm"
               >
-                <LogOut size={13} /> Sair
+                <LogOut size={14} /> Encerrar Sessão
               </button>
            </div>
         </div>
@@ -152,17 +137,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }, 1000);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-       if (e.altKey && e.key === 's') {
-          e.preventDefault();
-          document.getElementById('global-search-input')?.focus();
-       }
+       if (e.altKey && e.key === 's') { e.preventDefault(); document.getElementById('global-search-input')?.focus(); }
     };
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-       clearInterval(t);
-       window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => { clearInterval(t); window.removeEventListener('keydown', handleKeyDown); };
   }, []);
 
   useEffect(() => {
@@ -171,7 +149,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       setShowResults(false);
       return;
     }
-
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
@@ -181,13 +158,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
            setSearchResults(data);
            setShowResults(true);
         }
-      } catch (err) {
-        console.error("Search error", err);
-      } finally {
-        setIsSearching(false);
-      }
+      } catch (err) { console.error("Search error", err); } 
+      finally { setIsSearching(false); }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -199,139 +172,134 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-[#F9FAFB] dark:bg-zinc-950 font-dm">
       <AuroraBackground />
       
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1 flex flex-col min-w-0 h-full relative z-10">
-        {/* Header Header */}
-        <header className="h-20 flex items-center justify-between px-6 md:px-10 border-b border-border/50 backdrop-blur-md sticky top-0 bg-background/50">
-           <div className="flex items-center gap-3">
+      <main className="flex-1 flex flex-col min-w-0 h-full relative z-10 selection:bg-primary/20">
+        <header className="h-24 flex items-center justify-between px-8 md:px-12 border-b border-zinc-200/40 dark:border-white/5 backdrop-blur-2xl sticky top-0 bg-white/60 dark:bg-zinc-950/60 transition-all">
+           <div className="flex items-center gap-6">
               <button 
                 onClick={() => setSidebarOpen(true)}
-                className="p-2.5 rounded-xl bg-card border border-border md:hidden text-foreground shadow-sm"
+                className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-white/5 md:hidden text-foreground shadow-sm hover:scale-105 transition-all"
               >
-                <Menu size={20} />
+                <Menu size={22} />
               </button>
-              <div className="hidden sm:block">
-                 <h1 className="font-dm font-black text-xl tracking-tight text-foreground uppercase">{title || "Inovar APP"}</h1>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">{clock} • Enterprise Access</p>
+              <div>
+                 <h1 className="font-syne font-black text-2xl tracking-tighter text-zinc-900 dark:text-white uppercase leading-none mb-1">{title || "Inovar APP"}</h1>
+                 <p className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.3em] font-dm">{clock} • ENTERPRISE VIP ACCESS</p>
               </div>
            </div>
 
-           <div className="flex items-center gap-3 sm:gap-6">
+           <div className="flex items-center gap-4 sm:gap-8">
               <div className="hidden lg:flex relative group">
-                 <Search size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${isSearching ? 'text-primary animate-pulse' : 'text-muted-foreground group-focus-within:text-primary'}`} />
+                 <Search size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 ${isSearching ? 'text-primary animate-pulse' : 'text-zinc-400 group-focus-within:text-primary group-focus-within:scale-110'}`} />
                  <input 
                     id="global-search-input"
-                    placeholder="Busca global (Alt + S)" 
-                    className="h-10 pl-11 pr-4 bg-muted/40 border-none rounded-xl text-xs font-dm w-64 focus:ring-2 focus:ring-primary/40 transition-all text-foreground placeholder:text-muted-foreground/50"
+                    placeholder="Busca Inteligente (Alt + S)" 
+                    className="h-12 pl-12 pr-6 bg-zinc-100 dark:bg-zinc-900/50 border-none rounded-2xl text-xs font-dm w-72 focus:ring-4 focus:ring-primary/5 focus:bg-white dark:focus:bg-zinc-900 transition-all text-foreground placeholder:text-zinc-400/70"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
                  />
 
                  {showResults && (
-                    <div className="absolute top-12 left-0 w-[400px] bg-card border border-border shadow-2xl rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-1">
-                        <div className="flex justify-between items-center mb-4">
-                           <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">Resultados da Busca</h4>
-                           <button onClick={() => setShowResults(false)} className="text-muted-foreground hover:text-foreground"><X size={14}/></button>
+                    <div className="absolute top-14 left-0 w-[440px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-2xl rounded-[2rem] p-6 z-50 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                           <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">Resultados da Central</h4>
+                           <button onClick={() => setShowResults(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-400 transition-colors"><X size={16}/></button>
                         </div>
                         
-                        <div className="space-y-6 max-h-[400px] overflow-y-auto no-scrollbar">
+                        <div className="space-y-8 max-h-[450px] overflow-y-auto no-scrollbar pr-2">
                            {searchResults.os.length > 0 && (
-                              <div>
-                                 <div className="flex items-center gap-2 mb-2">
-                                    <Layout size={12} className="text-primary"/>
-                                    <span className="text-[10px] font-bold uppercase text-primary">Ordens de Serviço</span>
-                                 </div>
-                                 <div className="space-y-1">
-                                    {searchResults.os.map((os) => (
-                                       <Link key={os.id} href="/kanban" onClick={() => setShowResults(false)} className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors group">
-                                          <div className="flex flex-col">
-                                             <span className="text-xs font-bold text-foreground group-hover:text-primary">OS #{os.numero || os.id.split('-')[0]}</span>
-                                             <span className="text-[10px] text-muted-foreground truncate w-48">{os.nome}</span>
-                                          </div>
-                                          <span className="text-[9px] px-1.5 py-0.5 bg-primary/10 text-primary rounded font-bold uppercase">{os.status}</span>
-                                       </Link>
-                                    ))}
-                                 </div>
-                              </div>
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-2 mb-2 px-1">
+                                     <Layout size={14} className="text-primary"/>
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Ordens de Serviço</span>
+                                  </div>
+                                  <div className="grid gap-2">
+                                     {searchResults.os.map((os) => (
+                                        <Link key={os.id} href="/kanban" onClick={() => setShowResults(false)} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/10 rounded-2xl transition-all group">
+                                           <div className="flex items-center gap-4">
+                                              <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center shadow-sm font-syne font-bold text-[10px] text-primary group-hover:scale-110 transition-transform">OS</div>
+                                              <div className="flex flex-col">
+                                                 <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">#{os.numero || os.id.split('-')[0]}</span>
+                                                 <span className="text-[11px] text-zinc-500 truncate w-40">{os.nome}</span>
+                                              </div>
+                                           </div>
+                                           <span className="text-[9px] px-2 py-1 bg-primary/10 text-primary rounded-lg font-black uppercase tracking-widest">{os.status}</span>
+                                        </Link>
+                                     ))}
+                                  </div>
+                               </div>
                            )}
 
                            {searchResults.alumnos.length > 0 && (
-                              <div>
-                                 <div className="flex items-center gap-2 mb-2">
-                                    <GraduationCap size={12} className="text-indigo-500"/>
-                                    <span className="text-[10px] font-bold uppercase text-indigo-500">Alunos</span>
-                                 </div>
-                                 <div className="space-y-1">
-                                    {searchResults.alumnos.map((aluno) => (
-                                       <Link key={aluno.id} href="/alunos" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
-                                          <Avatar className="h-7 w-7 rounded-lg">
-                                             <AvatarFallback className="bg-indigo-500/10 text-indigo-500 text-[8px] font-black">{aluno.nome.charAt(0)}</AvatarFallback>
-                                          </Avatar>
-                                          <div className="flex flex-col">
-                                             <span className="text-xs font-bold text-foreground group-hover:text-indigo-500">{aluno.nome}</span>
-                                             <span className="text-[10px] text-muted-foreground">{aluno.curso}</span>
-                                          </div>
-                                       </Link>
-                                    ))}
-                                 </div>
-                              </div>
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-2 mb-2 px-1">
+                                     <GraduationCap size={14} className="text-violet-500"/>
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-violet-500">Alunos Cadastrados</span>
+                                  </div>
+                                  <div className="grid gap-2">
+                                     {searchResults.alumnos.map((aluno) => (
+                                        <Link key={aluno.id} href="/alunos" onClick={() => setShowResults(false)} className="flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-white/5 rounded-2xl transition-all group">
+                                           <Avatar className="h-10 w-10 rounded-xl">
+                                              <AvatarFallback className="bg-violet-500/10 text-violet-500 text-xs font-black">{aluno.nome.charAt(0)}</AvatarFallback>
+                                           </Avatar>
+                                           <div className="flex flex-col">
+                                              <span className="text-sm font-bold text-zinc-800 dark:text-zinc-100 group-hover:text-violet-500 transition-colors uppercase">{aluno.nome}</span>
+                                              <span className="text-[10px] text-zinc-500">{aluno.curso}</span>
+                                           </div>
+                                        </Link>
+                                     ))}
+                                  </div>
+                               </div>
                            )}
 
                            {searchResults.clientes.length > 0 && (
-                              <div>
-                                 <div className="flex items-center gap-2 mb-2">
-                                    <Briefcase size={12} className="text-emerald-500"/>
-                                    <span className="text-[10px] font-bold uppercase text-emerald-500">Clientes</span>
-                                 </div>
-                                 <div className="space-y-1">
-                                    {searchResults.clientes.map((cli) => (
-                                       <Link key={cli.id} href="/clientes" onClick={() => setShowResults(false)} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg transition-colors group">
-                                          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-[8px] font-black">
-                                             {cli.nome.charAt(0)}
-                                          </div>
-                                          <div className="flex flex-col">
-                                             <span className="text-xs font-bold text-foreground group-hover:text-emerald-500">{cli.nome}</span>
-                                             <span className="text-[10px] text-muted-foreground">{cli.empresa || cli.telefone}</span>
-                                          </div>
-                                       </Link>
-                                    ))}
-                                 </div>
-                              </div>
-                           )}
-
-                           {searchResults.os.length === 0 && searchResults.alumnos.length === 0 && searchResults.clientes.length === 0 && !isSearching && (
-                              <div className="py-8 text-center">
-                                 <Search className="w-8 h-8 text-muted-foreground/20 mx-auto mb-2" />
-                                 <p className="text-[10px] font-bold text-muted-foreground/40 font-mono tracking-widest uppercase">Nenhum resultado encontrado</p>
-                              </div>
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-2 mb-2 px-1">
+                                     <Briefcase size={14} className="text-emerald-500"/>
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Parceiros & Clientes</span>
+                                  </div>
+                                  <div className="grid gap-2">
+                                     {searchResults.clientes.map((cli) => (
+                                        <Link key={cli.id} href="/clientes" onClick={() => setShowResults(false)} className="flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-white/5 rounded-2xl transition-all group">
+                                           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xs font-black uppercase">
+                                              {cli.nome.charAt(0)}
+                                           </div>
+                                           <div className="flex flex-col">
+                                              <span className="text-sm font-bold text-zinc-800 dark:text-zinc-100 group-hover:text-emerald-500 transition-colors uppercase">{cli.nome}</span>
+                                              <span className="text-[10px] text-zinc-500">{cli.empresa || cli.telefone}</span>
+                                           </div>
+                                        </Link>
+                                     ))}
+                                  </div>
+                               </div>
                            )}
                         </div>
                     </div>
                  )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                  <div className="h-10 w-px bg-zinc-200 dark:bg-white/10 mx-2 hidden sm:block" />
                   <button 
                     onClick={toggleTheme}
-                    className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm group"
+                    className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-white/5 flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm group"
                   >
-                    {theme === "dark" ? <Sun size={18} className="group-hover:rotate-45 transition-transform" /> : <Moon size={18} className="group-hover:-rotate-12 transition-transform" />}
+                    {theme === "dark" ? <Sun size={20} className="group-hover:rotate-45 transition-transform" /> : <Moon size={20} className="group-hover:-rotate-12 transition-transform" />}
                   </button>
-                  <button className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm relative">
-                    <Bell size={18} />
-                    <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-background" />
+                  <button className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/50 dark:border-white/5 flex items-center justify-center text-foreground hover:bg-muted transition-all shadow-sm relative group">
+                    <Bell size={20} className="group-hover:animate-swing" />
+                    <span className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full border-2 border-white dark:border-zinc-900" />
                   </button>
               </div>
            </div>
         </header>
 
-        {/* Content Wrapper */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 no-scrollbar custom-scrollbar relative">
+        <div className="flex-1 overflow-y-auto p-8 md:p-12 no-scrollbar custom-scrollbar relative">
           {children}
         </div>
       </main>

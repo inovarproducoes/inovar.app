@@ -25,17 +25,17 @@ const accentMap: Record<string, {
   sparkGrad: string;
 }> = {
   blue: {
-    cardClass: "card-blue",
-    iconBg: "rgba(74,75,215,0.15)",
-    iconColor: "#8083ff",
-    spark: "#8083ff",
-    sparkGrad: "rgba(74,75,215,0.3)",
+    cardClass: "card-brand",
+    iconBg: "rgba(125,83,159,0.15)",
+    iconColor: "#a886c5",
+    spark: "#a886c5",
+    sparkGrad: "rgba(125,83,159,0.3)",
   },
   purple: {
     cardClass: "card-purple",
     iconBg: "rgba(110,59,216,0.15)",
-    iconColor: "#b89bff",
-    spark: "#b89bff",
+    iconColor: "#7D539F",
+    spark: "#7D539F",
     sparkGrad: "rgba(110,59,216,0.3)",
   },
   teal: {
@@ -85,7 +85,7 @@ export function StatCard({
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         (e.currentTarget as HTMLElement).style.background =
-          `radial-gradient(circle at ${x}px ${y}px, rgba(74,75,215,0.07), rgba(13,15,30,0.85) 65%)`;
+          `radial-gradient(circle at ${x}px ${y}px, rgba(125,83,159,0.07), rgba(13,15,30,0.85) 65%)`;
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.background = "";

@@ -9,36 +9,20 @@ type Modo = "login" | "registro";
 /* ─── Logo Elegante do App (Branding Roxo) ─── */
 import { Sparkles } from "lucide-react";
 
-function EventLogo() {
+import { Sparkles, ArrowRight } from "lucide-react";
+
+function InovarLogo({ className }: { className?: string }) {
   return (
-    <div className="flex justify-center mb-8 relative">
-       <div className="relative w-24 h-24 rounded-full flex items-center justify-center border-4 border-primary/5 bg-gradient-to-tr from-[#7D539F] to-[#a886c5] shadow-[0_0_40px_rgba(125,83,159,0.2)] backdrop-blur-md">
-          <Sparkles className="text-white w-10 h-10 animate-pulse" />
+    <div className={`flex items-center gap-2 ${className}`}>
+       <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-6 transition-transform">
+          <Sparkles className="text-white w-5 h-5" />
        </div>
+       <span className="font-syne font-black text-2xl tracking-tighter text-foreground">INOVAR<span className="text-primary">.</span></span>
     </div>
   );
 }
 
-/* ─── Trust badges ────────────────────────────────────────────── */
-function TrustBadges() {
-  const badges = [
-    { label: "AES-256", icon: "🔒" },
-    { label: "99.9% Up",  icon: "☁️" },
-    { label: "SOC 2",    icon: "🛡️" },
-  ];
-  return (
-    <div className="flex justify-center gap-6 mt-7">
-      {badges.map((b) => (
-        <div key={b.label} className="flex items-center gap-1.5" style={{ color: "#6b7280", fontSize: 11 }}>
-          <span style={{ fontSize: 12 }}>{b.icon}</span>
-          <span style={{ letterSpacing: "0.05em", fontWeight: 600 }}>{b.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ─── Main AuthGate ───────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────── */
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { autenticado, carregando, login, registrar } = useAuth();
 
@@ -51,272 +35,154 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
 
-  /* ── Loading ── */
   if (carregando) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center"
-        style={{ background: "#F8F9FA" }}
-      >
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FA]">
         <AuroraBackground />
-        <div
-          className="glitch-text font-syne font-extrabold z-10 mb-10"
-          style={{
-            fontSize: 28,
-            background: "linear-gradient(135deg, #7D539F, #4a4bd7)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Inovar OS
+        <InovarLogo className="z-10 mb-8 animate-pulse" />
+        <div className="z-10 relative mb-8" style={{ width: 44, height: 44 }}>
+          <div className="absolute inset-0 rounded-full border-2 border-primary/10" />
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
         </div>
-        <div className="z-10 relative mb-8" style={{ width: 56, height: 56 }}>
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: "50%",
-            border: "2px solid rgba(125,83,159,0.1)",
-          }} />
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: "50%",
-            border: "2px solid transparent",
-            borderTopColor: "#7D539F", borderRightColor: "#a886c5",
-            animation: "spinRing 1s cubic-bezier(0.4,0,0.2,1) infinite",
-          }} />
-          <style>{`@keyframes spinRing { to { transform: rotate(360deg); } }`}</style>
-        </div>
-        <p className="z-10 font-mono text-xs uppercase tracking-widest text-muted-foreground"
-          style={{ letterSpacing: "0.15em" }}>
-          Sincronizando ambiente...
-        </p>
+        <p className="z-10 font-dm font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground opacity-50">Sincronizando ambiente vip...</p>
       </div>
     );
   }
 
   if (autenticado) return <>{children}</>;
 
-  /* ── Form submit ── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
-
-    if (modo === "registro") {
-      if (senha !== confirmar) { setErro("As senhas não coincidem"); return; }
-      if (senha.length < 6)    { setErro("Mínimo 6 caracteres"); return; }
-    }
-
     setEnviando(true);
-    const res = modo === "login"
-      ? await login(email, senha)
-      : await registrar(nome, email, senha);
+    const res = modo === "login" ? await login(email, senha) : await registrar(nome, email, senha);
     if (!res.sucesso) setErro(res.erro ?? "Ocorreu um erro");
     setEnviando(false);
   };
 
-  const trocarModo = (m: Modo) => { setModo(m); setErro(""); setSenha(""); setConfirmar(""); };
-
-  /* ── Shared input style ── */
   const inputCls = `
-    w-full outline-none transition-all duration-300
-    font-dm text-sm pl-12 pr-4 py-3.5 rounded-2xl
+     w-full h-14 bg-white border border-border/50 rounded-2xl px-5 
+     text-sm font-dm outline-none focus:border-primary focus:ring-4 focus:ring-primary/5
+     transition-all duration-300 placeholder:text-muted-foreground/30
   `;
-  const inputStyle = {
-    background: "rgba(0,0,0,0.03)",
-    border: "1px solid rgba(0,0,0,0.05)",
-    color: "#1e293b",
-    fontFamily: "'DM Sans', sans-serif",
-  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: "#F8F9FA" }}>
-      <div className="absolute inset-0 opacity-40">
-        <AuroraBackground />
+    <div className="min-h-screen flex bg-white font-dm selection:bg-primary/10">
+      {/* ── PAINEL ESQUERDO (Brand Story) ── */}
+      <div className="hidden lg:flex relative w-[45%] xl:w-[40%] bg-zinc-950 overflow-hidden flex-col justify-between p-16">
+         {/* Background Decor */}
+         <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80 z-10" />
+            <img 
+              src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80" 
+              className="w-full h-full object-cover grayscale opacity-40 hover:scale-105 transition-transform duration-10000"
+              alt="High-end Event"
+            />
+         </div>
+
+         <div className="relative z-20">
+            <InovarLogo className="brightness-200" />
+         </div>
+
+         <div className="relative z-20 space-y-6">
+            <div className="w-12 h-1 bg-primary rounded-full shadow-[0_0_20px_#7D539F]" />
+            <h2 className="text-5xl xl:text-6xl font-syne font-black text-white leading-[1.1] tracking-tighter">
+               BEM-VINDO AO <br />
+               <span className="text-primary italic">INOVAR CLUB.</span>
+            </h2>
+            <p className="text-zinc-400 max-w-md leading-relaxed text-lg font-dm">
+               Gestão impecável para produções de eventos que não aceitam nada menos que a perfeição estética e operacional.
+            </p>
+         </div>
+
+         <div className="relative z-20 flex items-center justify-between border-t border-white/5 pt-8">
+            <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">© 2026 INOVAR PLATFORM</p>
+            <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">BY NETLIFE</p>
+         </div>
       </div>
 
-      <div className="relative z-10 w-full" style={{ maxWidth: 440 }}>
-        {/* Event Logo */}
-        <EventLogo />
+      {/* ── PAINEL DIREITO (Login Form) ── */}
+      <div className="flex-1 flex flex-col justify-center relative bg-[#F9FAFB]/50">
+         <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]">
+            <AuroraBackground />
+         </div>
 
-        {/* Brand */}
-        <div className="text-center mb-9">
-          <h1
-            className="glitch-text font-syne"
-            style={{
-              fontSize: 42, fontWeight: 800,
-              background: "linear-gradient(135deg, #7D539F 0%, #4a4bd7 100%)",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              letterSpacing: "-1.5px", lineHeight: 1,
-            }}
-          >
-            Inovar OS
-          </h1>
-          <p style={{ color: "#64748b", fontSize: 13, marginTop: 10, letterSpacing: "0.1em", fontWeight: 700, textTransform: "uppercase" }}>
-            Event Management Premium
-          </p>
-        </div>
-
-        {/* Tabs */}
-        <div
-          className="flex p-1.5 rounded-2xl mb-6"
-          style={{
-            background: "rgba(255,255,255,0.8)",
-            border: "1px solid rgba(0,0,0,0.05)",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.04)"
-          }}
-        >
-          {(["login", "registro"] as Modo[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => trocarModo(m)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300"
-              style={modo === m ? {
-                background: "#7D539F",
-                color: "white",
-                boxShadow: "0 4px 20px rgba(125,83,159,0.3)",
-                fontFamily: "'Syne', sans-serif",
-              } : { color: "#64748b", fontFamily: "'Syne', sans-serif" }}
-            >
-              {m === "login" ? <LogIn size={15} /> : <UserPlus size={15} />}
-              {m === "login" ? "Entrar" : "Criar conta"}
-            </button>
-          ))}
-        </div>
-
-        {/* Glass card */}
-        <div className="bg-white/80 backdrop-blur-2xl border border-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* Nome — só no registro */}
-            {modo === "registro" && (
-              <div>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 800, color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                  Nome completo
-                </label>
-                <div style={{ position: "relative" }}>
-                   <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 16 }}>👤</span>
-                  <input
-                    type="text" value={nome} onChange={e => setNome(e.target.value)}
-                    placeholder="Seu nome" required autoComplete="name"
-                    className={inputCls} style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = "#7D539F"; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(125,83,159,0.1)"; }}
-                    onBlur={e  => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)"; e.currentTarget.style.background = "rgba(0,0,0,0.03)"; e.currentTarget.style.boxShadow = "none"; }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* E-mail */}
-            <div>
-              <label style={{ display: "block", fontSize: 10, fontWeight: 800, color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                {modo === "login" ? "Email corporativo" : "E-mail"}
-              </label>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 16 }}>✉️</span>
-                <input
-                  type="email" value={email} onChange={e => setEmail(e.target.value)}
-                  placeholder="voce@inovar.io" required autoComplete="email"
-                  className={inputCls} style={inputStyle}
-                  onFocus={e => { e.currentTarget.style.borderColor = "#7D539F"; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(125,83,159,0.1)"; }}
-                  onBlur={e  => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)"; e.currentTarget.style.background = "rgba(0,0,0,0.03)"; e.currentTarget.style.boxShadow = "none"; }}
-                />
-              </div>
+         <div className="w-full max-w-[440px] px-8 mx-auto relative z-10">
+            <div className="relative mb-12">
+               <span className="absolute -left-12 -top-12 text-[180px] font-syne font-black text-primary/[0.03] select-none pointer-events-none">I</span>
+               <h3 className="text-4xl font-syne font-black text-zinc-900 tracking-tighter mb-2">ACESSO VIP</h3>
+               <p className="text-zinc-500 font-medium text-sm">Bem-vindo de volta à excelência.</p>
             </div>
 
-            {/* Senha */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <label style={{ fontSize: 10, fontWeight: 800, color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                  Senha
-                </label>
-                {modo === "login" && (
-                  <a href="#" style={{ fontSize: 11, color: "#7D539F", textDecoration: "none", fontWeight: 700 }}>Esqueceu?</a>
-                )}
-              </div>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 16 }}>🔒</span>
-                <input
-                  type={mostrarSenha ? "text" : "password"}
-                  value={senha} onChange={e => setSenha(e.target.value)}
-                  placeholder={modo === "registro" ? "Mínimo 6 caracteres" : "••••••••••••"}
-                  required autoComplete={modo === "login" ? "current-password" : "new-password"}
-                  className={inputCls} style={{ ...inputStyle, paddingRight: "3rem" }}
-                  onFocus={e => { e.currentTarget.style.borderColor = "#7D539F"; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(125,83,159,0.1)"; }}
-                  onBlur={e  => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)"; e.currentTarget.style.background = "rgba(0,0,0,0.03)"; e.currentTarget.style.boxShadow = "none"; }}
-                />
-                <button type="button" onClick={() => setMostrarSenha(!mostrarSenha)}
-                  style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#94a3b8", cursor: "pointer", display: "flex", alignItems: "center" }}>
-                  {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+               {modo === "registro" && (
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Nome do Integrante</label>
+                     <input 
+                       type="text" value={nome} onChange={e => setNome(e.target.value)} required
+                       placeholder="Ex: Carlos Henrique" className={inputCls} 
+                     />
+                  </div>
+               )}
 
-            {/* Confirmar senha */}
-            {modo === "registro" && (
-              <div>
-                <label style={{ display: "block", fontSize: 10, fontWeight: 800, color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                  Confirmar senha
-                </label>
-                <div style={{ position: "relative" }}>
-                  <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 16 }}>🔒</span>
-                  <input
-                    type={mostrarSenha ? "text" : "password"}
-                    value={confirmar} onChange={e => setConfirmar(e.target.value)}
-                    placeholder="Repita a senha" required autoComplete="new-password"
-                    className={inputCls} style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = "#7D539F"; e.currentTarget.style.background = "#fff"; e.currentTarget.style.boxShadow = "0 0 0 4px rgba(125,83,159,0.1)"; }}
-                    onBlur={e  => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.05)"; e.currentTarget.style.background = "rgba(0,0,0,0.03)"; e.currentTarget.style.boxShadow = "none"; }}
+               <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">E-mail Corporativo</label>
+                  <input 
+                    type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                    placeholder="exemplo@inovarapp.com" className={inputCls} 
                   />
-                </div>
-              </div>
-            )}
+               </div>
 
-            {/* Erro */}
-            {erro && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fee2e2", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#ef4444", fontWeight: 600 }}>
-                {erro}
-              </div>
-            )}
+               <div className="space-y-2">
+                  <div className="flex justify-between items-center px-1">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Senha de Acesso</label>
+                     {modo === "login" && <button type="button" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Esqueceu?</button>}
+                  </div>
+                  <div className="relative">
+                     <input 
+                       type={mostrarSenha ? "text" : "password"} value={senha} onChange={e => setSenha(e.target.value)} required
+                       placeholder="••••••••" className={inputCls} 
+                     />
+                     <button type="button" onClick={() => setMostrarSenha(!mostrarSenha)} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-zinc-500 transition-colors">
+                        {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                     </button>
+                  </div>
+               </div>
 
-            {/* Botão */}
-            <button
-              type="submit"
-              disabled={enviando}
-              className="w-full flex items-center justify-center gap-2 font-syne font-bold rounded-2xl py-4.5 transition-all duration-300 mt-2 h-14"
-              style={{
-                background: "#7D539F",
-                color: "white", fontSize: 15, letterSpacing: "0.05em",
-                boxShadow: "0 10px 30px rgba(125,83,159,0.4)",
-                cursor: enviando ? "not-allowed" : "pointer",
-                opacity: enviando ? 0.7 : 1,
-              }}
-              onMouseEnter={e => { if (!enviando) { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 15px 40px rgba(125,83,159,0.5)"; } }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(125,83,159,0.4)"; }}
-            >
-              {enviando ? (
-                <><Loader2 size={16} className="animate-spin" />{modo === "login" ? "Autenticando..." : "Criando conta..."}</>
-              ) : modo === "login" ? (
-                <><LogIn size={16} />Entrar na plataforma</>
-              ) : (
-                <><UserPlus size={16} />Criar minha conta</>
-              )}
-            </button>
-          </form>
-        </div>
+               {erro && (
+                  <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-500 text-xs font-bold flex items-center gap-3 animate-shake">
+                     <div className="w-1.5 h-1.5 rounded-full bg-red-500" /> {erro}
+                  </div>
+               )}
 
-        {/* Footer */}
-        <p className="text-center mt-8" style={{ color: "#64748b", fontSize: 13, fontWeight: 600 }}>
-          {modo === "login"
-            ? <>Novo na plataforma? <button onClick={() => trocarModo("registro")} style={{ color: "#7D539F", background: "none", border: "none", cursor: "pointer", fontWeight: 800 }}>Criar conta</button></>
-            : <>Já tem conta? <button onClick={() => trocarModo("login")} style={{ color: "#7D539F", background: "none", border: "none", cursor: "pointer", fontWeight: 800 }}>Entrar</button></>
-          }
-        </p>
+               <Button 
+                  type="submit" 
+                  disabled={enviando}
+                  className="w-full h-16 bg-zinc-900 hover:bg-black text-white rounded-2xl font-syne font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/10 flex items-center justify-center gap-3 group transition-all"
+               >
+                  {enviando ? <Loader2 className="animate-spin" /> : <>ACESSAR PAINEL <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
+               </Button>
+            </form>
 
-        <TrustBadges />
-
-        <p className="text-center mt-8 font-dm font-bold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.3)", fontSize: 10 }}>
-          © {new Date().getFullYear()} Inovar.app · Premium Experience
-        </p>
+            <div className="mt-12 pt-8 border-t border-zinc-100 text-center space-y-4">
+               <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+                  {modo === "login" ? "Não tem conta?" : "Já possui acesso?"} 
+                  <button onClick={() => setModo(modo === "login" ? "registro" : "login")} className="ml-2 text-primary hover:underline underline-offset-4">
+                     {modo === "login" ? "CADASTRAR AGORA" : "FAZER LOGIN"}
+                  </button>
+               </p>
+               <p className="text-[9px] font-black text-zinc-300 uppercase tracking-[0.3em]">Ambiente Seguro SSL Protected</p>
+            </div>
+         </div>
       </div>
+      <style>{`
+         @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+         }
+         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+      `}</style>
     </div>
   );
 }

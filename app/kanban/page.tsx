@@ -358,14 +358,14 @@ export default function KanbanPage() {
                                    <div className="flex items-center gap-3">
                                        <div className={cn("w-2 h-2 rounded-full", activeBoard?.id === b.id ? "bg-primary" : "bg-muted")} />
                                        <span className="font-dm text-sm font-medium">{b.nome}</span>
-                                       {b.ativo && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
+                                       {b.ativo && <Star className="w-3 h-3 text-primary fill-primary" />}
                                    </div>
                                    <div className="flex items-center gap-1">
                                       {!b.ativo && (
                                         <Button 
                                           variant="ghost" 
                                           size="icon" 
-                                          className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-amber-400" 
+                                          className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:text-primary" 
                                           onClick={(e) => { e.stopPropagation(); handleSetActive(b.id); }}
                                           title="Definir como padrão"
                                         >
