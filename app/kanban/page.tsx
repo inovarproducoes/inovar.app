@@ -18,19 +18,17 @@ import {
   horizontalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { Button } from "@/components/ui/button";
-import { Plus, Layout } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ColumnContainer } from "@/components/kanban/ColumnContainer";
 import { TaskCard } from "@/components/kanban/TaskCard";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TaskEditSheet } from "@/components/kanban/TaskEditSheet";
 import type { IBoard, IColumn, ITask } from "@/types/kanban";
-import { cn } from "@/lib/utils";
 
 export default function KanbanPage() {
   const [loading, setLoading] = useState(true);
-  const [boards, setBoards] = useState<IBoard[]>([]);
+
   const [activeBoard, setActiveBoard] = useState<IBoard | null>(null);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -65,7 +63,7 @@ export default function KanbanPage() {
               }))
             }))
           }));
-          setBoards(sanitizedBoards);
+
           
           // Prioridade: 1. Board já selecionado em estado | 2. Board marcado como 'ativo' no banco | 3. Primeiro da lista
           if (activeBoard) {
@@ -91,39 +89,9 @@ export default function KanbanPage() {
     }
   };
 
-  const handleSetActive = async (id: string) => {
-    try {
-      const res = await fetch('/api/kanban/boards', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, ativo: true })
-      });
-      if (res.ok) {
-        toast.success("Definido como padrão!");
-        fetchBoards();
-      }
-    } catch {
-      toast.error("Erro ao definir padrão");
-    }
-  };
 
-  const handleArchiveBoard = async (id: string) => {
-    if (!confirm("Arquivar este pipeline irá arquivar todas as tarefas dentro dele. Continuar?")) return;
-    try {
-      const res = await fetch('/api/kanban/boards', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, arquivado: true })
-      });
-      if (res.ok) {
-        toast.success("Pipeline arquivado!");
-        setActiveBoard(null);
-        fetchBoards();
-      }
-    } catch {
-      toast.error("Erro ao arquivar pipeline");
-    }
-  };
+
+
 
 
   const handleAddColumn = async () => {
