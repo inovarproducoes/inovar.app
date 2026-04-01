@@ -86,7 +86,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
             <div className="w-12 h-1 bg-primary rounded-full shadow-[0_0_20px_#7D539F]" />
             <h2 className="text-5xl xl:text-6xl font-syne font-black text-white leading-[1.1] tracking-tighter">
                BEM-VINDO AO <br />
-               <span className="text-primary italic">INOVAR CLUB.</span>
+               <span className="text-primary italic">INOVAR APP.</span>
             </h2>
             <p className="text-zinc-400 max-w-md leading-relaxed text-lg font-dm">
                Gestão impecável para produções de eventos que não aceitam nada menos que a perfeição estética e operacional.
@@ -134,7 +134,6 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                <div className="space-y-2">
                   <div className="flex justify-between items-center px-1">
                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Senha de Acesso</label>
-                     {modo === "login" && <button type="button" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Esqueceu?</button>}
                   </div>
                   <div className="relative">
                      <input 
