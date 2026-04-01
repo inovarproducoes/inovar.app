@@ -12,8 +12,8 @@ function ParticleCanvas() {
     if (!ctx) return;
 
     let W = 0, H = 0;
-    // Cores quentes/festa (Dourado, Champagne, Rosê, Branco suave)
-    const COLORS = ["#FDE68A", "#FBCFE8", "#FCA5A5", "#FFFBEB"];
+    // Cores da marca (Roxo, Lavanda, Branco suave)
+    const COLORS = ["#7D539F", "#A78BFA", "#C4B5FD", "#F3F1F5"];
 
     interface Particle {
       x: number; y: number;
@@ -95,9 +95,9 @@ export function AuroraBackground() {
     <>
       {/* Event Bokeh Backgrounds - Cores quentes e elegantes adaptativas */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
-        <div className="absolute top-[5%] left-[5%] w-[45vw] h-[45vw] rounded-full blur-[140px] bg-amber-500/10 dark:bg-amber-500/15 animate-aurora-drift" />
-        <div className="absolute bottom-[5%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[140px] bg-rose-500/10 dark:bg-rose-500/15 animate-aurora-drift" style={{ animationDelay: '-5s' }} />
-        <div className="absolute top-[40%] right-[15%] w-[35vw] h-[35vw] rounded-full blur-[120px] bg-purple-500/5 dark:bg-purple-500/15 animate-aurora-drift" style={{ animationDelay: '-10s' }} />
+        <div className="absolute top-[5%] left-[5%] w-[45vw] h-[45vw] rounded-full blur-[140px] bg-[#7D539F]/5 dark:bg-[#7D539F]/10 animate-aurora-drift" />
+        <div className="absolute bottom-[5%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[140px] bg-purple-600/5 dark:bg-purple-600/10 animate-aurora-drift" style={{ animationDelay: '-5s' }} />
+        <div className="absolute top-[40%] right-[15%] w-[35vw] h-[35vw] rounded-full blur-[120px] bg-blue-500/5 dark:bg-blue-500/10 animate-aurora-drift" style={{ animationDelay: '-10s' }} />
       </div>
 
       {/* Dot grid suave (Opcional, dá profundidade sem tirar o foco de festa) */}
