@@ -152,6 +152,7 @@ model OS {
   coluna           Coluna?  @relation(fields: [coluna_id], references: [id])
   quadro           Quadro?  @relation(fields: [quadro_id], references: [id])
 
+  @@unique([numero])
   @@map("ordens_servico")
 }
 
