@@ -199,8 +199,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Menu size={22} />
               </button>
               <div>
-                 <h1 className="font-syne font-black text-2xl tracking-tighter text-zinc-900 dark:text-white uppercase leading-none mb-1">{title || "Inovar APP"}</h1>
-                 <p className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.3em] font-dm">{clock} • ENTERPRISE VIP ACCESS</p>
+                 <h1 className="font-dm font-bold text-lg md:text-2xl tracking-tight text-zinc-900 dark:text-white leading-none mb-1">{title || "Inovar APP"}</h1>
+                 <p className="text-[8px] md:text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] md:tracking-[0.3em] font-dm">{clock} • ENTERPRISE VIP ACCESS</p>
               </div>
            </div>
 

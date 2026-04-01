@@ -18,58 +18,7 @@ const OsPorMesChart = dynamic(
   }
 );
 
-/* ─── Goal Card Component ───────────────────────────────────────── */
-interface GoalCardProps {
-  percentage: number;
-  current: number;
-  target: number;
-  label: string;
-  sublabel: string;
-}
 
-function GoalCard({ percentage, current, target, label, sublabel }: GoalCardProps) {
-  return (
-    <div className="glass-card p-7 fade-up flex flex-col h-full overflow-hidden border-border/80 text-foreground">
-      <div className="relative z-10">
-        <h3 className="font-dm font-bold text-base text-foreground mb-1">{label}</h3>
-        <p className="text-[10px] uppercase font-bold text-muted-foreground/70 mb-8 tracking-widest">{sublabel}</p>
-        
-        <div className="flex justify-center mb-8 relative">
-          <svg className="w-32 h-32 rotate-[-90deg]">
-            <circle cx="64" cy="64" r="54" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/10" />
-            <circle 
-                cx="64" cy="64" r="54" fill="none" stroke="url(#goalRingGradDashboard)" strokeWidth="8" strokeLinecap="round"
-                strokeDasharray="339" strokeDashoffset={339 - (339 * percentage / 100)}
-                className="transition-all duration-1000 ease-out"
-                style={{ filter: 'drop-shadow(0 0 8px rgba(125,83,159,0.4))' }}
-            />
-            <defs>
-              <linearGradient id="goalRingGradDashboard" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#7D539F" />
-                <stop offset="100%" stopColor="#a886c5" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center translate-y-1">
-             <span className="text-3xl font-dm font-black text-foreground">{percentage}%</span>
-             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Sucesso</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mt-auto">
-           <div className="bg-muted/30 p-3 rounded-xl border border-border/40">
-              <p className="text-[9px] font-black text-muted-foreground uppercase mb-1">Atual</p>
-              <p className="text-sm font-bold text-foreground">{current}</p>
-           </div>
-           <div className="bg-muted/30 p-3 rounded-xl border border-border/40 text-right">
-              <p className="text-[9px] font-black text-muted-foreground uppercase mb-1">Meta</p>
-              <p className="text-sm font-bold text-foreground">{target}</p>
-           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function DashboardPage() {
   const { data: stats, isLoading } = useOsStats();
@@ -120,8 +69,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 mb-10">
+        <div className="w-full">
             <div className="kpi-card h-full p-8 text-foreground">
                <div className="flex items-center justify-between mb-8">
                   <div>
@@ -135,16 +84,6 @@ export default function DashboardPage() {
                </div>
                <OsPorMesChart data={stats?.osPorMes || []} />
             </div>
-        </div>
-
-        <div className="lg:col-span-1">
-           <GoalCard 
-             label="Meta Trimestral" 
-             sublabel="Desempenho de entregas concluídas" 
-             percentage={stats?.taxaFinalizacao || 0}
-             current={stats?.finalizadas || 0}
-             target={Math.max(stats?.total || 50, 50)}
-           />
         </div>
       </div>
 
