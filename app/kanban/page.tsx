@@ -130,26 +130,6 @@ export default function KanbanPage() {
     }
   };
 
-  const handleCreateBoard = async (isOS = false) => {
-    try {
-      const nome = isOS ? "Fluxo Operacional OS" : "Novo Quadro";
-      const res = await fetch('/api/kanban/boards', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome,
-          descricao: isOS ? "Gestão inteligente de Ordens de Serviço" : "Quadro de acompanhamento",
-          isServiceOrderPipeline: isOS
-        })
-      });
-      if (res.ok) {
-        toast.success("Pipeline criado!");
-        fetchBoards();
-      }
-    } catch {
-      toast.error("Erro ao criar quadro");
-    }
-  };
 
   const handleAddColumn = async () => {
     if (!activeBoard) return;
