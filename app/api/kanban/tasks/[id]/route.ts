@@ -105,14 +105,38 @@ export async function DELETE(
       return NextResponse.json({ success: true, archived: true });
     } catch { }
 
-    // 2. Tentar arquivar como OS
+    // 2. Tentar arquivar como OS (Movendo para tabela OSArquivada)
     try {
-      await prisma.oS.update({ 
-        where: { id },
-        data: { arquivado: true, status: "arquivada" }
-      });
-      return NextResponse.json({ success: true, archived: true });
-    } catch { }
+      const os = await prisma.oS.findUnique({ where: { id } });
+      if (os) {
+        await prisma.$transaction([
+          prisma.oSArquivada.create({
+            data: {
+              id: os.id,
+              numero: os.numero,
+              nome: os.nome,
+              descricao: os.descricao,
+              status: "arquivada",
+              responsavel_nome: os.responsavel_nome,
+              aluno_id: os.aluno_id,
+              aluno_nome: os.aluno_nome,
+              aluno_cpf: os.aluno_cpf,
+              projeto_nome: os.projeto_nome,
+              instituicao: os.instituicao,
+              arquivado: true,
+              ordem: os.ordem,
+              coluna_id: os.coluna_id,
+              quadro_id: os.quadro_id,
+              created_at: os.created_at,
+            }
+          }),
+          prisma.oS.delete({ where: { id } })
+        ]);
+        return NextResponse.json({ success: true, archived: true, moved: true });
+      }
+    } catch (e) { 
+      console.error("Erro ao arquivar e mover OS", e);
+    }
 
     return NextResponse.json({ error: 'Item não encontrado' }, { status: 404 });
   } catch (error) {

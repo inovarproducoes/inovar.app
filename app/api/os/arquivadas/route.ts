@@ -8,8 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const [archivedOS, archivedTasks] = await Promise.all([
-      prisma.oS.findMany({
-        where: { arquivado: true },
+      prisma.oSArquivada.findMany({
         orderBy: { updated_at: "desc" },
       }),
       prisma.tarefa.findMany({

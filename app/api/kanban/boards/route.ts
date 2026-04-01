@@ -145,10 +145,31 @@ export async function PATCH(req: Request) {
           data: { arquivado: true }
         });
 
-        await tx.oS.updateMany({
-          where: { quadro_id: id },
-          data: { arquivado: true, status: 'arquivada' }
-        });
+        // Mover OS para tabela de arquivadas e remover da original
+        const osList = await tx.oS.findMany({ where: { quadro_id: id } });
+        if (osList.length > 0) {
+          await tx.oSArquivada.createMany({
+            data: osList.map(os => ({
+              id: os.id,
+              numero: os.numero,
+              nome: os.nome,
+              descricao: os.descricao,
+              status: "arquivada",
+              responsavel_nome: os.responsavel_nome,
+              aluno_id: os.aluno_id,
+              aluno_nome: os.aluno_nome,
+              aluno_cpf: os.aluno_cpf,
+              projeto_nome: os.projeto_nome,
+              instituicao: os.instituicao,
+              arquivado: true,
+              ordem: os.ordem,
+              coluna_id: os.coluna_id,
+              quadro_id: os.quadro_id,
+              created_at: os.created_at
+            }))
+          });
+          await tx.oS.deleteMany({ where: { quadro_id: id } });
+        }
 
         return NextResponse.json(board);
       });

@@ -156,6 +156,28 @@ model OS {
   @@map("ordens_servico")
 }
 
+model OSArquivada {
+  id               String   @id @default(uuid())
+  numero           String?
+  nome             String
+  descricao        String?
+  status           String   @default("arquivada")
+  responsavel_nome String?
+  aluno_id         String?
+  aluno_nome       String?
+  aluno_cpf        String?
+  projeto_nome     String?
+  instituicao      String?
+  arquivado        Boolean  @default(true)
+  ordem            Int      @default(0)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now()) @updatedAt
+  coluna_id        String?
+  quadro_id        String?
+
+  @@map("ordens_servico_arquivadas")
+}
+
 model Usuario {
   id         String   @id @default(uuid())
   nome       String
