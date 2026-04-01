@@ -32,5 +32,7 @@ export interface IBoard {
   id: string;
   nome: string;
   descricao?: string | null;
+  ativo: boolean;
+  arquivado: boolean;
   colunas: IColumn[];
 }
