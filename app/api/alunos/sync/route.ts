@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     // Validar se um id externo é um UUID válido; caso contrário, deixar o Prisma gerar um
     const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (alunoData.id && !UUID_REGEX.test(alunoData.id)) {
+    if (alunoData.id && !UUID_REGEX.test(String(alunoData.id))) {
       delete alunoData.id; // Deixar @default(uuid()) gerar o ID
     }
 
