@@ -12,7 +12,8 @@ interface ChatMessage {
   id: number;
   session_id: string;
   message: {
-    text: string;
+    content?: string;
+    text?: string;
     type?: string;
     role?: string;
     sender?: string;
@@ -173,6 +174,8 @@ export default function ChatHistoryPage() {
                   ) : (
                     messages.map((msg) => {
                       const isAi = msg.message.type === "ai" || msg.message.role === "assistant" || msg.message.sender === "ai";
+                      const content = msg.message.content || msg.message.text || "Mensagem vazia";
+                      
                       return (
                         <div key={msg.id} className={`flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 ${isAi ? "flex-row" : "flex-row-reverse text-right"}`}>
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${
@@ -181,12 +184,12 @@ export default function ChatHistoryPage() {
                             {isAi ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
                           </div>
                           <div className={`flex flex-col max-w-[80%] ${isAi ? "items-start" : "items-end"}`}>
-                             <div className={`p-4 rounded-2xl text-sm font-dm leading-relaxed shadow-sm ${
+                             <div className={`p-4 rounded-2xl text-sm font-dm leading-relaxed shadow-sm whitespace-pre-wrap ${
                                isAi 
                                 ? "bg-white dark:bg-zinc-900 border border-border/40 text-foreground" 
                                 : "bg-primary text-white"
                              }`}>
-                               {msg.message.text}
+                               {content}
                              </div>
                              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mt-2 px-1">
                                {isAi ? "Assistente IA" : "Usuário"}
