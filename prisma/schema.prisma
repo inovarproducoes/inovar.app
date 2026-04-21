@@ -189,8 +189,10 @@ model Usuario {
   nome               String
   email              String   @unique
   senha_hash         String
-  role               String   @default("user")
+  role               String   @default("user") // admin, staff, user
   ativo              Boolean  @default(true)
+  foto_url           String?
+  permissoes         Json?    // Ex: { "kanban": "full", "alunos": "read", ... }
   created_at         DateTime @default(now())
   updated_at         DateTime @default(now()) @updatedAt
   ordens_responsaveis OS[]    @relation("ResponsavelOS")

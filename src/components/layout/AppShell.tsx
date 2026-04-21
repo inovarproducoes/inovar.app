@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Briefcase,
   GraduationCap, Bell, Layout, LogOut, Archive, 
-  Sun, Moon, Search, MessageSquare
+  Sun, Moon, Search, MessageSquare, Settings
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { usePageTitle } from "@/context/PageTitleContext";
@@ -25,6 +25,7 @@ const menuItems = [
   { name: "Alunos",         href: "/alunos",           icon: GraduationCap },
   { name: "Clientes",       href: "/clientes",         icon: Briefcase },
   { name: "Histórico Chat", href: "/historico-chat",   icon: MessageSquare },
+  { name: "Configurações",  href: "/configuracoes",    icon: Settings },
 ];
 
 /* ─── Logo ────────────────────────────────────────────────────── */
