@@ -36,13 +36,28 @@ interface UserEntry {
   email: string;
   role: string;
   foto_url?: string | null;
+  permissoes?: any;
 }
+
+const MODULOS_SISTEMA = [
+  { id: "dashboard", label: "Dashboard", icon: Layout },
+  { id: "kanban", label: "Kanban OS", icon: Layout },
+  { id: "os_arquivadas", label: "OS Arquivadas", icon: Key },
+  { id: "alunos", label: "Gestão de Alunos", icon: Users },
+  { id: "clientes", label: "Gestão de Clientes", icon: Globe },
+  { id: "chat_history", label: "Histórico de Chat", icon: Mail },
+  { id: "configuracoes", label: "Configurações", icon: Settings },
+];
 
 export default function SettingsPage() {
   const { usuario } = useAuth();
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<UserEntry[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserEntry | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editPassword, setEditPassword] = useState("");
+  const [editPermissoes, setEditPermissoes] = useState<Record<string, boolean>>({});
 
   // Profile states
   const [profileName, setProfileName] = useState(usuario?.nome || "");
@@ -100,6 +115,43 @@ export default function SettingsPage() {
       }
     } catch {
       toast.error("Erro na conexão com o servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenEditUser = (u: UserEntry) => {
+    setEditingUser(u);
+    setEditPassword("");
+    // Ensure permissions is an object
+    const perms = u.permissoes && typeof u.permissoes === 'object' ? u.permissoes : {};
+    setEditPermissoes(perms);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveUserChanges = async () => {
+    if (!editingUser) return;
+    try {
+      setLoading(true);
+      const res = await fetch("/api/configuracoes/usuarios", {
+        method: "PATCH",
+        body: JSON.stringify({
+          id: editingUser.id,
+          permissoes: editPermissoes,
+          senha: editPassword || undefined
+        })
+      });
+
+      if (res.ok) {
+        toast.success("Usuário atualizado com sucesso!");
+        setIsEditModalOpen(false);
+        fetchUsers();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Erro ao salvar alterações");
+      }
+    } catch {
+      toast.error("Erro na conexão");
     } finally {
       setLoading(false);
     }
@@ -278,7 +330,12 @@ export default function SettingsPage() {
                               <p className="text-[9px] text-muted-foreground font-dm mt-1">Acesso: {u.role === 'admin' ? 'Total' : 'Limitado'}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="icon" className="rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => handleOpenEditUser(u)}
+                                className="rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
                                 <Settings size={16} className="text-muted-foreground" />
                               </Button>
                               <Button variant="ghost" size="icon" className="rounded-xl hover:bg-red-500/10 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -408,6 +465,79 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit User Modal */}
+      {isEditModalOpen && editingUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)} />
+          <Card className="relative w-full max-w-xl border-border/40 bg-white dark:bg-zinc-950 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="font-syne font-black text-xl">Editar Integrante</CardTitle>
+                  <CardDescription className="text-xs font-dm">{editingUser.nome} • {editingUser.email}</CardDescription>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setIsEditModalOpen(false)} className="rounded-full">
+                  <Plus className="rotate-45" size={20} />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-8 py-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+              {/* Reset Password */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-primary">
+                  <Key size={16} />
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Resetar Senha</h4>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] text-muted-foreground uppercase tracking-widest px-1">Nova Senha de Acesso</Label>
+                  <Input 
+                    type="password"
+                    placeholder="Deixe em branco para não alterar"
+                    value={editPassword}
+                    onChange={e => setEditPassword(e.target.value)}
+                    className="h-12 bg-muted/30 border-border/40 rounded-2xl text-sm font-dm"
+                  />
+                </div>
+              </div>
+
+              {/* Module Permissions */}
+              <div className="space-y-4 pt-6 border-t border-border/40">
+                <div className="flex items-center gap-2 text-primary">
+                  <Shield size={16} />
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">Módulos Habilitados</h4>
+                </div>
+                <div className="grid gap-3">
+                  {MODULOS_SISTEMA.map((modulo) => (
+                    <div key={modulo.id} className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/10 group hover:bg-muted/40 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+                          <modulo.icon size={18} />
+                        </div>
+                        <span className="text-sm font-bold font-syne">{modulo.label}</span>
+                      </div>
+                      <Switch 
+                        checked={!!editPermissoes[modulo.id]} 
+                        onCheckedChange={(val) => setEditPermissoes(prev => ({ ...prev, [modulo.id]: val }))}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+            <div className="p-6 bg-muted/30 border-t border-border/40 flex items-center justify-end gap-3">
+              <Button variant="ghost" onClick={() => setIsEditModalOpen(false)} className="rounded-2xl font-bold text-xs uppercase tracking-widest">Cancelar</Button>
+              <Button 
+                onClick={handleSaveUserChanges}
+                disabled={loading}
+                className="bg-primary text-white rounded-2xl px-8 h-12 font-syne font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20"
+              >
+                {loading ? "Salvando..." : "Confirmar Alterações"}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
       
       <style>{`
         .bg-gradient-brand {
