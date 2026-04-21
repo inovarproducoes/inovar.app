@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { 
   User, 
-  Shield, 
   Globe, 
   Bell, 
   Camera, 
@@ -34,7 +33,7 @@ import Image from "next/image";
 export default function SettingsPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<Record<string, any>[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   // Profile states
@@ -91,7 +90,7 @@ export default function SettingsPage() {
         const err = await res.json();
         toast.error(err.error || "Erro ao atualizar perfil");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Erro na conexão com o servidor");
     } finally {
       setLoading(false);

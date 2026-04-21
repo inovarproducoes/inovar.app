@@ -18,7 +18,7 @@ export async function GET() {
       }
     });
     return NextResponse.json(users);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Erro ao buscar usuários" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(user);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Erro ao criar usuário" }, { status: 500 });
   }
 }
@@ -55,7 +55,7 @@ export async function PATCH(req: Request) {
 
     if (!id) return NextResponse.json({ error: "ID obrigatório" }, { status: 400 });
 
-    const data: any = {
+    const data: Record<string, string | boolean | object | undefined> = {
       nome: nome || undefined,
       role: role || undefined,
       ativo: ativo !== undefined ? ativo : undefined,
@@ -72,7 +72,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json(user);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Erro ao atualizar usuário" }, { status: 500 });
   }
 }

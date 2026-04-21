@@ -14,7 +14,7 @@ export async function PATCH(req: Request) {
     const user = await prisma.usuario.findUnique({ where: { id } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
 
-    const data: any = {
+    const data: Record<string, string | boolean | object | undefined> = {
       nome: nome || undefined,
       email: email || undefined,
       foto_url: foto_url || undefined,
@@ -35,7 +35,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Erro ao atualizar perfil" }, { status: 500 });
   }
 }
