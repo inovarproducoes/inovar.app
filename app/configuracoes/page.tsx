@@ -31,26 +31,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { usuario } = useAuth();
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<Record<string, string | boolean | object | null>[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   // Profile states
-  const [profileName, setProfileName] = useState(user?.nome || "");
-  const [profileEmail, setProfileEmail] = useState(user?.email || "");
-  const [profilePhoto, setProfilePhoto] = useState(user?.foto_url || "");
+  const [profileName, setProfileName] = useState(usuario?.nome || "");
+  const [profileEmail, setProfileEmail] = useState(usuario?.email || "");
+  const [profilePhoto, setProfilePhoto] = useState(usuario?.foto_url || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
-    if (user) {
-      setProfileName(user.nome);
-      setProfileEmail(user.email);
-      setProfilePhoto(user.foto_url || "");
+    if (usuario) {
+      setProfileName(usuario.nome);
+      setProfileEmail(usuario.email);
+      setProfilePhoto(usuario.foto_url || "");
     }
     fetchUsers();
-  }, [user]);
+  }, [usuario]);
 
   const fetchUsers = async () => {
     try {
@@ -73,7 +73,7 @@ export default function SettingsPage() {
       const res = await fetch("/api/configuracoes/perfil", {
         method: "PATCH",
         body: JSON.stringify({
-          id: user?.id,
+          id: usuario?.id,
           nome: profileName,
           email: profileEmail,
           foto_url: profilePhoto,
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <CardTitle className="font-syne font-black text-xl">{profileName}</CardTitle>
-                  <CardDescription className="text-xs uppercase tracking-widest font-bold text-primary mt-1">{user?.role || "Usuário"}</CardDescription>
+                  <CardDescription className="text-xs uppercase tracking-widest font-bold text-primary mt-1">{usuario?.role || "Usuário"}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4 border-t border-border/40">
                   <div className="flex items-center justify-between text-xs p-3 rounded-2xl bg-muted/30">

@@ -6,6 +6,7 @@ interface Usuario {
   nome: string;
   email: string;
   role: string;
+  foto_url?: string;
 }
 
 interface AuthContextType {
