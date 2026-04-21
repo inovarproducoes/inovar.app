@@ -15,6 +15,7 @@ interface TaskCardProps {
   task: ITask;
   id?: string; // Aceitar ID opcional do pai
   allColumns?: IColumn[]; // Receber todas as colunas para o seletor
+  allUsers?: {id: string, nome: string}[]; // Receber usuários para o seletor
   onUpdate?: () => void; // Aceitar onUpdate opcional do pai
   onClick?: (task: ITask) => void;
 }
@@ -26,7 +27,7 @@ const PRIORIDADE_COLORS = {
   urgente: { bg: "bg-red-500/10", text: "text-red-500", border: "border-red-500/20" },
 };
 
-export function TaskCard({ task, onClick, onUpdate, allColumns }: TaskCardProps) {
+export function TaskCard({ task, onClick, onUpdate, allColumns, allUsers }: TaskCardProps) {
   const {
     setNodeRef,
     attributes,
@@ -69,6 +70,26 @@ export function TaskCard({ task, onClick, onUpdate, allColumns }: TaskCardProps)
       }
     } catch {
       toast.error("Erro de conexão");
+    }
+  };
+
+  const handleUpdateResponsavel = async (responsavelId: string) => {
+    try {
+      const user = allUsers?.find(u => u.id === responsavelId);
+      const res = await fetch(`/api/kanban/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          responsavel_id: responsavelId === "unassigned" ? null : responsavelId,
+          responsavel_nome: user ? user.nome : null
+        })
+      });
+      if (res.ok) {
+        toast.success("Responsável atualizado!");
+        onUpdate?.();
+      }
+    } catch {
+      toast.error("Erro ao atualizar responsável");
     }
   };
 
@@ -116,12 +137,30 @@ export function TaskCard({ task, onClick, onUpdate, allColumns }: TaskCardProps)
             </div>
           )}
 
-          {task.responsavel_nome && task.responsavel_nome !== task.aluno_nome && (
-            <div className="flex items-center gap-2 text-[10.5px] text-muted-foreground font-medium font-dm">
-              <Check size={12} className="text-emerald-500" />
-              <span className="truncate">{task.responsavel_nome}</span>
+          {task.aluno2_nome && (
+            <div className="flex items-center gap-2 text-[11.5px] text-primary/60 font-bold font-dm border-t border-primary/5 pt-1">
+              <UserIcon className="w-3 h-3 text-primary/40" />
+              <span className="truncate">{task.aluno2_nome}</span>
             </div>
           )}
+
+          <div className="pt-2 border-t border-border/10" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2 mb-1">
+               <Check size={12} className="text-emerald-500" />
+               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Responsável</span>
+            </div>
+            <Select value={task.responsavel_id || "unassigned"} onValueChange={handleUpdateResponsavel}>
+              <SelectTrigger className="h-7 text-[10px] bg-muted/20 border-none font-dm font-bold text-foreground">
+                <SelectValue placeholder="Selecione..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned" className="text-[10px]">Sem responsável</SelectItem>
+                {allUsers?.map(u => (
+                  <SelectItem key={u.id} value={u.id} className="text-[10px]">{u.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
           {task.projeto_nome && (
             <div className="flex items-center gap-2 text-[11px] text-indigo-500 font-bold font-dm bg-indigo-500/5 px-2 py-1 rounded-md border border-indigo-500/10">

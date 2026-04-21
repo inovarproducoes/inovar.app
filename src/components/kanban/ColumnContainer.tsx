@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { TaskCard } from "./TaskCard";
@@ -142,7 +142,9 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
     cliente_telefone: "",
     responsavel_nome: "",
     aluno_nome: "",
-    aluno_cpf: ""
+    aluno_cpf: "",
+    aluno2_nome: "",
+    aluno2_cpf: ""
   });
 
   const { data: globalClients = [] } = useQuery({
@@ -170,6 +172,8 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
           responsavel_nome: newTaskData.responsavel_nome || newTaskData.cliente_nome,
           aluno_nome: newTaskData.aluno_nome,
           aluno_cpf: newTaskData.aluno_cpf,
+          aluno2_nome: newTaskData.aluno2_nome,
+          aluno2_cpf: newTaskData.aluno2_cpf,
           coluna_id: id,
           quadro_id: boardId,
           prioridade: 'media',
@@ -179,7 +183,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       if (resp.ok) {
         toast.success(isOSBoard ? "OS criada com sucesso!" : "Tarefa criada");
         setIsNewTaskOpen(false);
-        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "", cliente_nome: "", cliente_id: "", cliente_telefone: "", responsavel_nome: "", aluno_nome: "", aluno_cpf: "" });
+        setNewTaskData({ titulo: "", instituicao: "", projeto_nome: "", cliente_nome: "", cliente_id: "", cliente_telefone: "", responsavel_nome: "", aluno_nome: "", aluno_cpf: "", aluno2_nome: "", aluno2_cpf: "" });
         onUpdate();
       }
     } catch {
@@ -192,6 +196,22 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
   };
 
 
+
+  const [allUsers, setAllUsers] = useState<{id: string, nome: string}[]>([]);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('/api/usuarios');
+      if (res.ok) {
+        const data = await res.json();
+        setAllUsers(data);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <div
@@ -278,7 +298,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar custom-scrollbar">
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} id={task.id} task={task} onClick={onEditTask} onUpdate={onUpdate} allColumns={allColumns} />
+            <TaskCard key={task.id} id={task.id} task={task} onClick={onEditTask} onUpdate={onUpdate} allColumns={allColumns} allUsers={allUsers} />
           ))}
         </SortableContext>
         
@@ -344,7 +364,7 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
       </Dialog>
 
       <Dialog open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
-        <DialogContent className="bg-background/95 border-border/40 backdrop-blur-xl text-foreground sm:max-w-[425px]">
+        <DialogContent className="bg-background/95 border-border/40 backdrop-blur-xl text-foreground sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-syne font-extrabold text-xl">Criar Nova OS</DialogTitle>
             <DialogDescription className="font-dm text-muted-foreground">
@@ -423,30 +443,59 @@ export function ColumnContainer({ id, title, tasks, boardId, allColumns, onUpdat
               </Popover>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="qc-aluno" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Nome do Aluno</Label>
-                <Input 
-                  id="qc-aluno" 
-                  placeholder="Ex: Maria Clara..." 
-                  value={newTaskData.aluno_nome} 
-                  onChange={(e) => setNewTaskData({ ...newTaskData, aluno_nome: e.target.value })}
-                  className="bg-muted/30 border-none rounded-xl h-11"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="qc-cpf" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">CPF do Aluno</Label>
-                <Input 
-                  id="qc-cpf" 
-                  placeholder="000.000.000-00" 
-                  value={newTaskData.aluno_cpf} 
-                  onChange={(e) => setNewTaskData({ ...newTaskData, aluno_cpf: e.target.value })}
-                  className="bg-muted/30 border-none rounded-xl h-11"
-                />
+            <div className="border-t border-border/10 pt-4 mt-2">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-3">Aluno 1</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="qc-aluno" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Nome</Label>
+                  <Input 
+                    id="qc-aluno" 
+                    placeholder="Ex: Maria Clara..." 
+                    value={newTaskData.aluno_nome} 
+                    onChange={(e) => setNewTaskData({ ...newTaskData, aluno_nome: e.target.value })}
+                    className="bg-muted/30 border-none rounded-xl h-11"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="qc-cpf" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">CPF</Label>
+                  <Input 
+                    id="qc-cpf" 
+                    placeholder="000.000.000-00" 
+                    value={newTaskData.aluno_cpf} 
+                    onChange={(e) => setNewTaskData({ ...newTaskData, aluno_cpf: e.target.value })}
+                    className="bg-muted/30 border-none rounded-xl h-11"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="border-t border-border/10 pt-4 mt-2">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-3">Aluno 2 (Opcional)</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="qc-aluno2" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Nome</Label>
+                  <Input 
+                    id="qc-aluno2" 
+                    placeholder="Nome do aluno 2..." 
+                    value={newTaskData.aluno2_nome} 
+                    onChange={(e) => setNewTaskData({ ...newTaskData, aluno2_nome: e.target.value })}
+                    className="bg-muted/30 border-none rounded-xl h-11"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="qc-cpf2" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">CPF</Label>
+                  <Input 
+                    id="qc-cpf2" 
+                    placeholder="000.000.000-00" 
+                    value={newTaskData.aluno2_cpf} 
+                    onChange={(e) => setNewTaskData({ ...newTaskData, aluno2_cpf: e.target.value })}
+                    className="bg-muted/30 border-none rounded-xl h-11"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-border/10 pt-4 mt-2">
               <div className="grid gap-2">
                 <Label htmlFor="qc-inst" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Instituição</Label>
                 <Input 

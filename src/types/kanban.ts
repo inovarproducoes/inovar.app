@@ -6,6 +6,7 @@ export interface ITask {
   descricao?: string | null;
   prioridade: PrioridadeTarefa;
   responsavel_nome?: string | null;
+  responsavel_id?: string | null;
   ordem: number;
   coluna_id: string;
   quadro_id: string;
@@ -15,6 +16,8 @@ export interface ITask {
   numero_os?: string | number;
   aluno_nome?: string | null;
   aluno_cpf?: string | null;
+  aluno2_nome?: string | null;
+  aluno2_cpf?: string | null;
   projeto_nome?: string | null;
   instituicao?: string | null;
   created_at?: string | Date | null;

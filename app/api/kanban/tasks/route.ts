@@ -17,6 +17,8 @@ export async function POST(req: Request) {
       numero,
       aluno_nome,
       aluno_cpf,
+      aluno2_nome,
+      aluno2_cpf,
     } = await req.json();
 
     if (!titulo || !coluna_id || !quadro_id) {
@@ -44,6 +46,8 @@ export async function POST(req: Request) {
               responsavel_nome: responsavel_nome ?? existing.responsavel_nome,
               aluno_nome: aluno_nome ?? existing.aluno_nome,
               aluno_cpf: aluno_cpf ?? existing.aluno_cpf,
+              aluno2_nome: aluno2_nome ?? existing.aluno2_nome,
+              aluno2_cpf: aluno2_cpf ?? existing.aluno2_cpf,
               instituicao: instituicao ?? existing.instituicao,
               projeto_nome: projeto_nome ?? existing.projeto_nome,
               arquivado: false,
@@ -71,6 +75,8 @@ export async function POST(req: Request) {
           responsavel_nome,
           aluno_nome,
           aluno_cpf,
+          aluno2_nome,
+          aluno2_cpf,
           instituicao,
           projeto_nome,
           status: colStatus,

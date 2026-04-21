@@ -138,9 +138,14 @@ model OS {
   descricao        String?
   status           String   @default("pendente")
   responsavel_nome String?
+  responsavel_id   String?
+  responsavel      Usuario? @relation("OSResponsavel", fields: [responsavel_id], references: [id])
   aluno_id         String?
   aluno_nome       String?
   aluno_cpf        String?
+  aluno2_id        String?
+  aluno2_nome      String?
+  aluno2_cpf       String?
   projeto_nome     String?
   instituicao      String?
   arquivado        Boolean  @default(false)
@@ -163,9 +168,13 @@ model OSArquivada {
   descricao        String?
   status           String   @default("arquivada")
   responsavel_nome String?
+  responsavel_id   String?
   aluno_id         String?
   aluno_nome       String?
   aluno_cpf        String?
+  aluno2_id        String?
+  aluno2_nome      String?
+  aluno2_cpf       String?
   projeto_nome     String?
   instituicao      String?
   arquivado        Boolean  @default(true)
@@ -179,14 +188,15 @@ model OSArquivada {
 }
 
 model Usuario {
-  id         String   @id @default(uuid())
-  nome       String
-  email      String   @unique
-  senha_hash String
-  role       String   @default("user")
-  ativo      Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  id                  String   @id @default(uuid())
+  nome                String
+  email               String   @unique
+  senha_hash          String
+  role                String   @default("user")
+  ativo               Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @default(now()) @updatedAt
+  ordens_responsaveis OS[]     @relation("OSResponsavel")
 
   @@map("usuarios")
 }

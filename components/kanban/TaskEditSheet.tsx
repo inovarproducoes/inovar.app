@@ -35,11 +35,26 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
   const [formData, setFormData] = useState<Partial<ITask>>({});
   const [loading, setLoading] = useState(false);
 
+  const [usuarios, setUsuarios] = useState<{id: string, nome: string}[]>([]);
+
   useEffect(() => {
     if (task) {
       setFormData(task);
     }
+    fetchUsuarios();
   }, [task]);
+
+  const fetchUsuarios = async () => {
+    try {
+      const res = await fetch('/api/usuarios');
+      if (res.ok) {
+        const data = await res.json();
+        setUsuarios(data);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+    }
+  };
 
   const handleSave = async () => {
     if (!task) return;
@@ -91,13 +106,13 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md border-l border-border/40 backdrop-blur-xl bg-background/95">
+      <SheetContent className="sm:max-w-md border-l border-border/40 backdrop-blur-xl bg-background/95 overflow-y-auto">
         <SheetHeader className="mb-6">
           <SheetTitle className="text-xl font-bold flex items-center gap-2">
-            Editar Tarefa
+            Editar {task?.isOS ? 'Ordem de Serviço' : 'Tarefa'}
           </SheetTitle>
           <SheetDescription>
-            Ajuste os detalhes da tarefa e mantenha o fluxo atualizado.
+            Ajuste os detalhes e mantenha o fluxo atualizado.
           </SheetDescription>
         </SheetHeader>
 
@@ -116,7 +131,7 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
             <Label htmlFor="descricao" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Descrição</Label>
             <Textarea 
               id="descricao" 
-              rows={4}
+              rows={3}
               value={formData.descricao || ""} 
               onChange={e => setFormData({...formData, descricao: e.target.value})}
               className="bg-muted/30 border-none resize-none focus:ring-1 ring-primary"
@@ -145,19 +160,35 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
 
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Responsável</Label>
-              <Input 
-                value={formData.responsavel_nome || ""} 
-                onChange={e => setFormData({...formData, responsavel_nome: e.target.value})}
-                className="bg-muted/30 border-none"
-                placeholder="Nome..."
-              />
+              <Select 
+                value={formData.responsavel_id || "unassigned"} 
+                onValueChange={(val) => {
+                  const user = usuarios.find(u => u.id === val);
+                  setFormData({
+                    ...formData, 
+                    responsavel_id: val === "unassigned" ? null : val,
+                    responsavel_nome: user ? user.nome : null
+                  });
+                }}
+              >
+                <SelectTrigger className="bg-muted/30 border-none">
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Sem responsável</SelectItem>
+                  {usuarios.map(u => (
+                    <SelectItem key={u.id} value={u.id}>{u.nome}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="space-y-6 pt-4 border-t border-border/30">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary/50">Aluno 1</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome do Aluno</Label>
+                <Label htmlFor="aluno_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome</Label>
                 <Input 
                   id="aluno_nome" 
                   value={formData.aluno_nome || ""} 
@@ -167,11 +198,35 @@ export function TaskEditSheet({ task, isOpen, onClose, onUpdate }: TaskEditSheet
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="aluno_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF do Aluno</Label>
+                <Label htmlFor="aluno_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF</Label>
                 <Input 
                   id="aluno_cpf" 
                   value={formData.aluno_cpf || ""} 
                   onChange={e => setFormData({...formData, aluno_cpf: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="000.000.000-00"
+                />
+              </div>
+            </div>
+
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary/50">Aluno 2 (Opcional)</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="aluno2_nome" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome</Label>
+                <Input 
+                  id="aluno2_nome" 
+                  value={formData.aluno2_nome || ""} 
+                  onChange={e => setFormData({...formData, aluno2_nome: e.target.value})}
+                  className="bg-muted/30 border-none"
+                  placeholder="Nome do segundo aluno..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="aluno2_cpf" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">CPF</Label>
+                <Input 
+                  id="aluno2_cpf" 
+                  value={formData.aluno2_cpf || ""} 
+                  onChange={e => setFormData({...formData, aluno2_cpf: e.target.value})}
                   className="bg-muted/30 border-none"
                   placeholder="000.000.000-00"
                 />

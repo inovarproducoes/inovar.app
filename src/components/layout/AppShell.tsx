@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   Menu, X, LayoutDashboard, Briefcase,
   GraduationCap, Bell, Layout, LogOut, Archive, 
-  Sun, Moon, Search,
+  Sun, Moon, Search, MessageSquare
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { usePageTitle } from "@/context/PageTitleContext";
@@ -19,11 +19,12 @@ interface SearchResultsState {
 }
 
 const menuItems = [
-  { name: "Dashboard",   href: "/",                icon: LayoutDashboard },
-  { name: "Kanban OS",   href: "/kanban",           icon: Layout },
-  { name: "OS Arquivadas", href: "/os/arquivadas",  icon: Archive },
-  { name: "Alunos",      href: "/alunos",           icon: GraduationCap },
-  { name: "Clientes",    href: "/clientes",         icon: Briefcase },
+  { name: "Dashboard",      href: "/",                icon: LayoutDashboard },
+  { name: "Kanban OS",      href: "/kanban",           icon: Layout },
+  { name: "OS Arquivadas",  href: "/os/arquivadas",    icon: Archive },
+  { name: "Alunos",         href: "/alunos",           icon: GraduationCap },
+  { name: "Clientes",       href: "/clientes",         icon: Briefcase },
+  { name: "Histórico Chat", href: "/historico-chat",   icon: MessageSquare },
 ];
 
 /* ─── Logo ────────────────────────────────────────────────────── */

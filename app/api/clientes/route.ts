@@ -45,11 +45,19 @@ export async function POST(req: NextRequest) {
       where: { telefone: payload.telefone }
     });
     
+    let cliente;
     if (existing) {
-      return NextResponse.json({ error: "Telefone já existe", id: existing.id }, { status: 409 });
+      cliente = await prisma.cliente.update({
+        where: { id: existing.id },
+        data: payload
+      });
+      console.log(`Cliente atualizado: ${cliente.nome} (${cliente.telefone})`);
+    } else {
+      cliente = await prisma.cliente.create({ data: payload });
+      console.log(`Novo cliente criado: ${cliente.nome}`);
     }
     
-    const newCliente = await prisma.cliente.create({ data: payload });
+    const newCliente = cliente; // Alias for compatibility with the rest of the code
 
     // AUTOMAÇÃO SÊNIOR: Criar uma tarefa no Kanban automaticamente
     try {

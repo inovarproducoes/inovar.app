@@ -8,6 +8,7 @@ export async function PATCH(
   try {
     const { id: rawId } = await params;
     const id = rawId?.replace(/[\n\r\t]/g, "").trim();
+    const body = await req.json();
     const {
       coluna_id,
       ordem,
@@ -15,11 +16,14 @@ export async function PATCH(
       descricao,
       prioridade,
       responsavel_nome,
+      responsavel_id,
       aluno_nome,
       aluno_cpf,
+      aluno2_nome,
+      aluno2_cpf,
       projeto_nome,
       instituicao
-    } = await req.json();
+    } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 });
@@ -69,8 +73,11 @@ export async function PATCH(
             nome: titulo || undefined, 
             descricao: descricao !== undefined ? descricao : undefined,
             responsavel_nome: responsavel_nome !== undefined ? responsavel_nome : undefined,
+            responsavel_id: body.responsavel_id !== undefined ? body.responsavel_id : undefined,
             aluno_nome: aluno_nome !== undefined ? aluno_nome : undefined,
             aluno_cpf: aluno_cpf !== undefined ? aluno_cpf : undefined,
+            aluno2_nome: body.aluno2_nome !== undefined ? body.aluno2_nome : undefined,
+            aluno2_cpf: body.aluno2_cpf !== undefined ? body.aluno2_cpf : undefined,
             projeto_nome: projeto_nome !== undefined ? projeto_nome : undefined,
             instituicao: instituicao !== undefined ? instituicao : undefined,
           }
@@ -118,9 +125,13 @@ export async function DELETE(
               descricao: os.descricao,
               status: "arquivada",
               responsavel_nome: os.responsavel_nome,
+              responsavel_id: os.responsavel_id,
               aluno_id: os.aluno_id,
               aluno_nome: os.aluno_nome,
               aluno_cpf: os.aluno_cpf,
+              aluno2_id: os.aluno2_id,
+              aluno2_nome: os.aluno2_nome,
+              aluno2_cpf: os.aluno2_cpf,
               projeto_nome: os.projeto_nome,
               instituicao: os.instituicao,
               arquivado: true,
