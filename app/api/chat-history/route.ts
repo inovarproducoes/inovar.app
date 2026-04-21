@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const sessionId = searchParams.get("sessionId");
 
     if (sessionId) {
-      const history = await prisma.n8n_chat_histories.findMany({
+      const history = await prisma.n8nChatHistory.findMany({
         where: { session_id: sessionId },
         orderBy: { id: "asc" },
       });
