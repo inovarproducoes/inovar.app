@@ -17,7 +17,8 @@ import {
   Webhook, 
   Key,
   Users,
-  Layout
+  Layout,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +37,7 @@ interface UserEntry {
   email: string;
   role: string;
   foto_url?: string | null;
-  permissoes?: any;
+  permissoes?: Record<string, boolean>;
 }
 
 const MODULOS_SISTEMA = [
