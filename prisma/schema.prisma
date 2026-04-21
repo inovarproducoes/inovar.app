@@ -146,6 +146,7 @@ model OS {
   instituicao      String?
   projeto_nome     String?
   aluno_cpf        String?
+  aluno2_id        String?
   aluno2_nome      String?
   aluno2_cpf       String?
   arquivado        Boolean  @default(false)
@@ -168,6 +169,7 @@ model OSArquivada {
   aluno_id         String?
   aluno_nome       String?
   aluno_cpf        String?
+  aluno2_id        String?
   aluno2_nome      String?
   aluno2_cpf       String?
   projeto_nome     String?
