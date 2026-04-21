@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Aluno {
-  id                   String        @id @default(uuid())
-  matricula            String?       @unique
+  id                   String   @id @default(uuid())
+  matricula            String?  @unique
   nome                 String
-  cpf                  String?       @unique
+  cpf                  String?  @unique
   idade                Int?
-  email                String?       @unique
+  email                String?  @unique
   telefone             String?
   turma                String?
   curso                String?
@@ -25,9 +25,9 @@ model Aluno {
   foto_url             String?
   observacoes          String?
   created_by           String?
-  created_at           DateTime      @default(now())
-  updated_at           DateTime      @default(now()) @updatedAt
-  status               String        @default("ativo")
+  created_at           DateTime @default(now())
+  updated_at           DateTime @default(now()) @updatedAt
+  status               String   @default("ativo")
   instituicao          String?
   projeto              String?
   financeiro_parcelas  Json?
@@ -40,8 +40,6 @@ model Aluno {
   @@index([projeto])
   @@map("alunos")
 }
-
-
 
 model Turma {
   id          String  @id @default(uuid())
@@ -80,10 +78,10 @@ model Quadro {
   id             String   @id @default(uuid())
   nome           String
   descricao      String?
-  ativo          Boolean  @default(false)
-  arquivado      Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now()) @updatedAt
+  arquivado      Boolean  @default(false)
+  ativo          Boolean  @default(false)
   colunas        Coluna[]
   ordens_servico OS[]
   tarefas        Tarefa[]
@@ -119,9 +117,9 @@ model Tarefa {
   created_at       DateTime  @default(now())
   updated_at       DateTime  @default(now()) @updatedAt
   prioridade       String    @default("media")
+  arquivado        Boolean   @default(false)
   instituicao      String?
   projeto_nome     String?
-  arquivado        Boolean   @default(false)
   coluna           Coluna    @relation(fields: [coluna_id], references: [id], onDelete: Cascade)
   quadro           Quadro    @relation(fields: [quadro_id], references: [id], onDelete: Cascade)
 
@@ -133,31 +131,29 @@ model Tarefa {
 
 model OS {
   id               String   @id @default(uuid())
-  numero           String?
+  numero           String?  @unique
   nome             String
   descricao        String?
   status           String   @default("pendente")
-  responsavel_nome String?
   responsavel_id   String?
-  responsavel      Usuario? @relation("OSResponsavel", fields: [responsavel_id], references: [id])
+  responsavel_nome String?
   aluno_id         String?
-  aluno_nome       String?
-  aluno_cpf        String?
-  aluno2_id        String?
-  aluno2_nome      String?
-  aluno2_cpf       String?
-  projeto_nome     String?
-  instituicao      String?
-  arquivado        Boolean  @default(false)
-  ordem            Int      @default(0)
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now()) @updatedAt
   coluna_id        String?
   quadro_id        String?
+  aluno_nome       String?
+  instituicao      String?
+  projeto_nome     String?
+  aluno_cpf        String?
+  aluno2_nome      String?
+  aluno2_cpf       String?
+  arquivado        Boolean  @default(false)
+  ordem            Int      @default(0)
   coluna           Coluna?  @relation(fields: [coluna_id], references: [id])
   quadro           Quadro?  @relation(fields: [quadro_id], references: [id])
+  responsavel      Usuario? @relation("ResponsavelOS", fields: [responsavel_id], references: [id])
 
-  @@unique([numero])
   @@map("ordens_servico")
 }
 
@@ -167,12 +163,11 @@ model OSArquivada {
   nome             String
   descricao        String?
   status           String   @default("arquivada")
-  responsavel_nome String?
   responsavel_id   String?
+  responsavel_nome String?
   aluno_id         String?
   aluno_nome       String?
   aluno_cpf        String?
-  aluno2_id        String?
   aluno2_nome      String?
   aluno2_cpf       String?
   projeto_nome     String?
@@ -188,21 +183,23 @@ model OSArquivada {
 }
 
 model Usuario {
-  id                  String   @id @default(uuid())
-  nome                String
-  email               String   @unique
-  senha_hash          String
-  role                String   @default("user")
-  ativo               Boolean  @default(true)
-  created_at          DateTime @default(now())
-  updated_at          DateTime @default(now()) @updatedAt
-  ordens_responsaveis OS[]     @relation("OSResponsavel")
+  id                 String   @id @default(uuid())
+  nome               String
+  email              String   @unique
+  senha_hash         String
+  role               String   @default("user")
+  ativo              Boolean  @default(true)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @default(now()) @updatedAt
+  ordens_responsaveis OS[]    @relation("ResponsavelOS")
 
   @@map("usuarios")
 }
 
-model n8n_chat_histories {
+model n8nChatHistory {
   id         Int    @id @default(autoincrement())
   session_id String @db.VarChar(255)
   message    Json
+
+  @@map("n8n_chat_histories")
 }
