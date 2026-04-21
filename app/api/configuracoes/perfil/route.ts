@@ -35,7 +35,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json(updated);
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao atualizar perfil" }, { status: 500 });
   }
 }

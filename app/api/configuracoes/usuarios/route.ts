@@ -18,7 +18,7 @@ export async function GET() {
       }
     });
     return NextResponse.json(users);
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao buscar usuários" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(user);
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao criar usuário" }, { status: 500 });
   }
 }
@@ -72,7 +72,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json(user);
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Erro ao atualizar usuário" }, { status: 500 });
   }
 }

@@ -33,7 +33,7 @@ import Image from "next/image";
 export default function SettingsPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<Record<string, any>[]>([]);
+  const [users, setUsers] = useState<Record<string, string | boolean | object | null>[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   // Profile states
@@ -90,7 +90,7 @@ export default function SettingsPage() {
         const err = await res.json();
         toast.error(err.error || "Erro ao atualizar perfil");
       }
-    } catch (_error) {
+    } catch {
       toast.error("Erro na conexão com o servidor");
     } finally {
       setLoading(false);
