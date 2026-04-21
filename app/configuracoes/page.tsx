@@ -30,10 +30,18 @@ import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
+interface UserEntry {
+  id: string;
+  nome: string;
+  email: string;
+  role: string;
+  foto_url?: string | null;
+}
+
 export default function SettingsPage() {
   const { usuario } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<Record<string, string | boolean | object | null>[]>([]);
+  const [users, setUsers] = useState<UserEntry[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   // Profile states
@@ -254,8 +262,8 @@ export default function SettingsPage() {
                       users.map((u) => (
                         <div key={u.id} className="flex items-center justify-between p-4 rounded-2xl border border-border/40 hover:bg-muted/30 transition-all group">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden flex items-center justify-center font-bold text-xs">
-                              {u.foto_url ? <Image src={u.foto_url} alt={u.nome} width={48} height={48} /> : u.nome[0].toUpperCase()}
+                            <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden flex items-center justify-center font-bold text-xs relative">
+                              {u.foto_url ? <Image src={u.foto_url} alt={u.nome} fill className="object-cover" /> : u.nome[0].toUpperCase()}
                             </div>
                             <div>
                               <p className="text-sm font-bold text-foreground">{u.nome}</p>
